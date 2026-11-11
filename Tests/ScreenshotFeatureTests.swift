@@ -127,11 +127,11 @@ enum ScreenshotFeatureTests {
 
         let ownScreenshotWindows: Set<CGWindowID> = [11, 12, 13]
         let protectedScreenshotWindows: Set<CGWindowID> = [12, 99]
-        suite.expect(Defaults.registeredDefaults[DefaultsKey.screenshotHideVorssaintWindows]
+        suite.expect(Defaults.registeredDefaults[DefaultsKey.screenshotHideUnupunctMacTabWindows]
                 as? Bool == true,
                "screenshots hide Unupunct MacTab windows by default")
         suite.expect(SettingsBackupSupport.exportKeys().contains(
-            DefaultsKey.screenshotHideVorssaintWindows),
+            DefaultsKey.screenshotHideUnupunctMacTabWindows),
                "the screenshot window visibility preference travels in backups")
         // An editor or a pinned capture is an ordinary window, so the
         // visibility preference has to reach it; the overlays and HUDs taking
@@ -151,7 +151,7 @@ enum ScreenshotFeatureTests {
         ) == ownScreenshotWindows,
         "a recording is exempt from the preference and protects both kinds")
         suite.expect(ScreenshotCapturePolicy.excludedWindowIDs(
-            hideVorssaintWindows: false,
+            hideUnupunctMacTabWindows: false,
             ownWindowIDs: ownScreenshotWindows,
             protectedWindowIDs: ScreenshotCapturePolicy.protectedWindowIDs(
                 workflowWindowIDs: workflowWindows,
@@ -162,20 +162,20 @@ enum ScreenshotFeatureTests {
         suite.expect(ScreenshotCapturePolicy.canPickWindow(
             13,
             isOwnWindow: true,
-            hideVorssaintWindows: false,
+            hideUnupunctMacTabWindows: false,
             protectedWindowIDs: ScreenshotCapturePolicy.protectedWindowIDs(
                 workflowWindowIDs: workflowWindows,
                 contentWindowIDs: contentWindows,
                 honoursVisibilityPreference: true)
         ), "a pinned capture can be picked while Unupunct MacTab windows are shown")
         suite.expect(ScreenshotCapturePolicy.excludedWindowIDs(
-            hideVorssaintWindows: true,
+            hideUnupunctMacTabWindows: true,
             ownWindowIDs: ownScreenshotWindows,
             protectedWindowIDs: protectedScreenshotWindows
         ) == ownScreenshotWindows,
         "screenshot hiding Unupunct MacTab excludes every own window")
         suite.expect(ScreenshotCapturePolicy.excludedWindowIDs(
-            hideVorssaintWindows: false,
+            hideUnupunctMacTabWindows: false,
             ownWindowIDs: ownScreenshotWindows,
             protectedWindowIDs: protectedScreenshotWindows
         ) == [12],
@@ -183,25 +183,25 @@ enum ScreenshotFeatureTests {
         suite.expect(ScreenshotCapturePolicy.canPickWindow(
             7,
             isOwnWindow: false,
-            hideVorssaintWindows: true,
+            hideUnupunctMacTabWindows: true,
             protectedWindowIDs: protectedScreenshotWindows
         ), "screenshot can always pick an ordinary external window")
         suite.expect(!ScreenshotCapturePolicy.canPickWindow(
             11,
             isOwnWindow: true,
-            hideVorssaintWindows: true,
+            hideUnupunctMacTabWindows: true,
             protectedWindowIDs: protectedScreenshotWindows
         ), "screenshot cannot pick a Unupunct MacTab window while hiding them")
         suite.expect(ScreenshotCapturePolicy.canPickWindow(
             11,
             isOwnWindow: true,
-            hideVorssaintWindows: false,
+            hideUnupunctMacTabWindows: false,
             protectedWindowIDs: protectedScreenshotWindows
         ), "screenshot can pick an ordinary Unupunct MacTab window when visible")
         suite.expect(!ScreenshotCapturePolicy.canPickWindow(
             12,
             isOwnWindow: true,
-            hideVorssaintWindows: false,
+            hideUnupunctMacTabWindows: false,
             protectedWindowIDs: protectedScreenshotWindows
         ), "screenshot cannot pick its own protected capture UI")
         islandCaptureChecks(suite)
@@ -1153,27 +1153,27 @@ enum ScreenshotFeatureTests {
             for: .screenshot,
             screenshotFreeze: false,
             screenshotIncludePointer: true,
-            screenshotHideVorssaintWindows: true)
+            screenshotHideUnupunctMacTabWindows: true)
         let recorderPolicy = ScreenshotSupport.unifiedCapturePolicy(
             for: .recording,
             screenshotFreeze: false,
             screenshotIncludePointer: true,
-            screenshotHideVorssaintWindows: true)
+            screenshotHideUnupunctMacTabWindows: true)
         let textPolicy = ScreenshotSupport.unifiedCapturePolicy(
             for: .text,
             screenshotFreeze: false,
             screenshotIncludePointer: true,
-            screenshotHideVorssaintWindows: true)
+            screenshotHideUnupunctMacTabWindows: true)
         suite.expect(liveScreenshotPolicy == .init(freeze: false, includePointer: true,
-                                             hideVorssaintWindows: true,
+                                             hideUnupunctMacTabWindows: true,
                                              keepsContentWindowsOut: true,
                                              usesGeometry: false)
                 && recorderPolicy == .init(freeze: true, includePointer: false,
-                                           hideVorssaintWindows: false,
+                                           hideUnupunctMacTabWindows: false,
                                            keepsContentWindowsOut: true,
                                            usesGeometry: true)
                 && textPolicy == .init(freeze: true, includePointer: false,
-                                       hideVorssaintWindows: true,
+                                       hideUnupunctMacTabWindows: true,
                                        keepsContentWindowsOut: true,
                                        usesGeometry: false),
                "switching capture mode rebuilds the frozen frame, pointer and window policy")
@@ -1181,12 +1181,12 @@ enum ScreenshotFeatureTests {
             for: .color,
             screenshotFreeze: false,
             screenshotIncludePointer: true,
-            screenshotHideVorssaintWindows: true)
+            screenshotHideUnupunctMacTabWindows: true)
         suite.expect(textPolicy.sharesSource(with: colorPolicy)
                 && !textPolicy.sharesSource(with: recorderPolicy)
                 && !textPolicy.sharesSource(with: liveScreenshotPolicy),
                "only freeze, pointer and window policy decide whether a mode needs its own photograph")
-        // With "Hide Vorssaint windows" off, freeze on and the pointer off,
+        // With "Hide Unupunct MacTab windows" off, freeze on and the pointer off,
         // every tool wants the same pixels except for the editors and pins
         // recording keeps out, so switching to or from recording has to
         // re-photograph and re-list the pickable windows (issue #780).
@@ -1195,7 +1195,7 @@ enum ScreenshotFeatureTests {
                 for: $0,
                 screenshotFreeze: true,
                 screenshotIncludePointer: false,
-                screenshotHideVorssaintWindows: false))
+                screenshotHideUnupunctMacTabWindows: false))
         })
         suite.expect(shownWindowPolicies[.recording]?.keepsContentWindowsOut == true
                 && shownWindowPolicies[.screenshot]?.keepsContentWindowsOut == false
@@ -1220,7 +1220,7 @@ enum ScreenshotFeatureTests {
                 for: $0,
                 screenshotFreeze: true,
                 screenshotIncludePointer: false,
-                screenshotHideVorssaintWindows: true)
+                screenshotHideUnupunctMacTabWindows: true)
         }
         suite.expect(hiddenWindowPolicies.allSatisfy(\.keepsContentWindowsOut),
                "hiding Unupunct MacTab windows keeps editors and pins out of every tool")
@@ -4270,7 +4270,7 @@ enum ScreenshotFeatureTests {
         GlobalShortcut.refreshLayoutLabels()
     }
 
-    /// The island follows "Show in screenshots and videos" in Vorssaint's own
+    /// The island follows "Show in screenshots and videos" in Unupunct MacTab's own
     /// captures too, area selections included, except while it is the tool
     /// taking the picture.
     private static func islandCaptureChecks(_ suite: TestSuite) {
@@ -4294,19 +4294,19 @@ enum ScreenshotFeatureTests {
             // What NotchService protects: the island windows not shown.
             let protected = islandWindows.subtracting(visible).union([overlay])
             let hidden = ScreenshotCapturePolicy.excludedWindowIDs(
-                hideVorssaintWindows: true, ownWindowIDs: ownWindows,
+                hideUnupunctMacTabWindows: true, ownWindowIDs: ownWindows,
                 protectedWindowIDs: protected, islandWindowIDs: visible)
             suite.expect(hidden == ownWindows.subtracting(visible),
                          "hiding Unupunct MacTab windows leaves the shown island in (capture tool: \(tool))")
             let kept = ScreenshotCapturePolicy.excludedWindowIDs(
-                hideVorssaintWindows: false, ownWindowIDs: ownWindows,
+                hideUnupunctMacTabWindows: false, ownWindowIDs: ownWindows,
                 protectedWindowIDs: protected, islandWindowIDs: visible)
             suite.expect(kept == protected,
                          "showing Unupunct MacTab windows still keeps the capture interface out (capture tool: \(tool))")
         }
         // Watch reads an area and must never see the island, whatever the preference says.
         suite.expect(ScreenshotCapturePolicy.excludedWindowIDs(
-            hideVorssaintWindows: true, ownWindowIDs: ownWindows,
+            hideUnupunctMacTabWindows: true, ownWindowIDs: ownWindows,
             protectedWindowIDs: islandWindows.union([overlay]),
             islandWindowIDs: shown(preference: true, tool: false)) == ownWindows,
                      "a caller that protects the island keeps it out even when it shows in captures")

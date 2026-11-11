@@ -3564,7 +3564,7 @@ enum NotchTests {
                "invalid internal positions cannot be serialized into adapter input")
     }
     private static func calendarContracts(_ suite: TestSuite) {
-        let entitlements = NSDictionary(contentsOfFile: "Resources/Vorssaint.entitlements") as? [String: Any]
+        let entitlements = NSDictionary(contentsOfFile: "Resources/UnupunctMacTab.entitlements") as? [String: Any]
         let info = NSDictionary(contentsOfFile: "Resources/Info.plist") as? [String: Any]
         suite.expect(entitlements?["com.apple.security.personal-information.calendars"] as? Bool == true
                && !(info?["NSCalendarsFullAccessUsageDescription"] as? String ?? "").isEmpty,

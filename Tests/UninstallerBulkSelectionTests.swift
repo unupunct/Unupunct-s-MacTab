@@ -66,7 +66,7 @@ enum UninstallerBulkSelectionTests {
                              confidence: .related, include: false),
         ]
         uninstaller.items = original
-        uninstaller.target = Fixture.Target(name: "Editor", bundleID: "org.vorssaint.fixture.editor",
+        uninstaller.target = Fixture.Target(name: "Editor", bundleID: "org.unupunct.fixture.editor",
                                             url: appURL, icon: NSImage())
         func expectSelection(_ flags: [Bool], _ state: Bulk, _ count: Int, _ size: Int64, _ context: String) {
             var expected = original

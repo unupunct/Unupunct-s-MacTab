@@ -2966,7 +2966,7 @@ enum PointerInputFeatureTests {
         // answers /private/tmp/… for a file the running program answers
         // /tmp/… for. Both ends resolve, so they meet.
         let identityRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("vorssaint-identity-\(getpid())", isDirectory: true)
+            .appendingPathComponent("unupunct-identity-\(getpid())", isDirectory: true)
         let runtimeBinary = identityRoot.appendingPathComponent("runtime/bin/launcher")
         try? FileManager.default.createDirectory(at: runtimeBinary.deletingLastPathComponent(),
                                                  withIntermediateDirectories: true)
@@ -3049,7 +3049,7 @@ enum PointerInputFeatureTests {
         // has no bundle identifier, while an ordinary .app bundle keeps its
         // bundle row and background/accessory processes stay excluded.
         let runningTestRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("vorssaint-running-\(getpid())", isDirectory: true)
+            .appendingPathComponent("unupunct-running-\(getpid())", isDirectory: true)
         let runningTargetBinary = runningTestRoot.appendingPathComponent("bin/java")
         let runningSymlinkBinary = runningTestRoot.appendingPathComponent("bin/java_link")
         try? FileManager.default.createDirectory(at: runningTargetBinary.deletingLastPathComponent(),
@@ -3304,7 +3304,7 @@ enum PointerInputFeatureTests {
         for file in ["Services/MouseExceptions/MouseAppExceptionSupport.swift",
                      "Services/InstalledApps.swift",
                      "Core/Defaults.swift"] {
-            let ruleLines = ((try? String(contentsOfFile: "Sources/Vorssaint/\(file)",
+            let ruleLines = ((try? String(contentsOfFile: "Sources/UnupunctMacTab/\(file)",
                                           encoding: .utf8)) ?? "").components(separatedBy: "\n")
             if ruleLines.count <= 1 { slashRuleSites.append("\(file) unreadable") }
             for (index, line) in ruleLines.enumerated()
@@ -3530,7 +3530,7 @@ enum PointerInputFeatureTests {
             // Process 13 stands for the window server, which is no app. This
             // app has an identity, so only the own-window rule keeps it out.
             var owners: [Int32: String] = [11: "com.apple.dock", 5: "com.example.modeler"]
-            owners[ownProcessID] = "com.example.vorssaint"
+            owners[ownProcessID] = "com.example.unupunct"
             let identities = owners
             let launchpad = MouseAppExceptionSupport.Window(frame: screen, layer: 27, processID: 11, number: 40)
             let app = MouseAppExceptionSupport.Window(frame: screen, layer: 0, processID: 5, number: 41)

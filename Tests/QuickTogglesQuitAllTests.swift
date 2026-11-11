@@ -7,7 +7,7 @@ import Foundation
 enum QuickTogglesQuitAllTests {
     static func run(_ suite: TestSuite) {
         let regular = QuickTogglesSupport.regularActivationPolicy
-        let vorssaint = QuickTogglesSupport.vorssaintBundleIdentifiers
+        let unupunct = QuickTogglesSupport.unupunctBundleIdentifiers
         let (finder, phone) = (Defaults.finderBundleIdentifier, Defaults.phoneBundleIdentifier)
 
         suite.expect(
@@ -25,7 +25,7 @@ enum QuickTogglesQuitAllTests {
         suite.expect(
             quits("com.apple.TextEdit") && !quits("com.apple.Safari") && !quits(finder) && !quits(phone),
             "a regular app outside the list is quit; user exceptions, Finder and Phone are skipped")
-        suite.expect(vorssaint.allSatisfy { !exceptions.contains($0) && !quits($0) },
+        suite.expect(unupunct.allSatisfy { !exceptions.contains($0) && !quits($0) },
                      "Unupunct MacTab never quits itself, even though it is not in the exception list")
         suite.expect(
             !quits("com.apple.TextEdit", policy: 1) && !quits("com.apple.TextEdit", policy: 2)
@@ -38,7 +38,7 @@ enum QuickTogglesQuitAllTests {
         }
         suite.expect(
             lists("com.apple.Safari") && lists(phone) && !lists(finder)
-                && vorssaint.allSatisfy { !lists($0) }
+                && unupunct.allSatisfy { !lists($0) }
                 && !lists("com.apple.TextEdit", policy: 1)
                 && !lists("com.apple.TextEdit", terminated: true) && !lists(nil),
             "the window lists regular apps and kept exceptions, never Finder, Unupunct MacTab or hidden apps")

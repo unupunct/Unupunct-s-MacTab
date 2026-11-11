@@ -21,6 +21,17 @@ clipboard history, a system monitor, mouse and scroll tweaks and more. Install o
 </p>
 <p align="center"><sub>Screenshots of the running app's Settings window, captured on macOS 12.7.6. They show default settings only.</sub></p>
 
+## What this port adds
+
+- **A panel built around the things you reach for most.** Click the menu bar icon for output and microphone volume sliders, then System, Network, Disk and Power, with **Screenshot**, **Send to** and **Clean** buttons underneath. The CPU, RAM, disk and network readings sit on the left of the icon.
+- **Clean.** Opens a window with the app's junk cleaner, its app uninstaller and a new **Large files** finder. Everything is reviewed first and goes to the Trash.
+- **Send to.** Copies chosen files to a folder, drive or mounted network location, or opens them in an app. You edit the list of destinations.
+- **App volume** for Music, Spotify and VLC (macOS 12 cannot control other apps one by one).
+- **Intel temperature sensors**, with LAN traffic shown where a Mac has no GPU sensor.
+- A first-run setup that offers every tool this Mac can run.
+
+All of this was written for this port and has only been looked at on one Mac. See the limits below.
+
 ## Download and install
 
 1. Get **`UnupunctMacTab-…-x86_64-macOS12.dmg`** from the [Releases](https://github.com/unupunct/Unupunct-s-MacTab/releases) page.

@@ -906,7 +906,7 @@ enum RepositoryFeatureTests {
         // their own shell, leaving nothing behind (issue #598).
         do {
             let folder = FileManager.default.temporaryDirectory
-                .appendingPathComponent("vorssaint-terminal-script-\(UUID().uuidString)")
+                .appendingPathComponent("unupunct-terminal-script-\(UUID().uuidString)")
             try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
             defer { try? FileManager.default.removeItem(at: folder) }
             // A stand-in login shell that writes down the arguments it was given.
@@ -1079,12 +1079,12 @@ enum RepositoryFeatureTests {
                 && plainLogin.arguments.last == loginShell.arguments.last,
                "Homebrew's fallback asks for the same dump from a plain login shell")
         let resolvingEnvironment = HomebrewEnvironment.loginShellEnvironment(base: ["HOME": "/Users/test"])
-        suite.expect(HomebrewEnvironment.resolvingVariable == "VORSSAINT_RESOLVING_ENVIRONMENT"
-                && resolvingEnvironment == ["HOME": "/Users/test", "VORSSAINT_RESOLVING_ENVIRONMENT": "1"],
-               "Homebrew runs the login shell with VORSSAINT_RESOLVING_ENVIRONMENT=1 on top of the app's environment")
+        suite.expect(HomebrewEnvironment.resolvingVariable == "UNUPUNCT_RESOLVING_ENVIRONMENT"
+                && resolvingEnvironment == ["HOME": "/Users/test", "UNUPUNCT_RESOLVING_ENVIRONMENT": "1"],
+               "Homebrew runs the login shell with UNUPUNCT_RESOLVING_ENVIRONMENT=1 on top of the app's environment")
         // A real zsh reading startup files from a scratch ZDOTDIR, so the user's own are never touched.
         let zdotdir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("vorssaint-login-shell-\(UUID().uuidString)")
+            .appendingPathComponent("unupunct-login-shell-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(at: zdotdir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: zdotdir) }
         func startupExports(zshrc: String) -> [String: String] {
@@ -1096,12 +1096,12 @@ enum RepositoryFeatureTests {
                 baseEnvironment: ["HOME": zdotdir.path, "ZDOTDIR": zdotdir.path, "PATH": "/usr/bin:/bin"])
         }
         let zshrcExports = startupExports(zshrc: "export https_proxy=http://127.0.0.1:7890\n"
-                                          + "export HOMEBREW_SEEN_RESOLVING=$VORSSAINT_RESOLVING_ENVIRONMENT\n")
+                                          + "export HOMEBREW_SEEN_RESOLVING=$UNUPUNCT_RESOLVING_ENVIRONMENT\n")
         suite.expect(zshrcExports["HOMEBREW_API_DOMAIN"] == "https://mirror.example/api"
                 && zshrcExports["https_proxy"] == "http://127.0.0.1:7890",
                "Homebrew reads exports from both ~/.zprofile and ~/.zshrc, found \(zshrcExports.keys.sorted())")
         expectEqual(zshrcExports["HOMEBREW_SEEN_RESOLVING"] ?? "", "1",
-                    "Homebrew's login shell exposes VORSSAINT_RESOLVING_ENVIRONMENT to startup files")
+                    "Homebrew's login shell exposes UNUPUNCT_RESOLVING_ENVIRONMENT to startup files")
         // A multiplexer autostart that fails without a terminal and exits, or an exec into another shell.
         for takeover in ["multiplexer_autostart_failed_without_a_terminal=1; exit 0", "exec /bin/sh -c true"] {
             let fallbackExports = startupExports(zshrc: takeover + "\n")
@@ -2065,7 +2065,7 @@ enum RepositoryFeatureTests {
 
         // The session records the app that was active when secure input
         // turned on, not the process holding it, and Settings makes
-        // Vorssaint that app.
+        // Unupunct MacTab that app.
         let secureInputOwnPid: pid_t = 77
         suite.expect(SecureInputSupport.holder(isEnabled: false,
                                          read: .noHolder,

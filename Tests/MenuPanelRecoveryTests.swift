@@ -304,7 +304,7 @@ enum MenuPanelRecoveryTests {
             host.popoverWillClose(Notification(name: Notification.Name("willClose")))
             host.popoverDidClose(Notification(name: Notification.Name("closed")))
         }
-        // A close Vorssaint asks for itself, which marks it app requested.
+        // A close Unupunct MacTab asks for itself, which marks it app requested.
         func requestClose(_ host: Host, _ reason: PanelCloseReason) {
             host.closePopoverNow(animated: false, reason: reason, completion: nil)
             host.popoverWillClose(Notification(name: Notification.Name("willClose")))

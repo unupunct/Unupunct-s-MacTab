@@ -1204,7 +1204,7 @@ enum SwitcherModelFeatureTests {
                && windowlessEntry.windowLabel(noOpenWindow: "No open window") == "No open window",
                "App Switcher preview labels name a window or explain that there is none")
         let dockIconBundle = FileManager.default.temporaryDirectory
-            .appendingPathComponent("vorssaint-dock-icon-\(UUID().uuidString).app")
+            .appendingPathComponent("unupunct-dock-icon-\(UUID().uuidString).app")
         let dockIconResources = dockIconBundle.appendingPathComponent("Contents/Resources")
         try? FileManager.default.createDirectory(at: dockIconResources,
                                                  withIntermediateDirectories: true)
@@ -3020,11 +3020,11 @@ enum SwitcherModelFeatureTests {
                "a screen too short for the panel still shows its top")
         suite.expect(registeredDefaults[DefaultsKey.menuBarHideIconWithMetrics] as? Bool == false,
                "the menu bar icon stays visible by default")
-        suite.expect(MenuBarSpacingSupport.keepAwakeSignals(active: true, tint: .orange, style: .vorssaint)
+        suite.expect(MenuBarSpacingSupport.keepAwakeSignals(active: true, tint: .orange, style: .unupunct)
                      && MenuBarSpacingSupport.keepAwakeSignals(active: true, tint: .none, style: .coffee),
                "an active Keep Awake brings back the glyph that shows it")
         suite.expect(!MenuBarSpacingSupport.keepAwakeSignals(active: false, tint: .orange, style: .coffee)
-                     && !MenuBarSpacingSupport.keepAwakeSignals(active: true, tint: .none, style: .vorssaint),
+                     && !MenuBarSpacingSupport.keepAwakeSignals(active: true, tint: .none, style: .unupunct),
                "nothing returns while Keep Awake is off, or when its active glyph looks the same as the idle one")
         // Both hide decisions and the title's leading space ask it, and an open
         // panel holds it: the returning glyph widens the item, and a separate
@@ -3176,14 +3176,14 @@ enum SwitcherModelFeatureTests {
             statusDefaults.removePersistentDomain(forName: statusPlacementSuite)
             suite.expect(StatusItemPlacementSupport.placementGeneration(in: statusDefaults) == 0,
                    "initial placement generation is 0")
-            suite.expect(StatusItemPlacementSupport.mainAutosaveName(in: statusDefaults) == "VorssaintMenuBarItem",
+            suite.expect(StatusItemPlacementSupport.mainAutosaveName(in: statusDefaults) == "UnupunctMacTabMenuBarItem",
                    "generation 0 uses base autosave name")
 
             // The coordinate macOS saves for the icon is what puts it back in
             // the same spot on the next launch. 3.3.3 deleted the one written
             // by the older recovery on every launch, which moved the icon to
             // where a first-time item goes and, on a full bar, out of sight.
-            let legacyKey = "NSStatusItem Preferred Position VorssaintMenuBarItem"
+            let legacyKey = "NSStatusItem Preferred Position UnupunctMacTabMenuBarItem"
             statusDefaults.set(64.0, forKey: legacyKey)
             StatusItemPlacementSupport.clearRememberedVisibility(in: statusDefaults)
             suite.expect(statusDefaults.double(forKey: legacyKey) == 64.0,
@@ -3196,29 +3196,29 @@ enum SwitcherModelFeatureTests {
 
             StatusItemPlacementSupport.bumpPlacementGeneration(in: statusDefaults)
             let gen1Name = StatusItemPlacementSupport.mainAutosaveName(in: statusDefaults)
-            suite.expect(gen1Name == "VorssaintMenuBarItem.1",
+            suite.expect(gen1Name == "UnupunctMacTabMenuBarItem.1",
                    "bumped generation produces numbered autosave name")
-            suite.expect(statusDefaults.object(forKey: "NSStatusItem Preferred Position VorssaintMenuBarItem.1") == nil,
+            suite.expect(statusDefaults.object(forKey: "NSStatusItem Preferred Position UnupunctMacTabMenuBarItem.1") == nil,
                    "a reset lets macOS place the full item without a machine-specific position")
-            suite.expect(statusDefaults.object(forKey: "NSStatusItem Preferred Position VorssaintMenuBarItem") == nil,
+            suite.expect(statusDefaults.object(forKey: "NSStatusItem Preferred Position UnupunctMacTabMenuBarItem") == nil,
                    "bumping drops the previous identity's preferred position")
 
             // Recovery keeps the spot the person arranged and only drops the
             // hidden state macOS remembered: an item that starts over with no
             // saved position is born against the notch, the first place a
             // crowded bar hides.
-            let gen1Position = "NSStatusItem Preferred Position VorssaintMenuBarItem.1"
+            let gen1Position = "NSStatusItem Preferred Position UnupunctMacTabMenuBarItem.1"
             statusDefaults.set(280.0, forKey: gen1Position)
-            statusDefaults.set(false, forKey: "NSStatusItem Visible VorssaintMenuBarItem.1")
-            statusDefaults.set(false, forKey: "NSStatusItem VisibleCC VorssaintMenuBarItem.1")
+            statusDefaults.set(false, forKey: "NSStatusItem Visible UnupunctMacTabMenuBarItem.1")
+            statusDefaults.set(false, forKey: "NSStatusItem VisibleCC UnupunctMacTabMenuBarItem.1")
             StatusItemPlacementSupport.clearRememberedVisibility(in: statusDefaults)
             suite.expect(statusDefaults.double(forKey: gen1Position) == 280.0,
                    "clearing the remembered visibility keeps the arranged position")
             suite.expect(StatusItemPlacementSupport.placementGeneration(in: statusDefaults) == 1
                     && StatusItemPlacementSupport.mainAutosaveName(in: statusDefaults) == gen1Name,
                    "recovery leaves the item's identity alone, so reopening cannot churn it")
-            suite.expect(statusDefaults.object(forKey: "NSStatusItem Visible VorssaintMenuBarItem.1") == nil
-                    && statusDefaults.object(forKey: "NSStatusItem VisibleCC VorssaintMenuBarItem.1") == nil,
+            suite.expect(statusDefaults.object(forKey: "NSStatusItem Visible UnupunctMacTabMenuBarItem.1") == nil
+                    && statusDefaults.object(forKey: "NSStatusItem VisibleCC UnupunctMacTabMenuBarItem.1") == nil,
                    "clearing the remembered visibility drops both spellings macOS has used")
 
             // Giving the spot up is what an explicit recovery escalates to,
@@ -3228,28 +3228,28 @@ enum SwitcherModelFeatureTests {
                    "only the identity reset gives up a saved position")
             // Leave orphan keys for older generations the way a long-running
             // install accumulates them, then confirm a bump sweeps them.
-            statusDefaults.set(11.0, forKey: "NSStatusItem Preferred Position VorssaintMenuBarItem")
-            statusDefaults.set(false, forKey: "NSStatusItem Visible VorssaintMenuBarItem")
-            statusDefaults.set(false, forKey: "NSStatusItem VisibleCC VorssaintMenuBarItem.1")
-            let metricPosition = "NSStatusItem Preferred Position VorssaintMetric.cpu"
+            statusDefaults.set(11.0, forKey: "NSStatusItem Preferred Position UnupunctMacTabMenuBarItem")
+            statusDefaults.set(false, forKey: "NSStatusItem Visible UnupunctMacTabMenuBarItem")
+            statusDefaults.set(false, forKey: "NSStatusItem VisibleCC UnupunctMacTabMenuBarItem.1")
+            let metricPosition = "NSStatusItem Preferred Position UnupunctMacTabMetric.cpu"
             statusDefaults.set(42.0, forKey: metricPosition)
             StatusItemPlacementSupport.bumpPlacementGeneration(in: statusDefaults)
             suite.expect(statusDefaults.object(forKey: gen1Position) == nil
-                    && statusDefaults.object(forKey: "NSStatusItem Preferred Position VorssaintMenuBarItem") == nil
-                    && statusDefaults.object(forKey: "NSStatusItem Visible VorssaintMenuBarItem") == nil
-                    && statusDefaults.object(forKey: "NSStatusItem VisibleCC VorssaintMenuBarItem.1") == nil
+                    && statusDefaults.object(forKey: "NSStatusItem Preferred Position UnupunctMacTabMenuBarItem") == nil
+                    && statusDefaults.object(forKey: "NSStatusItem Visible UnupunctMacTabMenuBarItem") == nil
+                    && statusDefaults.object(forKey: "NSStatusItem VisibleCC UnupunctMacTabMenuBarItem.1") == nil
                     && StatusItemPlacementSupport.mainAutosaveName(in: statusDefaults)
-                        == "VorssaintMenuBarItem.2"
-                    && statusDefaults.object(forKey: "NSStatusItem Preferred Position VorssaintMenuBarItem.2") == nil,
+                        == "UnupunctMacTabMenuBarItem.2"
+                    && statusDefaults.object(forKey: "NSStatusItem Preferred Position UnupunctMacTabMenuBarItem.2") == nil,
                    "the identity reset gives the saved position up and sweeps orphaned identities")
             suite.expect(statusDefaults.double(forKey: metricPosition) == 42.0,
                    "recovering the main item leaves metric-item positions alone")
             statusDefaults.set(StatusItemPlacementSupport.maxPlacementGeneration,
                                forKey: DefaultsKey.statusItemPlacementGeneration)
-            statusDefaults.set(false, forKey: "NSStatusItem Visible VorssaintMenuBarItem.9999")
+            statusDefaults.set(false, forKey: "NSStatusItem Visible UnupunctMacTabMenuBarItem.9999")
             StatusItemPlacementSupport.bumpPlacementGeneration(in: statusDefaults)
-            suite.expect(StatusItemPlacementSupport.mainAutosaveName(in: statusDefaults) == "VorssaintMenuBarItem.1"
-                    && statusDefaults.object(forKey: "NSStatusItem Visible VorssaintMenuBarItem.9999") == nil
+            suite.expect(StatusItemPlacementSupport.mainAutosaveName(in: statusDefaults) == "UnupunctMacTabMenuBarItem.1"
+                    && statusDefaults.object(forKey: "NSStatusItem Visible UnupunctMacTabMenuBarItem.9999") == nil
                     && statusDefaults.double(forKey: metricPosition) == 42.0,
                    "generation wrap clears old main-item state without touching metric placements")
             suite.expect(StatusItemAnchorSupport.isSettlingStatusFrame(CGRect(x: 0, y: 0, width: 36, height: 0)),
@@ -4587,7 +4587,7 @@ enum SwitcherModelFeatureTests {
                 && handoffStamp!.lowerBound < selfActivation!.lowerBound,
                "the activation handoff stamps the self-activation before asking for it")
         // Only the activation the handoff caused stays out of the history; the
-        // Dock icon, Settings and Vorssaint's own windows are real uses.
+        // Dock icon, Settings and Unupunct MacTab's own windows are real uses.
         let useTrackerSource = (try? String(
             contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/WindowUseTracker.swift",
             encoding: .utf8)) ?? ""

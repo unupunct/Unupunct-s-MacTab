@@ -245,7 +245,7 @@ enum NotchFullscreenTests {
     /// Window lists recorded from GLFW full screen (Minecraft) and ordinary
     /// desktop windows on a 14-inch notched display.
     private static func appFullscreenWindowChecks(_ suite: TestSuite) {
-        typealias Real = VorssaintTests.NotchAppFullscreen
+        typealias Real = UnupunctMacTabTests.NotchAppFullscreen
         let built = CGRect(x: 0, y: 0, width: 1512, height: 982)
         let external = CGRect(x: 1512, y: 0, width: 1920, height: 1080)
         let displays: [CGDirectDisplayID: CGRect] = [1: built, 2: external]
@@ -304,7 +304,7 @@ enum NotchFullscreenTests {
     /// Measured with VLC in its own full screen on display A and an app
     /// clicked on display B. Lists run front to back, in CG coordinates.
     private static func multiDisplayChecks(_ suite: TestSuite) {
-        typealias Real = VorssaintTests.NotchAppFullscreen
+        typealias Real = UnupunctMacTabTests.NotchAppFullscreen
         let a = CGRect(x: 0, y: 0, width: 3440, height: 1440)
         let b = CGRect(x: 3440, y: 193, width: 1800, height: 1169)
         let displays: [CGDirectDisplayID: CGRect] = [1: a, 2: b]

@@ -1732,7 +1732,7 @@ enum ClipboardFeatureTests {
         ClipboardHistoryImageEditorTests.run(suite)
         ClipboardHistoryAccessTests.run(suite)
 
-        let pasteboardAccess = GeneralPasteboardAccess(label: "Vorssaint.Tests.PasteboardAccess")
+        let pasteboardAccess = GeneralPasteboardAccess(label: "UnupunctMacTab.Tests.PasteboardAccess")
         let pasteboardGroup = DispatchGroup()
         let pasteboardStateLock = NSLock()
         var activePasteboardOperations = 0

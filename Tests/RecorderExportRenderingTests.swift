@@ -934,7 +934,7 @@ enum RecorderExportRenderingTests {
         suite.expect(!RecorderGIFClipboard.publish(fileURL: invalidURL, to: pasteboard)
                 && pasteboard.string(forType: .string) == "keep me",
                      "invalid GIF preparation leaves the existing clipboard untouched")
-        if let artifactPath = ProcessInfo.processInfo.environment["VORSSAINT_RECORDER_FIXTURE_DIR"] {
+        if let artifactPath = ProcessInfo.processInfo.environment["UNUPUNCT_RECORDER_FIXTURE_DIR"] {
             let artifactDirectory = URL(fileURLWithPath: artifactPath, isDirectory: true)
             try FileManager.default.createDirectory(at: artifactDirectory,
                                                     withIntermediateDirectories: true)

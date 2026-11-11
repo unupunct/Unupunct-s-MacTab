@@ -957,13 +957,13 @@ enum UpdateFeatureTests {
         suite.expect(UpdateInstallerSupport.installFailureCode(fromMarker: "") == nil,
                "an empty marker is not a failure")
         suite.expect(UpdateInstallerSupport.runsFromImmutableLocation(
-                   appPath: "/private/var/folders/ab/xyz/T/AppTranslocation/1F2/d/Vorssaint.app",
+                   appPath: "/private/var/folders/ab/xyz/T/AppTranslocation/1F2/d/UnupunctMacTab.app",
                    volumeIsReadOnly: { _ in false }),
                "translocated apps are flagged as not updatable in place")
-        suite.expect(UpdateInstallerSupport.runsFromImmutableLocation(appPath: "/Volumes/Unupunct MacTab/Vorssaint.app",
+        suite.expect(UpdateInstallerSupport.runsFromImmutableLocation(appPath: "/Volumes/Unupunct MacTab/UnupunctMacTab.app",
                                                                 volumeIsReadOnly: { _ in true }),
                "apps on a read-only volume (the DMG) are flagged as not updatable in place")
-        suite.expect(!UpdateInstallerSupport.runsFromImmutableLocation(appPath: "/Volumes/ExternalSSD/Vorssaint.app",
+        suite.expect(!UpdateInstallerSupport.runsFromImmutableLocation(appPath: "/Volumes/ExternalSSD/UnupunctMacTab.app",
                                                                  volumeIsReadOnly: { _ in false }),
                "apps on a writable external volume stay updatable in place")
         let installerScript = UpdateInstallerSupport.installerScript()
@@ -1000,8 +1000,8 @@ enum UpdateFeatureTests {
                 && !installerScript.contains("note() { /bin/echo \"$1\" > \"$RESULT.progress\""),
                "elevated marker writes drop to the original user's credentials")
         let elevated = UpdateInstallerSupport.elevatedInstallCommand(
-            appPath: "/Applications/Vorssaint.app",
-            dmgPath: "/tmp/Vorssaint-update.dmg",
+            appPath: "/Applications/UnupunctMacTab.app",
+            dmgPath: "/tmp/UnupunctMacTab-update.dmg",
             pid: 123,
             resultPath: "/tmp/result",
             uid: 501,
@@ -1010,7 +1010,7 @@ enum UpdateFeatureTests {
                "elevated installer leaves this app's session so it outlives the app it replaces")
         suite.expect(elevated.contains("nohup"),
                "elevated installer keeps the nohup fallback if setsid is unavailable")
-        suite.expect(elevated.contains("'/Applications/Vorssaint.app'"),
+        suite.expect(elevated.contains("'/Applications/UnupunctMacTab.app'"),
                "elevated installer passes the app path quoted for the shell")
         suite.expect(elevated.contains("'3.3.3'"),
                "elevated installer passes the expected version quoted for the shell")
@@ -1025,7 +1025,7 @@ enum UpdateFeatureTests {
         // is the payload's own. Every `exit 1` inside the installer script would
         // otherwise start the whole installer a second time, as root.
         let detachRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("VorssaintDetachTests-\(UUID().uuidString)")
+            .appendingPathComponent("UnupunctMacTabDetachTests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(at: detachRoot, withIntermediateDirectories: true)
         let detachPayload = detachRoot.appendingPathComponent("payload.sh")
         let detachLedger = detachRoot.appendingPathComponent("runs")
@@ -1069,7 +1069,7 @@ enum UpdateFeatureTests {
         // the same. 0/1/2 must still be open (on /dev/null), or the child's
         // first open() takes stdout's slot.
         let fdRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("VorssaintDetachFDTests-\(UUID().uuidString)")
+            .appendingPathComponent("UnupunctMacTabDetachFDTests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(at: fdRoot, withIntermediateDirectories: true)
         let fdHolder = fdRoot.appendingPathComponent("holder")
         let fdReport = fdRoot.appendingPathComponent("report")
@@ -1312,7 +1312,7 @@ enum UpdateFeatureTests {
         ### Fixed
         - Update preview stays focused on changes.
 
-        Signed with an Apple Developer ID and notarized by Apple, so it downloads and opens normally. Requires macOS 14 or later. Open the .dmg below and drag Vorssaint to Applications.
+        Signed with an Apple Developer ID and notarized by Apple, so it downloads and opens normally. Requires macOS 14 or later. Open the .dmg below and drag UnupunctMacTab to Applications.
         """
         let inAppUpdateBody = ReleaseNotes.inAppUpdateNotes(from: githubReleaseBodyWithFooter) ?? ""
         suite.expect(!inAppUpdateBody.contains("Signed with an Apple Developer ID"),
@@ -1485,9 +1485,9 @@ enum UpdateFeatureTests {
         suite.expect(packageRows.allSatisfy { $0.canInstallInPlace },
                "package rows can be installed on the spot")
         let ownPackageRows = AppUpdatesSupport.packageUpdates(
-            outdated: [caskUpdate("vorssaint", installed: "3.1.12", current: "3.2.0")],
+            outdated: [caskUpdate("unupunct", installed: "3.1.12", current: "3.2.0")],
             installed: [],
-            ignoredTokens: ["vorssaint"],
+            ignoredTokens: ["unupunct"],
             apps: [])
         suite.expect(ownPackageRows.isEmpty,
                "the app update list never offers to replace Unupunct MacTab through its own package")
@@ -2090,7 +2090,7 @@ enum UpdateFeatureTests {
         // folder and Simulator in Contents/Developer/Applications. Those count
         // as apps; helpers elsewhere in a bundle do not.
         let bundleFixture = FileManager.default.temporaryDirectory
-            .appendingPathComponent("vorssaint-bundled-apps-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("unupunct-bundled-apps-\(UUID().uuidString)", isDirectory: true)
         let host = bundleFixture.appendingPathComponent("Host.app", isDirectory: true)
         let tool = host.appendingPathComponent("Contents/Applications/Tool.app", isDirectory: true)
         let simulator = host.appendingPathComponent("Contents/Developer/Applications/Simulator.app",

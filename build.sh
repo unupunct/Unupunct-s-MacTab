@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 Vorssaint
 
-# Builds Vorssaint, assembles the .app bundle, signs it and (with --install)
+# Builds Unupunct MacTab, assembles the .app bundle, signs it and (with --install)
 # installs it into /Applications.
 #
 # The bundle is staged in a temporary directory outside ~/Documents: folders synced
@@ -26,7 +26,7 @@ trap cleanup EXIT
 # into the build sweeps like any other ending.
 trap 'exit 1' INT TERM HUP
 
-# Flags: --dev builds the local-only "Vorssaint (Developer)" variant (its own
+# Flags: --dev builds the local-only "Unupunct MacTab (Developer)" variant (its own
 # bundle id, so it coexists with the official app); --install puts it in /Applications.
 DEV=0
 INSTALL=0
@@ -43,15 +43,15 @@ for arg in "$@"; do
 done
 
 if (( DEV )); then
-    APP_NAME="Vorssaint (Developer)"
-    EXECUTABLE="VorssaintDeveloper"
+    APP_NAME="UnupunctMacTab (Developer)"
+    EXECUTABLE="UnupunctMacTabDeveloper"
     APP_BUNDLE_ID="com.vorssaint.utils.dev"
-    BUILD_VARIANT_FLAGS=(-D VORSSAINT_DEVELOPMENT)
+    BUILD_VARIANT_FLAGS=(-D UNUPUNCT_DEVELOPMENT)
     APP_OPTIMIZATION_FLAGS=(-Onone)
     BUILD_CONFIGURATION="debug"
 else
-    APP_NAME="Vorssaint"
-    EXECUTABLE="Vorssaint"
+    APP_NAME="UnupunctMacTab"
+    EXECUTABLE="UnupunctMacTab"
     APP_BUNDLE_ID="com.vorssaint.utils"
     BUILD_VARIANT_FLAGS=()
     APP_OPTIMIZATION_FLAGS=(-O)
@@ -61,10 +61,10 @@ FAN_HELPER_ID="$APP_BUNDLE_ID.fan-control"
 # Now Playing is read through /usr/bin/perl loading this library; see
 # Sources/NowPlayingAdapter. Staged under Contents/Frameworks, signed on its own.
 NOW_PLAYING_ADAPTER_ID="$APP_BUNDLE_ID.now-playing"
-NOW_PLAYING_ADAPTER="libVorssaintNowPlaying.dylib"
+NOW_PLAYING_ADAPTER="libUnupunctMacTabNowPlaying.dylib"
 TARGET="arm64-apple-macosx14.0"
-ENTITLEMENTS="Resources/Vorssaint.entitlements"
-LEGACY_IDENTITY="Vorssaint Utils Signing"
+ENTITLEMENTS="Resources/UnupunctMacTab.entitlements"
+LEGACY_IDENTITY="UnupunctMacTab Utils Signing"
 
 developer_id_identity() {
     security find-identity -v -p codesigning 2>/dev/null \
@@ -80,8 +80,8 @@ legacy_identity_installed() {
     local probe signed=1
     # A locked keychain still lists its identities but cannot sign with them,
     # and this one is locked after every reboot; unlock it before asking.
-    security unlock-keychain -p vorssaint-signing \
-        "$HOME/Library/Keychains/vorssaint-signing.keychain-db" 2>/dev/null || true
+    security unlock-keychain -p unupunct-signing \
+        "$HOME/Library/Keychains/unupunct-signing.keychain-db" 2>/dev/null || true
     probe="$(mktemp)"
     cp /bin/echo "$probe"
     /usr/bin/codesign --force --strip-disallowed-xattrs --sign "$LEGACY_IDENTITY" "$probe" \
@@ -184,8 +184,8 @@ finalize_installed_bundle_after_child() {
     echo "✓ Signature ready: $bundle"
 }
 
-if (( INSTALL && ! TEST )) && [[ "${VORSSAINT_INSTALL_CHILD:-0}" != "1" ]]; then
-    VORSSAINT_INSTALL_CHILD=1 "$0" "$@"
+if (( INSTALL && ! TEST )) && [[ "${UNUPUNCT_INSTALL_CHILD:-0}" != "1" ]]; then
+    UNUPUNCT_INSTALL_CHILD=1 "$0" "$@"
     child_status=$?
     if (( child_status != 0 )); then
         exit "$child_status"
@@ -250,341 +250,341 @@ if (( TEST )); then
     TEST_OBJECT_DIR="build/objects/tests"
     mkdir -p "$TEST_OBJECT_DIR"
     TEST_SOURCES=(
-        Sources/Vorssaint/Services/Media/MediaSupport.swift
-        Sources/Vorssaint/Core/QuitProtectionSupport.swift
-        Sources/Vorssaint/Core/QuitProtectionStrings.swift
-        Sources/Vorssaint/Core/Defaults.swift
-        Sources/Vorssaint/Core/NotchStrings.swift
-        Sources/Vorssaint/Core/NotchTourStrings.swift
-        Sources/Vorssaint/Core/NotchEditorStrings.swift
-        Sources/Vorssaint/UI/Settings/NotchSettingsTabRow.swift
-        Sources/Vorssaint/Core/NotchActivityStrings.swift
-        Sources/Vorssaint/Services/Notch/NotchTimerSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchAppFullscreen.swift
-        Sources/Vorssaint/Services/Notch/NotchTimerAlert.swift
-        Sources/Vorssaint/UI/Notch/NotchIslandAlert.swift
-        Sources/Vorssaint/Services/Notch/NotchAccessorySupport.swift
-        Sources/Vorssaint/Services/Notch/NotchAccessoryConnectionMonitor.swift
-        Sources/Vorssaint/Services/QuickTools/CameraPreviewSupport.swift
-        Sources/Vorssaint/Core/NotchMusicExtrasStrings.swift
-        Sources/Vorssaint/Core/NotchClipboardSizeStrings.swift
-        Sources/Vorssaint/Services/Notch/NotchLyricsSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchQueueSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchPreferredPlayer.swift
-        Sources/Vorssaint/Core/NotchFilesStrings.swift
-        Sources/Vorssaint/Core/NotchWatchStrings.swift
-        Sources/Vorssaint/Services/Notch/NotchWatchSupport.swift
-        Sources/Vorssaint/Core/NotchMascotStrings.swift
-        Sources/Vorssaint/Services/Notch/NotchMascotSupport.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarDropletMotion.swift
-        Sources/Vorssaint/Services/Notch/NotchFileToolsSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchDownloadSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchDownloadProgressObserver.swift
-        Sources/Vorssaint/Core/NotchCalendarStrings.swift
-        Sources/Vorssaint/Core/NotchNotificationStrings.swift
-        Sources/Vorssaint/Core/NotchGestureStrings.swift
-        Sources/Vorssaint/Core/NotchAgentStrings.swift
-        Sources/Vorssaint/Core/CodexAccountStrings.swift
-        Sources/Vorssaint/Core/ClaudeAccountStrings.swift
-        Sources/Vorssaint/Services/Notch/NotchAgentSupport.swift
-        Sources/Vorssaint/Core/NotchLockScreenStrings.swift
-        Sources/Vorssaint/Services/Notch/NotchLockScreenSupport.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentUsageModels.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentPricing.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentLogObject.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentLogParser.swift
-        Sources/Vorssaint/Services/AgentUsage/Harness/AgentHarnessReader.swift
-        Sources/Vorssaint/Services/AgentUsage/Harness/ClaudeReader.swift
-        Sources/Vorssaint/Services/AgentUsage/Harness/CodexReader.swift
-        Sources/Vorssaint/Services/AgentUsage/Harness/OpenCodeReader.swift
-        Sources/Vorssaint/Services/AgentUsage/Harness/CopilotReader.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentUsageSummary.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentUsageStore.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentUsageArchive.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentClaudeAppUsage.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentCLIConversation.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentClaudeServer.swift
-        Sources/Vorssaint/Services/AgentUsage/ClaudeAccountProfile.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentCodexServer.swift
-        Sources/Vorssaint/Services/AgentUsage/CodexAccountLimits.swift
-        Sources/Vorssaint/Services/AgentUsage/CodexProfileLimitsService.swift
-        Sources/Vorssaint/Services/AgentUsage/AgentOpenCodeReader.swift
-        Sources/Vorssaint/Services/Notch/NotchGestureSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchSectionPaging.swift
-        Sources/Vorssaint/Services/Notch/NotchSliderEditing.swift
-        Sources/Vorssaint/Services/Notch/NotchNotificationSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchNotificationReaderCore.swift
-        Sources/Vorssaint/Services/Notch/NotchCalendarSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchKeepAwakeSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchAudioLevelSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchVolumeKeyGate.swift
-        Sources/Vorssaint/Services/Notch/NotchMusicSupport.swift
-        Sources/Vorssaint/UI/Notch/NotchDecorativeClock.swift
-        Sources/Vorssaint/Services/Notch/NotchBrowserArtworkSupport.swift
-        Sources/Vorssaint/UI/Notch/NotchEqualizerBars.swift
-        Sources/Vorssaint/UI/Notch/NotchScrollEdgeFade.swift
-        Sources/Vorssaint/UI/Notch/NotchAgentAnimationView.swift
-        Sources/Vorssaint/UI/WindowVisibilityReader.swift
-        Sources/Vorssaint/Services/Notch/NotchMusicAutomationSupport.swift
-        Sources/Vorssaint/Services/Notch/NotchMusicAutomation.swift
-        Sources/Vorssaint/Services/Notch/NotchPlaybackSource.swift
-        Sources/Vorssaint/Services/Notch/NotchPlaybackCommand.swift
-        Sources/Vorssaint/Services/Notch/NotchMusicCommandWriter.swift
-        Sources/Vorssaint/Core/FeatureCatalog.swift
-        Sources/Vorssaint/Core/FeaturePresets.swift
-        Sources/Vorssaint/Core/FeatureHubStrings.swift
-        Sources/Vorssaint/Core/MixerScreenSharingStrings.swift
-        Sources/Vorssaint/Core/ShortcutSettingsStrings.swift
-        Sources/Vorssaint/Core/SwitcherShortcutStrings.swift
-        Sources/Vorssaint/Core/SettingsBackupSupport.swift
-        Sources/Vorssaint/Core/BackupStrings.swift
-        Sources/Vorssaint/Core/SnippetStrings.swift
-        Sources/Vorssaint/Core/AlertSoundStrings.swift
-        Sources/Vorssaint/Core/BrightnessStrings.swift
-        Sources/Vorssaint/Core/MediaImageStrings.swift
-        Sources/Vorssaint/Core/QuickToggleStrings.swift
-        Sources/Vorssaint/Core/ScreenshotStrings.swift
-        Sources/Vorssaint/Core/RecentCaptureStrings.swift
-        Sources/Vorssaint/Core/RecorderStrings.swift
-        Sources/Vorssaint/Core/RecorderShareStrings.swift
-        Sources/Vorssaint/Core/CameraPreviewStrings.swift
-        Sources/Vorssaint/Core/WallpaperStrings.swift
-        Sources/Vorssaint/Services/Wallpaper/WallpaperSupport.swift
-        Sources/Vorssaint/UI/MenuPanel/WallpaperThumbnailView.swift
-        Sources/Vorssaint/Core/ScratchpadStrings.swift
-        Sources/Vorssaint/Core/FinderRenameStrings.swift
-        Sources/Vorssaint/Core/CommandBarStrings.swift
-        Sources/Vorssaint/Core/FeedbackStrings.swift
-        Sources/Vorssaint/Core/RadialMenuStrings.swift
-        Sources/Vorssaint/Core/MenuBarAppearanceStrings.swift
-        Sources/Vorssaint/Core/AppAppearance.swift
-        Sources/Vorssaint/Core/AppearanceStrings.swift
-        Sources/Vorssaint/Core/GeneralSettingsStrings.swift
-        Sources/Vorssaint/Core/SettingsPageStrings.swift
-        Sources/Vorssaint/Core/BatteryTimeStrings.swift
-        Sources/Vorssaint/Core/CPUCoreStrings.swift
-        Sources/Vorssaint/Core/MonitorLayoutStrings.swift
-        Sources/Vorssaint/Core/KeepAwakeStrings.swift
-        Sources/Vorssaint/Core/BluetoothSleepStrings.swift
-        Sources/Vorssaint/Core/PermissionGuideStrings.swift
-        Sources/Vorssaint/Core/FanControlStrings.swift
-        Sources/Vorssaint/Core/ConnectedDevicesStrings.swift
-        Sources/Vorssaint/Services/FanControl/FanControlSupport.swift
-        Sources/Vorssaint/Services/FanControl/FanControlResumeSupport.swift
-        Sources/Vorssaint/Services/Snippets/TextSnippetSupport.swift
-        Sources/Vorssaint/Services/RadialMenu/RadialMenuSupport.swift
-        Sources/Vorssaint/Services/QuickTools/ScratchpadSupport.swift
-        Sources/Vorssaint/Services/QuickTools/ScratchpadStore.swift
-        Sources/Vorssaint/Services/KillProcess/KillProcessSupport.swift
-        Sources/Vorssaint/Services/Recorder/RecorderSupport.swift
-        Sources/Vorssaint/Services/Recorder/RecorderSampleTiming.swift
-        Sources/Vorssaint/Services/Recorder/RecorderWriter.swift
-        Sources/Vorssaint/Services/Recorder/RecorderCaptureEngine.swift
-        Sources/Vorssaint/Core/RecorderExportStrings.swift
-        Sources/Vorssaint/Core/RecorderExportFormatStrings.swift
-        Sources/Vorssaint/Services/Recorder/RecorderComposer.swift
-        Sources/Vorssaint/Services/Recorder/RecorderComposerPlan.swift
-        Sources/Vorssaint/Services/Recorder/RecorderCursorSprite.swift
-        Sources/Vorssaint/Services/Recorder/RecorderTextRenderer.swift
-        Sources/Vorssaint/Services/Recorder/RecorderImageRenderer.swift
-        Sources/Vorssaint/Services/Recorder/RecorderExporter.swift
-        Sources/Vorssaint/Services/Recorder/RecorderGIFClipboard.swift
-        Sources/Vorssaint/Services/Recorder/RecorderGIFWriter.swift
-        Sources/Vorssaint/Services/Recorder/RecorderGIFWorkspace.swift
-        Sources/Vorssaint/Services/Recorder/RecorderComposition.swift
-        Sources/Vorssaint/Services/Recorder/RecordingSharingSupport.swift
-        Sources/Vorssaint/Services/PrivateFileStore.swift
-        Sources/Vorssaint/Services/Recorder/RecorderTakeStore.swift
-        Sources/Vorssaint/Services/Recorder/RecorderPresetImageStore.swift
-        Sources/Vorssaint/Services/Recorder/RecorderMotion.swift
-        Sources/Vorssaint/Services/Recorder/RecorderPointerTrack.swift
-        Sources/Vorssaint/Services/Recorder/RecorderTypingTrack.swift
-        Sources/Vorssaint/Services/Recorder/RecorderTimeline.swift
-        Sources/Vorssaint/Services/Recorder/RecorderTextOverlay.swift
-        Sources/Vorssaint/Services/Recorder/RecorderImageOverlay.swift
-        Sources/Vorssaint/Services/Recorder/RecorderBlurRegion.swift
-        Sources/Vorssaint/Services/Recorder/RecorderEditDocument.swift
-        Sources/Vorssaint/Core/AppInfo.swift
-        Sources/Vorssaint/Core/GlobalShortcut.swift
-        Sources/Vorssaint/Core/SymbolicHotKeys.swift
-        Sources/Vorssaint/Services/SystemShortcutTakeoverSupport.swift
-        Sources/Vorssaint/Core/Localization.swift
-        Sources/Vorssaint/Core/Localizations/Strings+*.swift
-        Sources/Vorssaint/Core/FeatureStrings.swift
-        Sources/Vorssaint/Core/KillProcessStrings.swift
-        Sources/Vorssaint/Core/PortManagerStrings.swift
-        Sources/Vorssaint/Core/WhatsAppDownloadStrings.swift
-        Sources/Vorssaint/Core/WhatsAppOrganizerStrings.swift
-        Sources/Vorssaint/Core/ReleaseNotes.swift
-        Sources/Vorssaint/Core/ReleaseDigest.swift
-        Sources/Vorssaint/Core/ReleaseChangeAliases.swift
-        Sources/Vorssaint/Core/WhatsNewStrings.swift
-        Sources/Vorssaint/Core/URLCleaning.swift
-        Sources/Vorssaint/Services/URLCleanerLinkMetadata.swift
-        Sources/Vorssaint/Services/GeneralPasteboardAccess.swift
-        Sources/Vorssaint/Services/Clipboard/ClipboardHistoryWrite.swift
-        Sources/Vorssaint/Services/Audio/AirPlayRouteManager.swift
-        Sources/Vorssaint/Services/Audio/MixerRoutingSupport.swift
-        Sources/Vorssaint/Services/Audio/MusicLaunchSupport.swift
-        Sources/Vorssaint/Services/Bluetooth/BluetoothSleepSupport.swift
-        Sources/Vorssaint/UI/MenuPanel/MixerPercentNativeTextField.swift
-        Sources/Vorssaint/UI/MenuPanel/MixerAppDragSource.swift
-        Sources/Vorssaint/Services/Audio/BoostLimiter.swift
-        Sources/Vorssaint/Services/Audio/MixerRender.swift
-        Sources/Vorssaint/Services/Audio/PreciseVolumeRollerSupport.swift
-        Sources/Vorssaint/Services/DockPreview/DockPreviewSupport.swift
-        Sources/Vorssaint/Services/DockPreview/DockAutohideHold.swift
-        Sources/Vorssaint/Services/SpacesOrder/SpacesOrderHold.swift
-        Sources/Vorssaint/Services/Homebrew/HomebrewSupport.swift
-        Sources/Vorssaint/Services/Homebrew/HomebrewEnvironment.swift
-        Sources/Vorssaint/Services/AppUpdates/AppUpdatesSupport.swift
-        Sources/Vorssaint/Services/AppUpdates/AppUpdateFeedSupport.swift
-        Sources/Vorssaint/Core/AppUpdateStrings.swift
-        Sources/Vorssaint/Core/DiskImageInstallerStrings.swift
-        Sources/Vorssaint/Services/DiskImageInstaller/DiskImageInstallerSupport.swift
-        Sources/Vorssaint/UI/NonModalAlert.swift
-        Sources/Vorssaint/Services/Clipboard/ClipboardHistorySupport.swift
-        Sources/Vorssaint/Core/ColorValue.swift
-        Sources/Vorssaint/Services/Clipboard/ClipboardAutoClearSupport.swift
-        Sources/Vorssaint/Services/AutoQuit/AutoQuitSupport.swift
-        Sources/Vorssaint/Core/AutoQuitDockAppsStrings.swift
-        Sources/Vorssaint/Services/Shelf/ShelfSupport.swift
-        Sources/Vorssaint/Services/Shelf/ShelfFilePromiseTransfer.swift
-        Sources/Vorssaint/Core/ShelfPromiseDeliveryStrings.swift
-        Sources/Vorssaint/Services/Finder/FinderRenameSupport.swift
-        Sources/Vorssaint/Services/Update/UpdateInstallerSupport.swift
-        Sources/Vorssaint/Services/Update/UpdateServiceSupport.swift
-        Sources/Vorssaint/Services/InstalledApps.swift
-        Sources/Vorssaint/Services/LaunchAtLoginSupport.swift
-        Sources/Vorssaint/UI/Settings/SettingsSearchSupport.swift
-        Sources/Vorssaint/UI/Settings/SettingsSidebarSupport.swift
-        Sources/Vorssaint/UI/Settings/FeatureVisibilitySupport.swift
-        Sources/Vorssaint/UI/Onboarding/WhatsNewSupport.swift
-        Sources/Vorssaint/UI/Settings/SettingsWindow.swift
-        Sources/Vorssaint/Core/SettingsNavigationStrings.swift
-        Sources/Vorssaint/App/MenuBarSpacingSupport.swift
-        Sources/Vorssaint/App/MenuBarAllowanceSupport.swift
-        Sources/Vorssaint/App/ReopenRequestSupport.swift
-        Sources/Vorssaint/App/StatusItemAnchorSupport.swift
-        Sources/Vorssaint/Services/DockClick/DockClickSupport.swift
-        Sources/Vorssaint/Services/Finder/CutPasteProgressSupport.swift
-        Sources/Vorssaint/Services/Finder/CutPastePrivilegeSupport.swift
-        Sources/Vorssaint/Services/Finder/FinderPasteImageSupport.swift
-        Sources/Vorssaint/Services/MiddleClick/MiddleClickSupport.swift
-        Sources/Vorssaint/Services/MouseNavigation/MouseNavigationSupport.swift
-        Sources/Vorssaint/Services/MouseNavigation/MouseNavigationKeys.swift
-        Sources/Vorssaint/Services/MouseButtons/MouseButtonShortcutSupport.swift
-        Sources/Vorssaint/Services/MouseButtons/MouseSpacesGestureSupport.swift
-        Sources/Vorssaint/Services/MouseClickDebounce/MouseClickDebounceSupport.swift
-        Sources/Vorssaint/Services/MouseExceptions/MouseAppExceptionSupport.swift
-        Sources/Vorssaint/Services/MouseExceptions/MouseAppExceptions.swift
-        Sources/Vorssaint/Services/WindowServerSupport.swift
-        Sources/Vorssaint/Services/WindowMaximizerSupport.swift
-        Sources/Vorssaint/Core/MouseButtonStrings.swift
-        Sources/Vorssaint/Core/MouseClickDebounceStrings.swift
-        Sources/Vorssaint/Core/MouseExceptionStrings.swift
-        Sources/Vorssaint/Core/ClipboardIgnoredAppsStrings.swift
-        Sources/Vorssaint/Core/ClipboardRetentionStrings.swift
-        Sources/Vorssaint/Core/WindowLayoutIgnoredAppsStrings.swift
-        Sources/Vorssaint/Services/WindowLayout/WindowLayoutIgnoredApps.swift
-        Sources/Vorssaint/Core/WindowPreviewExclusionStrings.swift
-        Sources/Vorssaint/Core/WindowMaximizerExclusionStrings.swift
-        Sources/Vorssaint/Core/DiskExclusionStrings.swift
-        Sources/Vorssaint/Core/SwitcherAppRulesStrings.swift
-        Sources/Vorssaint/Services/QuickTools/QuickToolsSupport.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarSupport.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarPreferences.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarMath.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarUnits.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarColors.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarEmoji.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarLinks.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarDates.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarRowShortcuts.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarSystemSettingsSupport.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarFileSearchSupport.swift
-        Sources/Vorssaint/Services/CommandBar/CommandBarQueryMemory.swift
-        Sources/Vorssaint/Services/SpotlightNamesSupport.swift
-        Sources/Vorssaint/Services/QuickTools/MicMuteSupport.swift
-        Sources/Vorssaint/Services/QuickTools/QuickTogglesSupport.swift
-        Sources/Vorssaint/Services/QuickTools/ScreenshotCapturePolicy.swift
-        Sources/Vorssaint/Services/QuickTools/ScreenshotSupport.swift
-        Sources/Vorssaint/Services/QuickTools/ScreenshotCanvasSupport.swift
-        Sources/Vorssaint/Services/QuickTools/ScreenshotImageImport.swift
-        Sources/Vorssaint/Services/Media/MediaImageProcessing.swift
-        Sources/Vorssaint/Services/QuickTools/ScreenshotImageFile.swift
-        Sources/Vorssaint/UI/Settings/ScreenCaptureToolPicker.swift
-        Sources/Vorssaint/UI/Settings/MonitorToken.swift
-        Sources/Vorssaint/Services/QuickTools/ScreenshotRenderer.swift
-        Sources/Vorssaint/Services/QuickTools/ScreenshotImageLayerRendering.swift
-        Sources/Vorssaint/Services/QuickTools/RecentCaptureStore.swift
-        Sources/Vorssaint/Services/QuickTools/ScreenshotSharingSupport.swift
-        Sources/Vorssaint/Services/QuickTools/WindowActivationPolicy.swift
-        Sources/Vorssaint/Services/KeyboardDebounce/KeyboardDebounceSupport.swift
-        Sources/Vorssaint/Services/SuperKey/SuperKeySupport.swift
-        Sources/Vorssaint/Services/SuperKey/SuperKeyMappingGuard.swift
-        Sources/Vorssaint/Core/SuperKeyStrings.swift
-        Sources/Vorssaint/Core/InputSourceSelection.swift
-        Sources/Vorssaint/Services/SessionActivity.swift
-        Sources/Vorssaint/Services/SessionActivitySupport.swift
-        Sources/Vorssaint/Services/EventTimestamp.swift
-        Sources/Vorssaint/Services/OwnKeyEvent.swift
-        Sources/Vorssaint/Services/ScrollWheelSupport.swift
-        Sources/Vorssaint/Services/HorizontalWheelScrolling.swift
-        Sources/Vorssaint/Services/SmoothScrollSupport.swift
-        Sources/Vorssaint/Services/MouseAcceleration/MouseAccelerationSupport.swift
-        Sources/Vorssaint/Services/FocusFollowsMouse/FocusFollowsMouseSupport.swift
-        Sources/Vorssaint/Services/AssistiveKeyboard.swift
-        Sources/Vorssaint/Services/Switcher/SwitcherModels.swift
-        Sources/Vorssaint/Services/Switcher/WindowServerCaptureQueue.swift
-        Sources/Vorssaint/Services/Switcher/SwitcherSupport.swift
-        Sources/Vorssaint/Services/Switcher/SpaceHopSupport.swift
-        Sources/Vorssaint/Services/Switcher/WindowUseOrder.swift
-        Sources/Vorssaint/Services/Switcher/WindowEnumeratorAccessibilityPrefetch.swift
-        Sources/Vorssaint/Services/Metrics/MetricFormat.swift
-        Sources/Vorssaint/Services/Metrics/VMStatisticsDecoder.swift
-        Sources/Vorssaint/Services/KeepAwakeAutomationSupport.swift
-        Sources/Vorssaint/Services/SudoersSupport.swift
-        Sources/Vorssaint/Services/Metrics/BatteryTimeSupport.swift
-        Sources/Vorssaint/Services/Metrics/BatteryPowerSupport.swift
-        Sources/Vorssaint/Services/BoundedProcessRunner.swift
-        Sources/Vorssaint/Services/DetachedProcess.swift
-        Sources/Vorssaint/Services/ShellSupport.swift
-        Sources/Vorssaint/Services/PortManager/PortManagerSupport.swift
-        Sources/Vorssaint/Services/Metrics/NetworkProcessSupport.swift
-        Sources/Vorssaint/Services/Metrics/NetworkSampler.swift
-        Sources/Vorssaint/Services/Metrics/NetworkAddressService.swift
-        Sources/Vorssaint/Services/Metrics/SpeedTest.swift
-        Sources/Vorssaint/Services/Metrics/PeripheralBatterySampler.swift
-        Sources/Vorssaint/Services/Metrics/PeripheralBatterySupport.swift
-        Sources/Vorssaint/Services/Metrics/DiskSupport.swift
-        Sources/Vorssaint/Services/Metrics/MonitorSamplingPolicy.swift
-        Sources/Vorssaint/Services/Metrics/USBDeviceSampler.swift
-        Sources/Vorssaint/Services/Metrics/CPUCoreSampler.swift
-        Sources/Vorssaint/Services/Metrics/MaxCapacityProbe.swift
-        Sources/Vorssaint/Services/Metrics/TemperatureSensorSelector.swift
-        Sources/Vorssaint/Services/Metrics/SustainedAlertGate.swift
-        Sources/Vorssaint/Services/WindowLayout/WindowLayoutSupport.swift
-        Sources/Vorssaint/Services/WindowLayout/WindowStageManagerSupport.swift
-        Sources/Vorssaint/Core/WindowStageManagerStrings.swift
-        Sources/Vorssaint/Core/WindowEdgeSnapRestoreStrings.swift
-        Sources/Vorssaint/Services/WindowLayout/WindowGestureSupport.swift
-        Sources/Vorssaint/Core/WindowDirectionalStrings.swift
-        Sources/Vorssaint/Core/PointerDisplayStrings.swift
-        Sources/Vorssaint/Core/GraphScaleStrings.swift
-        Sources/Vorssaint/Core/NotchLowBatteryStrings.swift
-        Sources/Vorssaint/Services/CleaningMode/CleaningUnlockCounter.swift
-        Sources/Vorssaint/Services/CleaningMode/CleaningMouseReleaseGate.swift
-        Sources/Vorssaint/Services/Display/ExtraBrightnessSupport.swift
-        Sources/Vorssaint/Services/Display/BrightnessSupport.swift
-        Sources/Vorssaint/Services/Display/LidDimmingSupport.swift
-        Sources/Vorssaint/Services/Cleaner/CleanerSupport.swift
-        Sources/Vorssaint/Services/Cleaner/CleanerPolicy.swift
-        Sources/Vorssaint/Services/Cleaner/CleanerSchedule.swift
-        Sources/Vorssaint/Services/Uninstall/UninstallerSupport.swift
-        Sources/Vorssaint/Services/ManagedDownloads/WhatsAppDownloadSupport.swift
-        Sources/Vorssaint/Core/SecureInputSupport.swift
+        Sources/UnupunctMacTab/Services/Media/MediaSupport.swift
+        Sources/UnupunctMacTab/Core/QuitProtectionSupport.swift
+        Sources/UnupunctMacTab/Core/QuitProtectionStrings.swift
+        Sources/UnupunctMacTab/Core/Defaults.swift
+        Sources/UnupunctMacTab/Core/NotchStrings.swift
+        Sources/UnupunctMacTab/Core/NotchTourStrings.swift
+        Sources/UnupunctMacTab/Core/NotchEditorStrings.swift
+        Sources/UnupunctMacTab/UI/Settings/NotchSettingsTabRow.swift
+        Sources/UnupunctMacTab/Core/NotchActivityStrings.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchTimerSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchAppFullscreen.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchTimerAlert.swift
+        Sources/UnupunctMacTab/UI/Notch/NotchIslandAlert.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchAccessorySupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchAccessoryConnectionMonitor.swift
+        Sources/UnupunctMacTab/Services/QuickTools/CameraPreviewSupport.swift
+        Sources/UnupunctMacTab/Core/NotchMusicExtrasStrings.swift
+        Sources/UnupunctMacTab/Core/NotchClipboardSizeStrings.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchLyricsSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchQueueSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchPreferredPlayer.swift
+        Sources/UnupunctMacTab/Core/NotchFilesStrings.swift
+        Sources/UnupunctMacTab/Core/NotchWatchStrings.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchWatchSupport.swift
+        Sources/UnupunctMacTab/Core/NotchMascotStrings.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchMascotSupport.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarDropletMotion.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchFileToolsSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchDownloadSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchDownloadProgressObserver.swift
+        Sources/UnupunctMacTab/Core/NotchCalendarStrings.swift
+        Sources/UnupunctMacTab/Core/NotchNotificationStrings.swift
+        Sources/UnupunctMacTab/Core/NotchGestureStrings.swift
+        Sources/UnupunctMacTab/Core/NotchAgentStrings.swift
+        Sources/UnupunctMacTab/Core/CodexAccountStrings.swift
+        Sources/UnupunctMacTab/Core/ClaudeAccountStrings.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchAgentSupport.swift
+        Sources/UnupunctMacTab/Core/NotchLockScreenStrings.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchLockScreenSupport.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentUsageModels.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentPricing.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentLogObject.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentLogParser.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/Harness/AgentHarnessReader.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/Harness/ClaudeReader.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/Harness/CodexReader.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/Harness/OpenCodeReader.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/Harness/CopilotReader.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentUsageSummary.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentUsageStore.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentUsageArchive.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentClaudeAppUsage.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentCLIConversation.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentClaudeServer.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/ClaudeAccountProfile.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentCodexServer.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/CodexAccountLimits.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/CodexProfileLimitsService.swift
+        Sources/UnupunctMacTab/Services/AgentUsage/AgentOpenCodeReader.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchGestureSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchSectionPaging.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchSliderEditing.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchNotificationSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchNotificationReaderCore.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchCalendarSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchKeepAwakeSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchAudioLevelSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchVolumeKeyGate.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchMusicSupport.swift
+        Sources/UnupunctMacTab/UI/Notch/NotchDecorativeClock.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchBrowserArtworkSupport.swift
+        Sources/UnupunctMacTab/UI/Notch/NotchEqualizerBars.swift
+        Sources/UnupunctMacTab/UI/Notch/NotchScrollEdgeFade.swift
+        Sources/UnupunctMacTab/UI/Notch/NotchAgentAnimationView.swift
+        Sources/UnupunctMacTab/UI/WindowVisibilityReader.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchMusicAutomationSupport.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchMusicAutomation.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchPlaybackSource.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchPlaybackCommand.swift
+        Sources/UnupunctMacTab/Services/Notch/NotchMusicCommandWriter.swift
+        Sources/UnupunctMacTab/Core/FeatureCatalog.swift
+        Sources/UnupunctMacTab/Core/FeaturePresets.swift
+        Sources/UnupunctMacTab/Core/FeatureHubStrings.swift
+        Sources/UnupunctMacTab/Core/MixerScreenSharingStrings.swift
+        Sources/UnupunctMacTab/Core/ShortcutSettingsStrings.swift
+        Sources/UnupunctMacTab/Core/SwitcherShortcutStrings.swift
+        Sources/UnupunctMacTab/Core/SettingsBackupSupport.swift
+        Sources/UnupunctMacTab/Core/BackupStrings.swift
+        Sources/UnupunctMacTab/Core/SnippetStrings.swift
+        Sources/UnupunctMacTab/Core/AlertSoundStrings.swift
+        Sources/UnupunctMacTab/Core/BrightnessStrings.swift
+        Sources/UnupunctMacTab/Core/MediaImageStrings.swift
+        Sources/UnupunctMacTab/Core/QuickToggleStrings.swift
+        Sources/UnupunctMacTab/Core/ScreenshotStrings.swift
+        Sources/UnupunctMacTab/Core/RecentCaptureStrings.swift
+        Sources/UnupunctMacTab/Core/RecorderStrings.swift
+        Sources/UnupunctMacTab/Core/RecorderShareStrings.swift
+        Sources/UnupunctMacTab/Core/CameraPreviewStrings.swift
+        Sources/UnupunctMacTab/Core/WallpaperStrings.swift
+        Sources/UnupunctMacTab/Services/Wallpaper/WallpaperSupport.swift
+        Sources/UnupunctMacTab/UI/MenuPanel/WallpaperThumbnailView.swift
+        Sources/UnupunctMacTab/Core/ScratchpadStrings.swift
+        Sources/UnupunctMacTab/Core/FinderRenameStrings.swift
+        Sources/UnupunctMacTab/Core/CommandBarStrings.swift
+        Sources/UnupunctMacTab/Core/FeedbackStrings.swift
+        Sources/UnupunctMacTab/Core/RadialMenuStrings.swift
+        Sources/UnupunctMacTab/Core/MenuBarAppearanceStrings.swift
+        Sources/UnupunctMacTab/Core/AppAppearance.swift
+        Sources/UnupunctMacTab/Core/AppearanceStrings.swift
+        Sources/UnupunctMacTab/Core/GeneralSettingsStrings.swift
+        Sources/UnupunctMacTab/Core/SettingsPageStrings.swift
+        Sources/UnupunctMacTab/Core/BatteryTimeStrings.swift
+        Sources/UnupunctMacTab/Core/CPUCoreStrings.swift
+        Sources/UnupunctMacTab/Core/MonitorLayoutStrings.swift
+        Sources/UnupunctMacTab/Core/KeepAwakeStrings.swift
+        Sources/UnupunctMacTab/Core/BluetoothSleepStrings.swift
+        Sources/UnupunctMacTab/Core/PermissionGuideStrings.swift
+        Sources/UnupunctMacTab/Core/FanControlStrings.swift
+        Sources/UnupunctMacTab/Core/ConnectedDevicesStrings.swift
+        Sources/UnupunctMacTab/Services/FanControl/FanControlSupport.swift
+        Sources/UnupunctMacTab/Services/FanControl/FanControlResumeSupport.swift
+        Sources/UnupunctMacTab/Services/Snippets/TextSnippetSupport.swift
+        Sources/UnupunctMacTab/Services/RadialMenu/RadialMenuSupport.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScratchpadSupport.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScratchpadStore.swift
+        Sources/UnupunctMacTab/Services/KillProcess/KillProcessSupport.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderSupport.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderSampleTiming.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderWriter.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderCaptureEngine.swift
+        Sources/UnupunctMacTab/Core/RecorderExportStrings.swift
+        Sources/UnupunctMacTab/Core/RecorderExportFormatStrings.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderComposer.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderComposerPlan.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderCursorSprite.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderTextRenderer.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderImageRenderer.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderExporter.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderGIFClipboard.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderGIFWriter.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderGIFWorkspace.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderComposition.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecordingSharingSupport.swift
+        Sources/UnupunctMacTab/Services/PrivateFileStore.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderTakeStore.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderPresetImageStore.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderMotion.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderPointerTrack.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderTypingTrack.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderTimeline.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderTextOverlay.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderImageOverlay.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderBlurRegion.swift
+        Sources/UnupunctMacTab/Services/Recorder/RecorderEditDocument.swift
+        Sources/UnupunctMacTab/Core/AppInfo.swift
+        Sources/UnupunctMacTab/Core/GlobalShortcut.swift
+        Sources/UnupunctMacTab/Core/SymbolicHotKeys.swift
+        Sources/UnupunctMacTab/Services/SystemShortcutTakeoverSupport.swift
+        Sources/UnupunctMacTab/Core/Localization.swift
+        Sources/UnupunctMacTab/Core/Localizations/Strings+*.swift
+        Sources/UnupunctMacTab/Core/FeatureStrings.swift
+        Sources/UnupunctMacTab/Core/KillProcessStrings.swift
+        Sources/UnupunctMacTab/Core/PortManagerStrings.swift
+        Sources/UnupunctMacTab/Core/WhatsAppDownloadStrings.swift
+        Sources/UnupunctMacTab/Core/WhatsAppOrganizerStrings.swift
+        Sources/UnupunctMacTab/Core/ReleaseNotes.swift
+        Sources/UnupunctMacTab/Core/ReleaseDigest.swift
+        Sources/UnupunctMacTab/Core/ReleaseChangeAliases.swift
+        Sources/UnupunctMacTab/Core/WhatsNewStrings.swift
+        Sources/UnupunctMacTab/Core/URLCleaning.swift
+        Sources/UnupunctMacTab/Services/URLCleanerLinkMetadata.swift
+        Sources/UnupunctMacTab/Services/GeneralPasteboardAccess.swift
+        Sources/UnupunctMacTab/Services/Clipboard/ClipboardHistoryWrite.swift
+        Sources/UnupunctMacTab/Services/Audio/AirPlayRouteManager.swift
+        Sources/UnupunctMacTab/Services/Audio/MixerRoutingSupport.swift
+        Sources/UnupunctMacTab/Services/Audio/MusicLaunchSupport.swift
+        Sources/UnupunctMacTab/Services/Bluetooth/BluetoothSleepSupport.swift
+        Sources/UnupunctMacTab/UI/MenuPanel/MixerPercentNativeTextField.swift
+        Sources/UnupunctMacTab/UI/MenuPanel/MixerAppDragSource.swift
+        Sources/UnupunctMacTab/Services/Audio/BoostLimiter.swift
+        Sources/UnupunctMacTab/Services/Audio/MixerRender.swift
+        Sources/UnupunctMacTab/Services/Audio/PreciseVolumeRollerSupport.swift
+        Sources/UnupunctMacTab/Services/DockPreview/DockPreviewSupport.swift
+        Sources/UnupunctMacTab/Services/DockPreview/DockAutohideHold.swift
+        Sources/UnupunctMacTab/Services/SpacesOrder/SpacesOrderHold.swift
+        Sources/UnupunctMacTab/Services/Homebrew/HomebrewSupport.swift
+        Sources/UnupunctMacTab/Services/Homebrew/HomebrewEnvironment.swift
+        Sources/UnupunctMacTab/Services/AppUpdates/AppUpdatesSupport.swift
+        Sources/UnupunctMacTab/Services/AppUpdates/AppUpdateFeedSupport.swift
+        Sources/UnupunctMacTab/Core/AppUpdateStrings.swift
+        Sources/UnupunctMacTab/Core/DiskImageInstallerStrings.swift
+        Sources/UnupunctMacTab/Services/DiskImageInstaller/DiskImageInstallerSupport.swift
+        Sources/UnupunctMacTab/UI/NonModalAlert.swift
+        Sources/UnupunctMacTab/Services/Clipboard/ClipboardHistorySupport.swift
+        Sources/UnupunctMacTab/Core/ColorValue.swift
+        Sources/UnupunctMacTab/Services/Clipboard/ClipboardAutoClearSupport.swift
+        Sources/UnupunctMacTab/Services/AutoQuit/AutoQuitSupport.swift
+        Sources/UnupunctMacTab/Core/AutoQuitDockAppsStrings.swift
+        Sources/UnupunctMacTab/Services/Shelf/ShelfSupport.swift
+        Sources/UnupunctMacTab/Services/Shelf/ShelfFilePromiseTransfer.swift
+        Sources/UnupunctMacTab/Core/ShelfPromiseDeliveryStrings.swift
+        Sources/UnupunctMacTab/Services/Finder/FinderRenameSupport.swift
+        Sources/UnupunctMacTab/Services/Update/UpdateInstallerSupport.swift
+        Sources/UnupunctMacTab/Services/Update/UpdateServiceSupport.swift
+        Sources/UnupunctMacTab/Services/InstalledApps.swift
+        Sources/UnupunctMacTab/Services/LaunchAtLoginSupport.swift
+        Sources/UnupunctMacTab/UI/Settings/SettingsSearchSupport.swift
+        Sources/UnupunctMacTab/UI/Settings/SettingsSidebarSupport.swift
+        Sources/UnupunctMacTab/UI/Settings/FeatureVisibilitySupport.swift
+        Sources/UnupunctMacTab/UI/Onboarding/WhatsNewSupport.swift
+        Sources/UnupunctMacTab/UI/Settings/SettingsWindow.swift
+        Sources/UnupunctMacTab/Core/SettingsNavigationStrings.swift
+        Sources/UnupunctMacTab/App/MenuBarSpacingSupport.swift
+        Sources/UnupunctMacTab/App/MenuBarAllowanceSupport.swift
+        Sources/UnupunctMacTab/App/ReopenRequestSupport.swift
+        Sources/UnupunctMacTab/App/StatusItemAnchorSupport.swift
+        Sources/UnupunctMacTab/Services/DockClick/DockClickSupport.swift
+        Sources/UnupunctMacTab/Services/Finder/CutPasteProgressSupport.swift
+        Sources/UnupunctMacTab/Services/Finder/CutPastePrivilegeSupport.swift
+        Sources/UnupunctMacTab/Services/Finder/FinderPasteImageSupport.swift
+        Sources/UnupunctMacTab/Services/MiddleClick/MiddleClickSupport.swift
+        Sources/UnupunctMacTab/Services/MouseNavigation/MouseNavigationSupport.swift
+        Sources/UnupunctMacTab/Services/MouseNavigation/MouseNavigationKeys.swift
+        Sources/UnupunctMacTab/Services/MouseButtons/MouseButtonShortcutSupport.swift
+        Sources/UnupunctMacTab/Services/MouseButtons/MouseSpacesGestureSupport.swift
+        Sources/UnupunctMacTab/Services/MouseClickDebounce/MouseClickDebounceSupport.swift
+        Sources/UnupunctMacTab/Services/MouseExceptions/MouseAppExceptionSupport.swift
+        Sources/UnupunctMacTab/Services/MouseExceptions/MouseAppExceptions.swift
+        Sources/UnupunctMacTab/Services/WindowServerSupport.swift
+        Sources/UnupunctMacTab/Services/WindowMaximizerSupport.swift
+        Sources/UnupunctMacTab/Core/MouseButtonStrings.swift
+        Sources/UnupunctMacTab/Core/MouseClickDebounceStrings.swift
+        Sources/UnupunctMacTab/Core/MouseExceptionStrings.swift
+        Sources/UnupunctMacTab/Core/ClipboardIgnoredAppsStrings.swift
+        Sources/UnupunctMacTab/Core/ClipboardRetentionStrings.swift
+        Sources/UnupunctMacTab/Core/WindowLayoutIgnoredAppsStrings.swift
+        Sources/UnupunctMacTab/Services/WindowLayout/WindowLayoutIgnoredApps.swift
+        Sources/UnupunctMacTab/Core/WindowPreviewExclusionStrings.swift
+        Sources/UnupunctMacTab/Core/WindowMaximizerExclusionStrings.swift
+        Sources/UnupunctMacTab/Core/DiskExclusionStrings.swift
+        Sources/UnupunctMacTab/Core/SwitcherAppRulesStrings.swift
+        Sources/UnupunctMacTab/Services/QuickTools/QuickToolsSupport.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarSupport.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarPreferences.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarMath.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarUnits.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarColors.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarEmoji.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarLinks.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarDates.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarRowShortcuts.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarSystemSettingsSupport.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarFileSearchSupport.swift
+        Sources/UnupunctMacTab/Services/CommandBar/CommandBarQueryMemory.swift
+        Sources/UnupunctMacTab/Services/SpotlightNamesSupport.swift
+        Sources/UnupunctMacTab/Services/QuickTools/MicMuteSupport.swift
+        Sources/UnupunctMacTab/Services/QuickTools/QuickTogglesSupport.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScreenshotCapturePolicy.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScreenshotSupport.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScreenshotCanvasSupport.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScreenshotImageImport.swift
+        Sources/UnupunctMacTab/Services/Media/MediaImageProcessing.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScreenshotImageFile.swift
+        Sources/UnupunctMacTab/UI/Settings/ScreenCaptureToolPicker.swift
+        Sources/UnupunctMacTab/UI/Settings/MonitorToken.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScreenshotRenderer.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScreenshotImageLayerRendering.swift
+        Sources/UnupunctMacTab/Services/QuickTools/RecentCaptureStore.swift
+        Sources/UnupunctMacTab/Services/QuickTools/ScreenshotSharingSupport.swift
+        Sources/UnupunctMacTab/Services/QuickTools/WindowActivationPolicy.swift
+        Sources/UnupunctMacTab/Services/KeyboardDebounce/KeyboardDebounceSupport.swift
+        Sources/UnupunctMacTab/Services/SuperKey/SuperKeySupport.swift
+        Sources/UnupunctMacTab/Services/SuperKey/SuperKeyMappingGuard.swift
+        Sources/UnupunctMacTab/Core/SuperKeyStrings.swift
+        Sources/UnupunctMacTab/Core/InputSourceSelection.swift
+        Sources/UnupunctMacTab/Services/SessionActivity.swift
+        Sources/UnupunctMacTab/Services/SessionActivitySupport.swift
+        Sources/UnupunctMacTab/Services/EventTimestamp.swift
+        Sources/UnupunctMacTab/Services/OwnKeyEvent.swift
+        Sources/UnupunctMacTab/Services/ScrollWheelSupport.swift
+        Sources/UnupunctMacTab/Services/HorizontalWheelScrolling.swift
+        Sources/UnupunctMacTab/Services/SmoothScrollSupport.swift
+        Sources/UnupunctMacTab/Services/MouseAcceleration/MouseAccelerationSupport.swift
+        Sources/UnupunctMacTab/Services/FocusFollowsMouse/FocusFollowsMouseSupport.swift
+        Sources/UnupunctMacTab/Services/AssistiveKeyboard.swift
+        Sources/UnupunctMacTab/Services/Switcher/SwitcherModels.swift
+        Sources/UnupunctMacTab/Services/Switcher/WindowServerCaptureQueue.swift
+        Sources/UnupunctMacTab/Services/Switcher/SwitcherSupport.swift
+        Sources/UnupunctMacTab/Services/Switcher/SpaceHopSupport.swift
+        Sources/UnupunctMacTab/Services/Switcher/WindowUseOrder.swift
+        Sources/UnupunctMacTab/Services/Switcher/WindowEnumeratorAccessibilityPrefetch.swift
+        Sources/UnupunctMacTab/Services/Metrics/MetricFormat.swift
+        Sources/UnupunctMacTab/Services/Metrics/VMStatisticsDecoder.swift
+        Sources/UnupunctMacTab/Services/KeepAwakeAutomationSupport.swift
+        Sources/UnupunctMacTab/Services/SudoersSupport.swift
+        Sources/UnupunctMacTab/Services/Metrics/BatteryTimeSupport.swift
+        Sources/UnupunctMacTab/Services/Metrics/BatteryPowerSupport.swift
+        Sources/UnupunctMacTab/Services/BoundedProcessRunner.swift
+        Sources/UnupunctMacTab/Services/DetachedProcess.swift
+        Sources/UnupunctMacTab/Services/ShellSupport.swift
+        Sources/UnupunctMacTab/Services/PortManager/PortManagerSupport.swift
+        Sources/UnupunctMacTab/Services/Metrics/NetworkProcessSupport.swift
+        Sources/UnupunctMacTab/Services/Metrics/NetworkSampler.swift
+        Sources/UnupunctMacTab/Services/Metrics/NetworkAddressService.swift
+        Sources/UnupunctMacTab/Services/Metrics/SpeedTest.swift
+        Sources/UnupunctMacTab/Services/Metrics/PeripheralBatterySampler.swift
+        Sources/UnupunctMacTab/Services/Metrics/PeripheralBatterySupport.swift
+        Sources/UnupunctMacTab/Services/Metrics/DiskSupport.swift
+        Sources/UnupunctMacTab/Services/Metrics/MonitorSamplingPolicy.swift
+        Sources/UnupunctMacTab/Services/Metrics/USBDeviceSampler.swift
+        Sources/UnupunctMacTab/Services/Metrics/CPUCoreSampler.swift
+        Sources/UnupunctMacTab/Services/Metrics/MaxCapacityProbe.swift
+        Sources/UnupunctMacTab/Services/Metrics/TemperatureSensorSelector.swift
+        Sources/UnupunctMacTab/Services/Metrics/SustainedAlertGate.swift
+        Sources/UnupunctMacTab/Services/WindowLayout/WindowLayoutSupport.swift
+        Sources/UnupunctMacTab/Services/WindowLayout/WindowStageManagerSupport.swift
+        Sources/UnupunctMacTab/Core/WindowStageManagerStrings.swift
+        Sources/UnupunctMacTab/Core/WindowEdgeSnapRestoreStrings.swift
+        Sources/UnupunctMacTab/Services/WindowLayout/WindowGestureSupport.swift
+        Sources/UnupunctMacTab/Core/WindowDirectionalStrings.swift
+        Sources/UnupunctMacTab/Core/PointerDisplayStrings.swift
+        Sources/UnupunctMacTab/Core/GraphScaleStrings.swift
+        Sources/UnupunctMacTab/Core/NotchLowBatteryStrings.swift
+        Sources/UnupunctMacTab/Services/CleaningMode/CleaningUnlockCounter.swift
+        Sources/UnupunctMacTab/Services/CleaningMode/CleaningMouseReleaseGate.swift
+        Sources/UnupunctMacTab/Services/Display/ExtraBrightnessSupport.swift
+        Sources/UnupunctMacTab/Services/Display/BrightnessSupport.swift
+        Sources/UnupunctMacTab/Services/Display/LidDimmingSupport.swift
+        Sources/UnupunctMacTab/Services/Cleaner/CleanerSupport.swift
+        Sources/UnupunctMacTab/Services/Cleaner/CleanerPolicy.swift
+        Sources/UnupunctMacTab/Services/Cleaner/CleanerSchedule.swift
+        Sources/UnupunctMacTab/Services/Uninstall/UninstallerSupport.swift
+        Sources/UnupunctMacTab/Services/ManagedDownloads/WhatsAppDownloadSupport.swift
+        Sources/UnupunctMacTab/Core/SecureInputSupport.swift
         Tests/*.swift
         build/generated-tests/*.swift
     )
@@ -592,7 +592,7 @@ if (( TEST )); then
     write_swift_output_file_map "$TEST_OUTPUT_FILE_MAP" "$TEST_OBJECT_DIR" "${TEST_SOURCES[@]}"
     echo "▸ Building & running tests against $(basename "$SDK")…"
     swiftc -Onone -incremental -enable-batch-mode -j "$(sysctl -n hw.logicalcpu)" \
-        -module-name VorssaintTests -output-file-map "$TEST_OUTPUT_FILE_MAP" \
+        -module-name UnupunctMacTabTests -output-file-map "$TEST_OUTPUT_FILE_MAP" \
         -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" \
         "${VM_STATISTICS_COMPAT_FLAGS[@]}" "${TEST_SOURCES[@]}" -o build/metrics-tests
     test_status=0
@@ -607,7 +607,7 @@ if (( TEST )); then
 fi
 
 echo "▸ Compiling ($BUILD_CONFIGURATION) against $(basename "$SDK")…"
-APP_SOURCES=(Sources/Vorssaint/**/*.swift)
+APP_SOURCES=(Sources/UnupunctMacTab/**/*.swift)
 if (( ! DEV )); then
     # A release starts from an empty build directory, so nothing an earlier
     # build left behind (an old icon catalog, a staged bundle) can reach it.
@@ -631,23 +631,23 @@ swiftc "${APP_OPTIMIZATION_FLAGS[@]}" -incremental -enable-batch-mode -j "$(sysc
 
 echo "▸ Compiling protected fan helper…"
 swiftc -O -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" "${BUILD_VARIANT_FLAGS[@]}" \
-    Sources/Vorssaint/Services/FanControl/FanControlSupport.swift \
-    Sources/Vorssaint/Services/FanControl/FanControlXPC.swift \
-    Sources/Vorssaint/Services/SystemMonitor/SMCClient.swift \
-    Sources/Vorssaint/Services/Metrics/TemperatureSensorSelector.swift \
-    Sources/Vorssaint/Services/FanControl/FanControlHardware.swift \
+    Sources/UnupunctMacTab/Services/FanControl/FanControlSupport.swift \
+    Sources/UnupunctMacTab/Services/FanControl/FanControlXPC.swift \
+    Sources/UnupunctMacTab/Services/SystemMonitor/SMCClient.swift \
+    Sources/UnupunctMacTab/Services/Metrics/TemperatureSensorSelector.swift \
+    Sources/UnupunctMacTab/Services/FanControl/FanControlHardware.swift \
     Sources/FanControlHelper/main.swift \
     -o "build/$FAN_HELPER_ID"
 "build/$FAN_HELPER_ID" --selftest
 
 echo "▸ Compiling Now Playing adapter…"
 swiftc -O -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" -emit-library \
-    -module-name VorssaintNowPlaying \
+    -module-name UnupunctMacTabNowPlaying \
     Sources/NowPlayingAdapter/NowPlayingAdapter.swift \
     Sources/NowPlayingAdapter/NowPlayingQueue.swift \
     Sources/NowPlayingAdapter/NowPlayingSelection.swift \
-    Sources/Vorssaint/Services/Notch/NotchPlaybackSource.swift \
-    Sources/Vorssaint/Services/Notch/NotchPlaybackCommand.swift \
+    Sources/UnupunctMacTab/Services/Notch/NotchPlaybackSource.swift \
+    Sources/UnupunctMacTab/Services/Notch/NotchPlaybackCommand.swift \
     -o "build/$NOW_PLAYING_ADAPTER"
 
 echo "▸ Generating app icon…"
@@ -717,7 +717,7 @@ if (( DEV )); then
     # testing, instead of unknowingly running a stale build. Dev-only; never shipped.
     SHA="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
     [[ -n "$(git status --porcelain 2>/dev/null)" ]] && SHA="$SHA-dirty"
-    /usr/libexec/PlistBuddy -c "Add :VorssaintBuildCommit string '$SHA · $(date '+%Y-%m-%d %H:%M')'" "$STAGE/Contents/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :UnupunctMacTabBuildCommit string '$SHA · $(date '+%Y-%m-%d %H:%M')'" "$STAGE/Contents/Info.plist"
     echo "  stamped dev build: $SHA"
 fi
 FAN_HELPER_VERSION="$(
@@ -728,7 +728,7 @@ FAN_HELPER_VERSION="$(
         | /usr/bin/awk '{print $1}' | /usr/bin/shasum -a 256 \
         | /usr/bin/awk '{print $1}'
 )"
-/usr/libexec/PlistBuddy -c "Add :VorssaintFanControlHelperVersion string '$FAN_HELPER_VERSION'" \
+/usr/libexec/PlistBuddy -c "Add :UnupunctMacTabFanControlHelperVersion string '$FAN_HELPER_VERSION'" \
     "$STAGE/Contents/Info.plist"
 printf 'APPL????' > "$STAGE/Contents/PkgInfo"
 cp build/AppIcon.icns "$STAGE/Contents/Resources/AppIcon.icns"
@@ -756,7 +756,7 @@ xattr -c -r "$STAGE" 2>/dev/null || true
 #      notarization), the app's entitlements and a secure timestamp. Gives a
 #      stable, team-based designated requirement, so permissions persist across
 #      updates AND Gatekeeper shows no "unverified developer" warning.
-#   2. "Vorssaint Utils Signing" — the legacy stable self-signed identity, kept
+#   2. "Unupunct MacTab Signing" — the legacy stable self-signed identity, kept
 #      as a fallback so contributors without a Developer ID still get a constant
 #      designated requirement across their local builds.
 #   3. Ad-hoc — fresh clone with no identity at all.
@@ -917,9 +917,9 @@ if (( INSTALL )); then
     echo "▸ Installing into /Applications…"
     stop_process "$EXECUTABLE"
     # Only an official install replaces the pre-rename official apps. The
-    # Developer variant must coexist with them just as it does with Vorssaint.
+    # Developer variant must coexist with them just as it does with Unupunct MacTab.
     if (( ! DEV )); then
-        for legacy in "Vorss:Vorss" "Vorssaint Utils:VorssaintUtils"; do
+        for legacy in "Vorss:Vorss" "UnupunctMacTab Utils:UnupunctMacTabUtils"; do
             name="${legacy%%:*}"; proc="${legacy##*:}"
             if [[ -d "/Applications/$name.app" ]]; then
                 stop_process "$proc"

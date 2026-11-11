@@ -5,7 +5,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Vorssaint",
+    name: "UnupunctMacTab",
     platforms: [.macOS(.v14)],
     targets: [
         .systemLibrary(
@@ -17,9 +17,9 @@ let package = Package(
             path: "Sources/VMStatisticsCompat"
         ),
         .executableTarget(
-            name: "Vorssaint",
+            name: "UnupunctMacTab",
             dependencies: ["VMStatisticsCompat", "HIDEventSystem"],
-            path: "Sources/Vorssaint"
+            path: "Sources/UnupunctMacTab"
         )
     ]
 )

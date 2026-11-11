@@ -26,7 +26,7 @@ below exist because of that older compiler as well as the older OS.
 |---|---|
 | App compiles and links for macOS 12.3 | yes (714 Swift files, 0 errors) |
 | Fan-control helper compiles; its own `--selftest` | yes / `fan-control-helper: ok` (it is **not** bundled, see below) |
-| Now Playing adapter (`libVorssaintNowPlaying.dylib`) compiles | yes |
+| Now Playing adapter (`libUnupunctMacTabNowPlaying.dylib`) compiles | yes |
 | App launches on macOS 12.7.6 and keeps running | yes (observed running for the duration of the checks, no crash report) |
 | App's built-in `--selftest` on macOS 12.7.6 | **`SELFTEST OK`**, with 5 warnings (below) |
 | Settings window renders on macOS 12.7.6 | see the screenshots in the README (captured from the running app) |
@@ -39,6 +39,17 @@ The 5 self-test warnings, all on this Mac: no SMC temperature keys (hardware); f
 from newer SF Symbols (`mountain.2.fill`, `gauge.with.dots.needle.67percent`, `cat.fill` do not exist on
 macOS 12, `cloud.fill` touches its canvas edge). Choosing one of the missing symbols falls back to the
 app's own icon, which is the behaviour upstream's self-test describes.
+
+## Added by this port (release monterey.2)
+
+New code, not in upstream, and **tested only by looking at it on the one Mac**: the panel's Screenshot, Send to and Clean
+buttons; the Clean window with the app uninstaller and the Large files finder; Send to; app volume for Music, Spotify and
+VLC through AppleScript; Intel SMC temperature keys (`TC…`, `TG…`); a LAN tile that replaces the GPU temperature where a
+Mac has none; a keep-the-panel-below-the-menu-bar guard (macOS 12 grew the panel upward and cut off its top); the first-run
+"Everything" choice. Seen working in screenshots: the panel layout, the volume sliders, the CPU temperature and the Send to
+button. Not exercised: sending files, removing files from the Large files list, running the cleaner, the per-app sliders
+(none of those apps was open), and the first-run flow end to end (one run ended with only 7 tools installed and the cause is
+unknown; if it happens, use Settings > Features > Install all).
 
 ## Features disabled or reduced on Monterey (and why)
 
@@ -68,7 +79,7 @@ Degraded but still present (visual or minor behaviour):
 
 ## Post-Monterey APIs replaced (selection)
 
-The full set is in `Sources/Vorssaint/Support/` (`MontereyCompat.swift`, `AppServiceCompat.swift`,
+The full set is in `Sources/UnupunctMacTab/Support/` (`MontereyCompat.swift`, `AppServiceCompat.swift`,
 `DisplayLinkCompat.swift`, `ScreenshotCompat.swift`, `SwiftUICompat.swift`) plus
 `Sources/MontereyCompat/Bridging.h`.
 
