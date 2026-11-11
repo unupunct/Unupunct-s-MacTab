@@ -235,7 +235,7 @@ struct NetworkSection: View {
                 Text(value.map { MetricFormat.networkRate($0, inBits: speedInBits) } ?? l10n.s.networkMeasuring)
                     .font(.system(size: 13.5, weight: .semibold, design: .rounded))
                     .monospacedDigit()
-                    .contentTransition(.numericText())
+                    .contentTransitionNumericCompat()
                 Text(label)
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
@@ -318,7 +318,7 @@ struct NetworkSection: View {
                         Text("↓\(mbps(down)) ↑\(mbps(up)) Mbps")
                             .font(.system(size: 11, weight: .semibold))
                             .monospacedDigit()
-                            .contentTransition(.numericText())
+                            .contentTransitionNumericCompat()
                     }
                     if editing {
                         PanelInlineHideButton(isVisible: $netTest)

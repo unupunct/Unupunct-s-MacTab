@@ -190,7 +190,7 @@ struct RecorderGIFFrameRateControl: View {
                             draftRate = Double(rate)
                         } label: {
                             Text("\(rate) FPS")
-                                .fontWeight(Int(draftRate) == rate ? .bold : .regular)
+                                .fontWeightCompat(Int(draftRate) == rate ? .bold : .regular)
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.bordered)

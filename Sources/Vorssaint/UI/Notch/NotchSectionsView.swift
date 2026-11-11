@@ -82,7 +82,7 @@ struct NotchSectionsView: View {
                 ForEach(0..<positions, id: \.self) { position in
                     Button { service.showSectionRow(position) } label: {
                         Circle()
-                            .fill(.white.opacity(position == current ? 0.9 : contrast == .increased ? 0.5 : 0.28))
+                            .fill(Color.white.opacity(position == current ? 0.9 : contrast == .increased ? 0.5 : 0.28))
                             .frame(width: 6, height: 6)
                             .frame(width: 12, height: 12)
                             .contentShape(Rectangle())
@@ -115,20 +115,20 @@ struct NotchSectionsView: View {
                     .frame(height: 27)
                 Text("⌥⌘" + module.shortcutKey.uppercased())
                     .font(.system(size: 10, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(Color.white.opacity(0.6))
             }
             .padding(.horizontal, 6)
             .frame(maxWidth: .infinity)
             .frame(height: NotchLayout.sectionTileHeight)
-            .background(.white.opacity(highlighted ? 0.12 : 0.045), in: shape)
+            .background(Color.white.opacity(highlighted ? 0.12 : 0.045), in: shape)
             .overlay {
-                shape.strokeBorder(.white.opacity(highlighted ? 0.55 : contrast == .increased ? 0.4 : 0.04), lineWidth: 1)
+                shape.strokeBorder(Color.white.opacity(highlighted ? 0.55 : contrast == .increased ? 0.4 : 0.04), lineWidth: 1)
             }
             .overlay(alignment: .topTrailing) {
                 if current {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 10))
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(Color.white.opacity(0.7))
                         .padding(7)
                 }
             }
@@ -148,7 +148,7 @@ struct NotchSectionsView: View {
         case .music: return .pink
         case .calendar: return .red
         case .timer: return .orange
-        default: return .white.opacity(0.85)
+        default: return Color.white.opacity(0.85)
         }
     }
 }
@@ -186,7 +186,7 @@ struct NotchSectionSearch: View {
         HStack(spacing: expanded ? 4 : 6) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(expanded ? .white : .white.opacity(0.55))
+                .foregroundStyle(expanded ? .white : Color.white.opacity(0.55))
                 .frame(width: expanded ? 22 : 28, height: 28)
             // The field keeps its focus at a hair's width, so typing filters
             // the gallery before the field has even shown itself.
@@ -208,7 +208,7 @@ struct NotchSectionSearch: View {
         }
         .padding(.trailing, expanded ? 8 : 0)
         .frame(height: 28)
-        .background(.white.opacity(expanded ? 0.07 : 0), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+        .background(Color.white.opacity(expanded ? 0.07 : 0), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
         .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
         .clipped()
         .onHover { hovering in

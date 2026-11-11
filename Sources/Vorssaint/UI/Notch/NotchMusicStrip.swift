@@ -153,7 +153,7 @@ struct NotchMusicStrip: View {
             if showsArtist, let artist {
                 Text(artist)
                     .font(Font(Layout.artistFont as CTFont))
-                    .foregroundStyle(.white.opacity(0.62))
+                    .foregroundStyle(Color.white.opacity(0.62))
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
@@ -171,7 +171,7 @@ struct NotchMusicStrip: View {
             if showsArtist, let artist {
                 Text(artist)
                     .font(.system(size: 9, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.62))
+                    .foregroundStyle(Color.white.opacity(0.62))
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
@@ -196,7 +196,7 @@ struct NotchMusicStripButton: View {
         Image(systemName: symbol)
             .font(.system(size: size, weight: .semibold))
             .foregroundStyle(tint)
-            .contentTransition(.symbolEffect(.replace))
+            .contentTransitionSymbolReplaceCompat()
             .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: playing)
             // The ink, not the frame, sits on the bars' middle.
             .alignmentGuide(VerticalAlignment.center) {
@@ -214,20 +214,21 @@ struct NotchMusicSwipeFeedback: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var trigger = 0
     @State private var direction: CGFloat = -1
+    @State private var travel: CGFloat = 0
 
     func body(content: Content) -> some View {
         let displacement = reduceMotion ? 0 : direction
         return content
-            .keyframeAnimator(initialValue: CGFloat.zero, trigger: trigger) { view, travel in
-                view.offset(x: displacement * travel)
-            } keyframes: { _ in
-                CubicKeyframe(8, duration: 0.09)
-                SpringKeyframe(0, duration: 0.25, spring: .smooth)
-            }
+            .offset(x: displacement * travel)
             .onReceive(NotchMusicService.shared.gestureSkips) { forward in
                 guard enabled, !reduceMotion else { return }
                 direction = forward ? -1 : 1
                 trigger &+= 1
+                // Out and back: the keyframe animator needs macOS 14.
+                withAnimation(.easeOut(duration: 0.09)) { travel = 8 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) {
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) { travel = 0 }
+                }
             }
     }
 }
@@ -257,7 +258,7 @@ struct NotchMusicCover: View {
         .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
         .overlay {
             RoundedRectangle(cornerRadius: radius, style: .circular)
-                .strokeBorder(.white.opacity(0.14), lineWidth: 0.5)
+                .strokeBorder(Color.white.opacity(0.14), lineWidth: 0.5)
         }
     }
 }

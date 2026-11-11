@@ -50,7 +50,7 @@ struct NotchIslandPreview: View {
 
     private var previewSurface: some View {
         GeometryReader { proxy in stage(in: proxy.size) }
-            .background(.quaternary.opacity(0.35))
+            .background(Color.quaternaryFill(0.35))
             .background(WindowVisibilityReader { windowVisible = $0 })
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay(alignment: .bottomLeading) { caption }
@@ -62,7 +62,7 @@ struct NotchIslandPreview: View {
         let scale = Self.scale(in: stageSize)
         return ZStack(alignment: .top) {
             Rectangle()
-                .fill(.primary.opacity(0.06))
+                .fill(Color.primary.opacity(0.06))
                 .frame(height: geometry.menuBarHeight * scale)
             if windowVisible {
                 island(size: size, geometry: geometry)
@@ -185,7 +185,7 @@ struct NotchPagePreview: View {
         VStack(spacing: 10) {
             Image(systemName: "person.crop.rectangle")
                 .font(.system(size: 34, weight: .light))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Color.white.opacity(0.5))
             Text(FeatureStrings.notchEditor(l10n.language).cameraPreview)
                 .font(.system(size: 12))
                 .foregroundStyle(.secondary)
@@ -209,7 +209,7 @@ private struct NotchScratchpadStill: View {
         let text = FeatureStrings.scratchpad(l10n.language)
         Text(pad.text.isEmpty ? text.placeholder : pad.text)
             .font(.system(size: ScratchpadSupport.sanitizedTextSize(storedTextSize)))
-            .foregroundStyle(.white.opacity(pad.text.isEmpty ? 0.35 : 0.9))
+            .foregroundStyle(Color.white.opacity(pad.text.isEmpty ? 0.35 : 0.9))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding(10)
             .modifier(NotchControlSurface(cornerRadius: 12, interactive: false))
@@ -223,7 +223,7 @@ private struct NotchScratchpadStill: View {
                         Image(systemName: "chevron.down")
                             .font(.system(size: 9, weight: .semibold))
                     }
-                    .foregroundStyle(.white.opacity(0.85))
+                    .foregroundStyle(Color.white.opacity(0.85))
                     .padding(.horizontal, 7)
                 } else {
                     HStack(spacing: 6) {
@@ -254,17 +254,17 @@ private struct NotchScratchpadStill: View {
                     .font(.system(size: 8, weight: .semibold))
             }
         }
-        .foregroundStyle(selected ? .white : .white.opacity(0.6))
+        .foregroundStyle(selected ? .white : Color.white.opacity(0.6))
         .padding(.leading, 10)
         .padding(.trailing, selected ? 8 : 10)
         .frame(height: 22)
-        .background(.white.opacity(selected ? 0.14 : 0.05), in: Capsule())
+        .background(Color.white.opacity(selected ? 0.14 : 0.05), in: Capsule())
     }
 
     private func glyph(_ symbol: String) -> some View {
         Image(systemName: symbol)
             .font(.system(size: 12, weight: .medium))
-            .foregroundStyle(.white.opacity(0.55))
+            .foregroundStyle(Color.white.opacity(0.55))
             .frame(width: 28, height: 28)
     }
 }
@@ -409,5 +409,5 @@ extension NotchModule {
         }
     }
 
-    var settingsGlyph: Color { self == .scratchpad ? .black.opacity(0.75) : .white }
+    var settingsGlyph: Color { self == .scratchpad ? Color.black.opacity(0.75) : .white }
 }

@@ -402,7 +402,11 @@ final class RecorderExporter {
         await withCheckedContinuation { continuation in
             let finished = OnceFlag()
             // AVFoundation invokes this callback only on the serial queue above.
+            #if compiler(>=5.10)
             nonisolated(unsafe) let serializedInput = input
+            #else
+            let serializedInput = input
+            #endif
             input.requestMediaDataWhenReady(on: queue) {
                 while serializedInput.isReadyForMoreMediaData {
                     if cancelled.isCancelled {
@@ -632,7 +636,7 @@ final class RecorderExporter {
                 if cancelled.isCancelled { return .cancelled }
                 let seconds = min(outputDuration, Double(index) / Double(fps))
                 let time = CMTime(seconds: seconds, preferredTimescale: 600)
-                var decoded = try? await generator.image(at: time).image
+                var decoded = try? await generator.imageCompat(at: time)
                 if let image = decoded, let resizeContext, let composer {
                     decoded = resizeContext.createCGImage(
                         composer.render(CIImage(cgImage: image), at: seconds),

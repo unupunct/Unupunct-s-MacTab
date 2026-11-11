@@ -18,7 +18,7 @@ enum AgentClaudeAppUsage {
     private static let maximumSize = 4 << 20
 
     static func historyURL(home: URL) -> URL {
-        home.appending(path: "Library/Application Support/Claude/plan-usage-history.json", directoryHint: .notDirectory)
+        home.appendingCompat(path: "Library/Application Support/Claude/plan-usage-history.json", directoryHint: .notDirectory)
     }
 
     /// When the app last saved its limits, straight from the file.
@@ -234,7 +234,7 @@ enum AgentClaudeAppUsage {
     /// sees at half past.
     static func hour(of date: Date) -> Date {
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "UTC") ?? .gmt
+        calendar.timeZone = TimeZone(identifier: "UTC") ?? .gmtCompat
         return calendar.dateInterval(of: .hour, for: date)?.start ?? date
     }
 }

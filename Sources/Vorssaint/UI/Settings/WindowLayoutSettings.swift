@@ -248,7 +248,7 @@ struct WindowLayoutSettings: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .onAppear { refreshSystemTilingState() }
         .onReceive(NotificationCenter.default.publisher(
             for: NSApplication.didBecomeActiveNotification)) { _ in

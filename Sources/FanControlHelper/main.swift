@@ -599,7 +599,15 @@ guard geteuid() == 0 else {
 private let controller = FanControlController()
 private let delegate = FanControlListenerDelegate(controller: controller)
 private let listener = NSXPCListener(machServiceName: FanControlIdentifiers.helperID)
-listener.setConnectionCodeSigningRequirement(FanControlIdentifiers.appCodeRequirement)
+// The caller's code-signing requirement cannot be enforced before macOS 13, and
+// this helper must never accept an unchecked client: it refuses to run there.
+// (The app does not install it on macOS 12 either; see MONTEREY-COMPATIBILITY.md.)
+if #available(macOS 13.0, *) {
+    listener.setConnectionCodeSigningRequirement(FanControlIdentifiers.appCodeRequirement)
+} else {
+    FileHandle.standardError.write(Data("fan-control helper needs macOS 13 or later".utf8 + [10]))
+    exit(EXIT_FAILURE)
+}
 listener.delegate = delegate
 listener.activate()
 

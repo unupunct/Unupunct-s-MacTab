@@ -60,12 +60,12 @@ enum AgentCodexServer {
     static func candidates(apps: [URL], home: URL, searchPath: String? = nil) -> [URL] {
         let bundled = apps.flatMap { app in
             ["Contents/Resources/codex-cli/bin/codex", "Contents/Resources/codex"].map {
-                app.appending(path: $0, directoryHint: .notDirectory)
+                app.appendingCompat(path: $0, directoryHint: .notDirectory)
             }
         }
-        let folders = [home.appending(path: ".local/bin").path, "/opt/homebrew/bin", "/usr/local/bin"]
+        let folders = [home.appendingCompat(path: ".local/bin").path, "/opt/homebrew/bin", "/usr/local/bin"]
             + (searchPath ?? "").split(separator: ":").map(String.init).filter { $0.hasPrefix("/") }
-        return bundled + folders.map { URL(fileURLWithPath: $0, isDirectory: true).appending(path: "codex") }
+        return bundled + folders.map { URL(fileURLWithPath: $0, isDirectory: true).appendingCompat(path: "codex") }
     }
 
     static func executable(apps: [URL], home: URL, searchPath: String? = nil) -> URL? {
@@ -200,7 +200,7 @@ final class AgentCodexConversation: AgentCLIConversation {
     /// Introduces the app, as every conversation must begin.
     func start() -> Result<Void, AgentCodexServer.Failure> {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
-        let client: [String: Any] = ["name": "vorssaint", "title": "Vorssaint", "version": version]
+        let client: [String: Any] = ["name": "vorssaint", "title": "Unupunct MacTab", "version": version]
         return ask("initialize", ["clientInfo": client, "capabilities": NSNull()])
             .flatMap { _ -> Result<Void, AgentCodexServer.Failure> in
                 send(["method": "initialized"]) ? .success(()) : .failure(.unreachable)

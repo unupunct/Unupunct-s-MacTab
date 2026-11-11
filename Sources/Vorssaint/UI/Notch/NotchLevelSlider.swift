@@ -31,6 +31,7 @@ struct NotchLevelSlider: NSViewRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
+    @available(macOS 13.0, *)
     func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSSlider, context: Context) -> CGSize? {
         vertical ? CGSize(width: proposal.width ?? 28, height: proposal.height ?? 180)
             : CGSize(width: proposal.width ?? 180, height: proposal.height ?? 28)

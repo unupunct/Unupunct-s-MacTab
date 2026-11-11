@@ -130,7 +130,7 @@ struct URLCleanerSettings: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
     }
 
     /// Two dozen names for one site is a lot of clicking to say "not this

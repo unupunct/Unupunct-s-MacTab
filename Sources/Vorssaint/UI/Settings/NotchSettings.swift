@@ -379,7 +379,7 @@ struct NotchSettings: View {
                         }
                     }
                 }
-                .scrollIndicators(.automatic)
+                .scrollIndicatorsCompat(.automatic)
                 // A section chosen from the island itself may sit low in the list.
                 .onAppear { reader.scrollTo(selectedModule) }
                 .onChange(of: selectedModule) { _, module in
@@ -388,7 +388,7 @@ struct NotchSettings: View {
             }
         }
         .padding(10)
-        .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(Color.quaternaryFill(0.35), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private func isShown(_ module: NotchModule) -> Bool {
@@ -686,7 +686,7 @@ struct NotchSettings: View {
                                          isOn: $gesturesEnabled, feature: .notchGestures)
                 switchRow("waveform.path", text.hapticFeedback, isOn: $hapticFeedback)
                 SettingsRow(symbol: "arrow.uturn.backward", title: editor.reopening) {
-                    Picker(editor.reopening, selection: Binding(get: {
+                    Picker(editor.reopening, selection: Binding<String>(get: { () -> String in
                         guard returnHome else { return "" }
                         return NotchModule(rawValue: homeModule) != nil
                             || NotchReopeningDestination(rawValue: homeModule) != nil
@@ -1085,15 +1085,15 @@ private struct NotchSilhouetteSample: View {
                                      cameraWidth: 0, menuBarHeight: 24, silhouette: silhouette)
         let island = geometry.restingSize(showsContent: false)
         ZStack(alignment: .top) {
-            Rectangle().fill(.primary.opacity(0.08)).frame(height: geometry.menuBarHeight)
+            Rectangle().fill(Color.primary.opacity(0.08)).frame(height: geometry.menuBarHeight)
             // Menus on the left and status items on the right, clear of the island.
             HStack(spacing: 9) {
                 ForEach([26, 36, 30], id: \.self) { width in
-                    Capsule().fill(.primary.opacity(0.22)).frame(width: CGFloat(width), height: 8)
+                    Capsule().fill(Color.primary.opacity(0.22)).frame(width: CGFloat(width), height: 8)
                 }
                 Spacer(minLength: 0)
                 ForEach(0..<3, id: \.self) { _ in
-                    Circle().fill(.primary.opacity(0.22)).frame(width: 12, height: 12)
+                    Circle().fill(Color.primary.opacity(0.22)).frame(width: 12, height: 12)
                 }
             }
             .padding(.horizontal, 14)
@@ -1102,7 +1102,7 @@ private struct NotchSilhouetteSample: View {
                 .frame(width: island.width, height: island.height)
         }
         .frame(width: 400, height: 48, alignment: .top)
-        .background(.primary.opacity(0.04))
+        .background(Color.primary.opacity(0.04))
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .scaleEffect(0.5)
         .frame(width: 200, height: 24)

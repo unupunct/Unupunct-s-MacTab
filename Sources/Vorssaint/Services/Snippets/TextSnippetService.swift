@@ -137,7 +137,7 @@ final class TextSnippetService {
             shouldStopTapThread = false
             pendingTapRestart = false
             let thread = Thread { [weak self] in self?.runEventTap() }
-            thread.name = "Vorssaint Text Expansion"
+            thread.name = "Unupunct MacTab Text Expansion"
             thread.qualityOfService = .userInteractive
             tapThread = thread
             return thread
@@ -447,7 +447,7 @@ final class TextSnippetService {
     /// so no other app is asked.
     private static var ownWindowIsKey: Bool {
         guard Thread.isMainThread else { return true }
-        return MainActor.assumeIsolated { NSApp.keyWindow != nil }
+        return MainActorCompat.assumeIsolated { NSApp.keyWindow != nil }
     }
 
     /// Also the snippet library's insertion path (deleteCount 0): one typing

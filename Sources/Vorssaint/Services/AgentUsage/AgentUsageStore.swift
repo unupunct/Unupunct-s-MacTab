@@ -477,7 +477,7 @@ struct AgentLogRoot: Equatable {
         let claude = claudeProfile.logURLs(home: home).map { AgentLogRoot(provider: .claude, url: canonical($0)) }
         return claude + [(AgentProvider.codex, ".codex/sessions"), (.codex, ".codex/archived_sessions"),
          (.opencode, ".local/share/opencode"), (.copilot, ".copilot/session-state")].map { provider, path in
-            AgentLogRoot(provider: provider, url: canonical(home.appending(path: path, directoryHint: .isDirectory)))
+            AgentLogRoot(provider: provider, url: canonical(home.appendingCompat(path: path, directoryHint: .isDirectory)))
         }
     }
 
@@ -498,7 +498,7 @@ struct AgentLogRoot: Equatable {
     func accepts(_ path: String) -> Bool {
         let prefix = url.path + "/"
         guard path.hasPrefix(prefix) else { return false }
-        if provider == .opencode { return path == url.appending(path: AgentOpenCodeReader.database).path }
+        if provider == .opencode { return path == url.appendingCompat(path: AgentOpenCodeReader.database).path }
         guard path.hasSuffix(".jsonl") else { return false }
         guard provider == .copilot else { return true }
         let parts = path.dropFirst(prefix.count).split(separator: "/", omittingEmptySubsequences: false)
@@ -527,7 +527,7 @@ struct AgentSessionRegistry: Equatable {
             guard let names = try? FileManager.default.contentsOfDirectory(atPath: folder.path) else { continue }
             registry.listed = true
             for name in names where name.hasSuffix(".json") && Int32(name.dropLast(5)) != nil {
-                guard let data = try? Data(contentsOf: folder.appending(path: name)), data.count < 1 << 16,
+                guard let data = try? Data(contentsOf: folder.appendingCompat(path: name)), data.count < 1 << 16,
                       let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
                       let pid = json["pid"] as? Int, let session = json["sessionId"] as? String, !session.isEmpty else {
                     registry.complete = false
@@ -743,7 +743,7 @@ enum AgentLogReader {
             // OpenCode keeps its database beside the snapshots, clones and
             // logs of its data folder, which are never walked.
             if root.provider == .opencode {
-                let path = root.url.appending(path: AgentOpenCodeReader.database).path
+                let path = root.url.appendingCompat(path: AgentOpenCodeReader.database).path
                 if let modified = AgentOpenCodeReader.modified(path), modified >= horizon {
                     found.append((path, root.provider, modified, false))
                 }
@@ -756,7 +756,7 @@ enum AgentLogReader {
             if root.provider == .copilot {
                 let sessions = (try? FileManager.default.contentsOfDirectory(
                     at: root.url, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])) ?? []
-                for session in sessions { include(session.appending(path: "events.jsonl"), from: root) }
+                for session in sessions { include(session.appendingCompat(path: "events.jsonl"), from: root) }
                 continue
             }
             guard let enumerator = FileManager.default.enumerator(at: root.url, includingPropertiesForKeys: keys,

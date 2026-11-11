@@ -153,8 +153,22 @@ enum ScreenshotRenderer {
         let bounds = CGRect(origin: .zero, size: imageSize)
         let regions = annotations.compactMap { litRegion($0, within: bounds) }
         guard let first = regions.first, strength > 0 else { return }
-        let lit = regions.dropFirst().reduce(CGPath(rect: first, transform: nil)) {
-            $0.union(CGPath(rect: $1, transform: nil))
+        let lit: CGPath
+        if #available(macOS 13.0, *) {
+            lit = regions.dropFirst().reduce(CGPath(rect: first, transform: nil)) {
+                $0.union(CGPath(rect: $1, transform: nil))
+            }
+        } else {
+            // macOS 12 has no CGPath boolean operations: build the union from disjoint rects.
+            let union = CGMutablePath()
+            var covered: [CGRect] = []
+            for region in regions {
+                var pieces = [region]
+                for other in covered { pieces = pieces.flatMap { Self.subtract($0, minus: other) } }
+                for piece in pieces { union.addRect(piece) }
+                covered.append(region)
+            }
+            lit = union
         }
         // Even-odd over the bounds plus the lit union fills only the outside,
         // and overlapping regions are never dimmed twice.
@@ -167,6 +181,18 @@ enum ScreenshotRenderer {
         context.addPath(dimmed)
         context.fillPath(using: .evenOdd)
         context.restoreGState()
+    }
+
+    /// `rect` with `other` cut out, as up to four disjoint rectangles.
+    private static func subtract(_ rect: CGRect, minus other: CGRect) -> [CGRect] {
+        guard rect.intersects(other) else { return [rect] }
+        let hit = rect.intersection(other)
+        var pieces: [CGRect] = []
+        if hit.minX > rect.minX { pieces.append(CGRect(x: rect.minX, y: rect.minY, width: hit.minX - rect.minX, height: rect.height)) }
+        if hit.maxX < rect.maxX { pieces.append(CGRect(x: hit.maxX, y: rect.minY, width: rect.maxX - hit.maxX, height: rect.height)) }
+        if hit.minY > rect.minY { pieces.append(CGRect(x: hit.minX, y: rect.minY, width: hit.width, height: hit.minY - rect.minY)) }
+        if hit.maxY < rect.maxY { pieces.append(CGRect(x: hit.minX, y: hit.maxY, width: hit.width, height: rect.maxY - hit.maxY)) }
+        return pieces
     }
 
     private static func strokeShape(in context: CGContext,

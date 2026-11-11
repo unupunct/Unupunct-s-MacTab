@@ -55,6 +55,7 @@ struct MouseSettings: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                Group {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(l10n.s.tabMouse).font(.title2.bold())
                     Text(FeatureStrings.settingsPages(l10n.language).mouseDescription)
@@ -89,6 +90,8 @@ struct MouseSettings: View {
                     accelerationCard
                         .settingsSectionAnchor(.mouseAcceleration, cornerRadius: 16)
                 }
+                }
+                Group {
                 if AppFeature.mouseNavigation.isAvailable {
                     navigationCard
                         .settingsSectionAnchor(.mouseNavigation, cornerRadius: 16)
@@ -108,6 +111,7 @@ struct MouseSettings: View {
                     SettingsCard(title: l10n.s.permissionRequired) {
                         PermissionRow(kind: .accessibility)
                     }
+                }
                 }
             }
             .frame(maxWidth: 760)

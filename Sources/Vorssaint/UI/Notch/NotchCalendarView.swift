@@ -30,9 +30,9 @@ struct NotchCalendarView: View {
                         if showsMonth {
                             HStack(alignment: .top, spacing: 16) {
                                 ScrollView { monthView(now: context.date) }
-                                    .scrollIndicators(.automatic)
+                                    .scrollIndicatorsCompat(.automatic)
                                     .frame(width: 196)
-                                Rectangle().fill(.white.opacity(0.12)).frame(width: 1)
+                                Rectangle().fill(Color.white.opacity(0.12)).frame(width: 1)
                                     .accessibilityHidden(true)
                                 VStack(alignment: .leading, spacing: 12) {
                                     agendaHeader
@@ -129,7 +129,7 @@ struct NotchCalendarView: View {
                     title
                         .padding(.horizontal, 7)
                         .frame(height: 28)
-                        .background(.white.opacity(showingMonth ? 0.12 : 0),
+                        .background(Color.white.opacity(showingMonth ? 0.12 : 0),
                                     in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                         .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
                 }
@@ -234,7 +234,7 @@ struct NotchCalendarView: View {
     private func agenda(now: Date) -> some View {
         ScrollViewReader { proxy in
             ScrollView { appointmentList(now: now) }
-                .scrollIndicators(.automatic)
+                .scrollIndicatorsCompat(.automatic)
                 .id(selectedDay)
                 .onChange(of: calendar.loading ? nil : calendar.revealing, initial: true) { _, target in
                     guard !preview, let target else { return }
@@ -291,11 +291,11 @@ struct NotchCalendarView: View {
         HStack(spacing: 12) {
             Image(systemName: "calendar.badge.checkmark")
                 .font(.system(size: 26, weight: .light))
-                .foregroundStyle(.white.opacity(0.45))
+                .foregroundStyle(Color.white.opacity(0.45))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 8) {
                 Text(selectedDay == nil ? text.empty : text.emptyDay)
-                    .font(.system(size: 12)).foregroundStyle(.white.opacity(0.65))
+                    .font(.system(size: 12)).foregroundStyle(Color.white.opacity(0.65))
                     .fixedSize(horizontal: false, vertical: true)
                 // With no card to open it from and no room for it in the row.
                 if !rowOpensCalendar {
@@ -311,7 +311,7 @@ struct NotchCalendarView: View {
             Image(systemName: "calendar.badge.clock").font(.system(size: 28))
             Text(permissions.calendarAccess == .denied || permissions.calendarAccess == .restricted
                  ? text.denied : text.permission)
-                .font(.callout).foregroundStyle(.white.opacity(0.7)).multilineTextAlignment(.center)
+                .font(.callout).foregroundStyle(Color.white.opacity(0.7)).multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 10) {
                 if permissions.calendarAccess == .denied || permissions.calendarAccess == .restricted {
@@ -362,7 +362,7 @@ private struct NotchCalendarDayLabel: View {
             Text(day, format: .dateTime.day().month(.abbreviated))
         }
         .font(.system(size: 11, weight: .medium))
-        .foregroundStyle(.white.opacity(0.5))
+        .foregroundStyle(Color.white.opacity(0.5))
         .lineLimit(1)
     }
 }
@@ -395,12 +395,12 @@ private struct NotchCalendarEventRow: View {
             if ongoing || isNext {
                 Text(ongoing ? text.ongoing : text.next)
                     .font(.system(size: 9, weight: .semibold))
-                    .foregroundStyle(ongoing ? .mint : .white.opacity(0.7))
+                    .foregroundStyle(ongoing ? .mint : Color.white.opacity(0.7))
                     .lineLimit(1)
             }
             Text(event.title.isEmpty ? text.untitled : event.title)
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.white.opacity(ended ? 0.65 : 1))
+                .foregroundStyle(Color.white.opacity(ended ? 0.65 : 1))
                 .fixedSize(horizontal: false, vertical: true)
             HStack(alignment: .firstTextBaseline, spacing: 5) {
                 Group {
@@ -423,12 +423,12 @@ private struct NotchCalendarEventRow: View {
                 }
             }
             .font(.system(size: 11)).monospacedDigit()
-            .foregroundStyle(.white.opacity(0.75))
+            .foregroundStyle(Color.white.opacity(0.75))
             Text(event.calendar)
-                .font(.system(size: 10)).foregroundStyle(.white.opacity(0.5)).lineLimit(1)
+                .font(.system(size: 10)).foregroundStyle(Color.white.opacity(0.5)).lineLimit(1)
             if !event.location.isEmpty {
                 Label(event.location, systemImage: "mappin")
-                    .font(.system(size: 10)).foregroundStyle(.white.opacity(0.6)).lineLimit(1)
+                    .font(.system(size: 10)).foregroundStyle(Color.white.opacity(0.6)).lineLimit(1)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -444,7 +444,7 @@ private struct NotchCalendarEventRow: View {
                     in: RoundedRectangle(cornerRadius: 11, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 11, style: .continuous)
-                .strokeBorder(.white.opacity(contrast == .increased ? 0.5 : ongoing ? 0.16 : 0.05), lineWidth: 0.75)
+                .strokeBorder(Color.white.opacity(contrast == .increased ? 0.5 : ongoing ? 0.16 : 0.05), lineWidth: 0.75)
         }
         .clipped()
     }

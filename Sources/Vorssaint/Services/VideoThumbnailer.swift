@@ -38,7 +38,7 @@ enum VideoThumbnailer {
         // above actually avoid a black or title-card first frame.
         generator.requestedTimeToleranceBefore = .zero
         generator.requestedTimeToleranceAfter = .zero
-        guard let cgImage = try? await generator.image(at: time).image else { return nil }
+        guard let cgImage = try? await generator.imageCompat(at: time) else { return nil }
         let size = NSSize(width: CGFloat(cgImage.width) / scale, height: CGFloat(cgImage.height) / scale)
         return NSImage(cgImage: cgImage, size: size)
     }

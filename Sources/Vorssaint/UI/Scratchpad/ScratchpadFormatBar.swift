@@ -29,7 +29,7 @@ struct ScratchpadFormatBar: View {
     @ObservedObject private var l10n = L10n.shared
 
     private var text: ScratchpadFeatureStrings { FeatureStrings.scratchpad(l10n.language) }
-    private var tint: Color { style.isDark ? .white.opacity(0.55) : .secondary }
+    private var tint: Color { style.isDark ? Color.white.opacity(0.55) : .secondary }
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -37,7 +37,7 @@ struct ScratchpadFormatBar: View {
                 ForEach(ScratchpadMark.allCases, id: \.self) { markButton($0) }
             }
         }
-        .scrollIndicators(.hidden)
+        .scrollIndicatorsCompat(.hidden)
     }
 
     private func markButton(_ mark: ScratchpadMark) -> some View {

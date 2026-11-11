@@ -363,7 +363,7 @@ struct PowerSection: View {
             Text(value)
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .monospacedDigit()
-                .contentTransition(.numericText())
+                .contentTransitionNumericCompat()
                 .frame(minWidth: 44, alignment: .trailing)
             if editing {
                 PanelInlineHideButton(isVisible: visible)

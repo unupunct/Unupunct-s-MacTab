@@ -252,7 +252,7 @@ struct AppUpdatesListView: View {
             ForEach(updates.rules) { rule in
                 HStack(spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(rule.name).fontWeight(.medium).lineLimit(1)
+                        Text(rule.name).fontWeightCompat(.medium).lineLimit(1)
                         Text(rule.version.map { String(format: text.skippedVersionFormat, $0) }
                              ?? text.excludedApp)
                             .foregroundStyle(.secondary)

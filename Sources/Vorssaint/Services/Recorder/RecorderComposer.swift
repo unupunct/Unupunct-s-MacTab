@@ -444,16 +444,22 @@ private final class RecorderCompositionInstruction: NSObject, AVVideoComposition
 
 /// Draws each frame through `RecorderComposer.render` with one context shared
 /// by every preview and export.
+#if compiler(>=5.9)
+private typealias CompositorAttributes = [String: any Sendable]
+#else
+private typealias CompositorAttributes = [String: Any]
+#endif
+
 private final class RecorderVideoCompositor: NSObject, AVVideoCompositing, @unchecked Sendable {
     private static let context = CIContext()
 
     /// Frames as the decoder made them, so Core Image does the one colour
     /// conversion.
-    let sourcePixelBufferAttributes: [String: any Sendable]? = [
+    let sourcePixelBufferAttributes: CompositorAttributes? = [
         kCVPixelBufferPixelFormatTypeKey as String: [kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
                                                      kCVPixelFormatType_32BGRA],
     ]
-    let requiredPixelBufferAttributesForRenderContext: [String: any Sendable] = [
+    let requiredPixelBufferAttributesForRenderContext: CompositorAttributes = [
         kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
     ]
 

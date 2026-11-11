@@ -80,6 +80,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
             UNUserNotificationCenter.current().delegate = self
         }
         beginStartupWatch()
+        WindowCaptureDebug.startIfRequested(self)
         Self.boundAccessibilityWaits()
         // Pay the first AppKit process lookup before an input callback needs
         // it. Each click still resolves the current process independently.
@@ -481,10 +482,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
         // the arrow, while its controls stay inside the safe area. Older AppKit
         // versions misplace full-size content, so keep the inset layout and let
         // the popover draw its native material and corners there.
-        popover.hasFullSizeContent = PanelSurface.popoverHostsFullSizeContent
+        popover.setFullSizeContentIfSupported(PanelSurface.popoverHostsFullSizeContent)
         popover.delegate = self
         let host = NSHostingController(rootView: MenuPanelView())
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         popover.contentViewController = host
         AppAppearanceController.shared.follow(panel: popover)
     }
@@ -1533,7 +1534,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
                   !self.handbackWouldSwitchDesktop(to: source.processIdentifier)
             else { return }
             ActivationHandoff.yield(to: source)
-            if !source.activate(from: NSRunningApplication.current, options: []) {
+            if !source.activateCompat(from: NSRunningApplication.current) {
                 source.activate(options: [])
             }
         }
@@ -1851,7 +1852,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
             // growing it to fit content or freezing it at a stale snapshot.
             // The window's size is fully owned by SettingsWindowSupport's
             // explicit sizing below plus ordinary user drag-resize.
-            host.sizingOptions = []
+            host.setPreferredContentSizing(false)
             let window = SettingsWindow(contentViewController: host)
             window.isMouseButtonCaptureActive = { MouseButtonShortcutService.isCaptureActive }
             // .miniaturizable so the Window menu's Minimize (Cmd+M) actually works.
@@ -2169,7 +2170,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
             self?.markOnboardingComplete()
             self?.onboardingWindow?.close()
         })
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         let window = NSWindow(contentViewController: host)
         let isFirstRun = !UserDefaults.standard.bool(forKey: DefaultsKey.hasOnboarded)
         window.title = mode.title(L10n.shared.s)
@@ -2272,7 +2273,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
         let host = NSHostingController(rootView: UpdateHighlightsView(
             onFinish: { [weak self] in self?.updateHighlightsWindow?.close() }
         ))
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         let window = NSPanel(contentViewController: host)
         window.title = L10n.shared.s.highlightsTitle
         window.styleMask = [.titled, .closable, .fullSizeContentView]
@@ -2409,7 +2410,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
             onOpenSettings: { [weak self] in self?.openSettingsFromWhatsNew() },
             onFinish: { [weak self] in self?.whatsNewWindow?.close() }
         ))
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         let window = NSWindow(contentViewController: host)
         window.title = strings.tabReleaseNotes
         window.styleMask = [.titled, .closable, .fullSizeContentView]
@@ -2498,7 +2499,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
                 self?.updateShowcaseWindow?.close()
             }
         ))
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         let window = NSWindow(contentViewController: host)
         window.title = L10n.shared.s.updateShowcaseTitle
         window.styleMask = [.titled, .closable, .fullSizeContentView]
@@ -2543,7 +2544,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
                 self?.supportIntroWindow?.close()
             }
         ))
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         let window = NSPanel(contentViewController: host)
         window.title = L10n.shared.s.supportIntroTitle
         window.styleMask = [.titled, .fullSizeContentView]
@@ -2634,7 +2635,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
                 self?.updatePreviewWindow?.close()
             }
         ))
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         let window = NSWindow(contentViewController: host)
         window.title = L10n.shared.s.tabReleaseNotes
         window.styleMask = [.titled, .closable, .fullSizeContentView]

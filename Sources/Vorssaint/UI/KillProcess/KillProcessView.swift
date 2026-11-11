@@ -69,7 +69,7 @@ struct KillProcessView: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
-            .formStyle(.grouped)
+            .formStyleGroupedCompat()
             .fixedSize(horizontal: false, vertical: true)
 
             HStack(spacing: 16) {

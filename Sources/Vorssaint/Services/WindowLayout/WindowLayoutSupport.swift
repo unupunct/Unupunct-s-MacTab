@@ -486,10 +486,10 @@ enum WindowLayoutGeometry {
         return frames.indices
             .filter {
                 switch direction {
-                case .left: frames[$0].minX < current.minX
-                case .right: frames[$0].minX > current.minX
-                case .up: frames[$0].minY >= current.maxY
-                case .down: frames[$0].maxY <= current.minY
+                case .left: return frames[$0].minX < current.minX
+                case .right: return frames[$0].minX > current.minX
+                case .up: return frames[$0].minY >= current.maxY
+                case .down: return frames[$0].maxY <= current.minY
                 }
             }
             .min { lhs, rhs in
@@ -520,9 +520,9 @@ enum WindowLayoutGeometry {
                     rhsCenterDistance = abs(rhsFrame.midX - current.midX)
                 }
                 if lhsPosition != rhsPosition {
-                    return switch direction {
-                    case .right, .up: lhsPosition < rhsPosition
-                    case .left, .down: lhsPosition > rhsPosition
+                    switch direction {
+                    case .right, .up: return lhsPosition < rhsPosition
+                    case .left, .down: return lhsPosition > rhsPosition
                     }
                 }
                 if lhsCenterDistance != rhsCenterDistance {

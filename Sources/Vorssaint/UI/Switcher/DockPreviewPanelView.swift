@@ -168,7 +168,7 @@ private struct DockPreviewPanelContent: View {
                 // A panel that already shows every window has nothing to
                 // scroll, and a scroll view that can move steals the drag that
                 // carries a window out of the panel.
-                .scrollDisabled(showsEveryWindow)
+                .scrollDisabledCompat(showsEveryWindow)
             }
         }
         .frame(width: stacksVertically ? DockPreviewSupport.cardWidth
@@ -251,7 +251,7 @@ private struct DockPreviewPanelContent: View {
                 .accessibilityLabel(l10n.s.dockPreviewClosePanel)
             }
         }
-        .focusEffectDisabled()
+        .focusEffectDisabledCompat()
         .padding(.horizontal, DockPreviewSupport.panelPadding)
         .frame(height: DockPreviewSupport.panelHeaderHeight)
     }

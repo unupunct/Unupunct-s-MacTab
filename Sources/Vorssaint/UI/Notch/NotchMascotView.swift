@@ -1216,6 +1216,7 @@ struct NotchMascotView: NSViewRepresentable {
         if let cue { view.play(cue, id: cueID) }
     }
 
+    @available(macOS 13.0, *)
     func sizeThatFits(_ proposal: ProposedViewSize, nsView: NotchMascotHostView, context: Context) -> CGSize? {
         CGSize(width: proposal.width ?? size, height: proposal.height ?? size)
     }
@@ -1266,6 +1267,7 @@ struct NotchMascotTrackView: NSViewRepresentable {
         if rests { view.react(reaction, lift: track.hop(0.22)) }
     }
 
+    @available(macOS 13.0, *)
     func sizeThatFits(_ proposal: ProposedViewSize, nsView: NotchMascotHostView, context: Context) -> CGSize? {
         CGSize(width: track.width, height: track.height)
     }

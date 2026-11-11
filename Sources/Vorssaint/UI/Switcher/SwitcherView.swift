@@ -211,7 +211,7 @@ struct SwitcherView: View {
                     }
                 }
             }
-            .scrollDisabled(switcher.grid.rows <= switcher.grid.visibleRows)
+            .scrollDisabledCompat(switcher.grid.rows <= switcher.grid.visibleRows)
             // Like the wrapped icon rows: a reverse start selects the last card
             // before the grid exists, so reveal it on appear too.
             .onAppear {
@@ -366,7 +366,7 @@ struct SwitcherView: View {
                                 }
                             .frame(height: SwitcherIconRowLayout.previewCardHeight, alignment: .center)
                         }
-                        .scrollDisabled(switcher.iconRowLayout.previewFitsWithoutScrolling(cardCount: appWindows.count))
+                        .scrollDisabledCompat(switcher.iconRowLayout.previewFitsWithoutScrolling(cardCount: appWindows.count))
                         .frame(width: switcher.iconRowLayout.previewContentWidth,
                                height: SwitcherIconRowLayout.previewCardHeight)
                         .onAppear { revealSelection(in: proxy, animated: false) }
@@ -606,7 +606,7 @@ struct SwitcherView: View {
                         .frame(height: SwitcherIconRowLayout.rowHeight)
                 }
             }
-            .scrollDisabled(layout.rows <= layout.visibleRows)
+            .scrollDisabledCompat(layout.rows <= layout.visibleRows)
             // The reverse shortcut opens on the last item, which is selected
             // before this view exists, so no change fires to reveal it.
             .onAppear { revealSelectedIcon(in: proxy, animated: false) }

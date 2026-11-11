@@ -151,7 +151,7 @@ private struct WelcomeStep: View {
                         .foregroundStyle(.white)
                     Text(l10n.s.obStepWelcomeBody)
                         .font(.system(size: 12))
-                        .foregroundStyle(.white.opacity(0.85))
+                        .foregroundStyle(Color.white.opacity(0.85))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                 }
@@ -234,7 +234,7 @@ private struct PurposeStep: View {
                 Text(hub.tabFeatures.uppercased())
                     .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(.secondary)
-                    .tracking(1)
+                    .trackingCompat(1)
                 Spacer()
                 Text(String(format: hub.activeCountFormat,
                             selectedFeatures.count, FeatureRuntime.shared.installableCount))
@@ -361,7 +361,7 @@ private struct PurposeStep: View {
                     .overlay {
                         Image(systemName: feature.symbolName)
                             .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(selected ? AnyShapeStyle(.white) : AnyShapeStyle(.secondary))
+                            .foregroundStyle(selected ? AnyShapeStyle(.white) : AnyShapeStyle(HierarchicalShapeStyle.secondary))
                             .accessibilityHidden(true)
                     }
                 VStack(alignment: .leading, spacing: 2) {
@@ -525,7 +525,7 @@ private struct DoneStep: View {
                         .foregroundStyle(.white)
                     Text(l10n.s.obStepDoneBody)
                         .font(.system(size: 12.5))
-                        .foregroundStyle(.white.opacity(0.85))
+                        .foregroundStyle(Color.white.opacity(0.85))
                 }
             }
             .frame(height: 300)

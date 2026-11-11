@@ -874,7 +874,7 @@ final class AudioRingBuffer: @unchecked Sendable {
             destination[i * 2 + 1] = storage[slot + 1]
         }
         if count < frameCount {
-            (destination + count * 2).update(repeating: 0, count: (frameCount - count) * 2)
+            (destination + count * 2).assign(repeating: 0, count: (frameCount - count) * 2)
         }
         if count > 0 {
             _ = OSAtomicAdd64Barrier(Int64(count), head)

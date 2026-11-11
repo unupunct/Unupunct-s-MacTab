@@ -185,7 +185,7 @@ struct RadialMenuSettings: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .onAppear {
             if selectedProfileID == nil || !profiles.contains(where: { $0.id == selectedProfileID }) {
                 selectedProfileID = profiles.first?.id
@@ -882,7 +882,7 @@ private struct RadialItemEditor: View {
 
                 RadialSymbolPicker(text: text, item: $item)
             }
-            .formStyle(.columns)
+            .formStyleColumnsCompat()
 
             if urlIsInvalid, !item.payload.isEmpty {
                 Text(text.urlInvalid)
@@ -893,7 +893,7 @@ private struct RadialItemEditor: View {
                 Text(shortcutMessage.text)
                     .font(.caption)
                     .foregroundStyle(shortcutMessage.isProblem ? AnyShapeStyle(.orange)
-                                                               : AnyShapeStyle(.secondary))
+                                                               : AnyShapeStyle(HierarchicalShapeStyle.secondary))
                     .fixedSize(horizontal: false, vertical: true)
             }
             if item.kind == .submenu {

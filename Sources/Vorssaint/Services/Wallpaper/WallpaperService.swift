@@ -299,15 +299,15 @@ final class WallpaperService: ObservableObject {
         } catch {
             return false
         }
-        let deadline = ContinuousClock.now + .seconds(60)
-        while ContinuousClock.now < deadline {
+        let deadline = Date().addingTimeInterval(60)
+        while Date() < deadline {
             guard isAvailable, applyToken == token else { return false }
             if (try? url.resourceValues(forKeys: [.ubiquitousItemDownloadingErrorKey])
                 .ubiquitousItemDownloadingError) != nil {
                 return false
             }
             if !Self.needsCloudDownload(url) { return true }
-            try? await Task.sleep(for: .milliseconds(250))
+            try? await Task.sleepCompat(seconds: Double(250) / 1000)
         }
         return !Self.needsCloudDownload(url)
     }
@@ -355,7 +355,7 @@ final class WallpaperService: ObservableObject {
             }
         }
         if needsPause {
-            try? await Task.sleep(for: .milliseconds(400))
+            try? await Task.sleepCompat(seconds: Double(400) / 1000)
             guard isAvailable, applyToken == token else { return false }
         }
         var ok = true

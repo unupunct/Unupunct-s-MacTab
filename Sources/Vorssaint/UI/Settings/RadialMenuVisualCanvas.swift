@@ -50,7 +50,7 @@ struct RadialMenuVisualCanvas: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(Color.white.opacity(colorScheme == .light ? 0.12 : 0.14), lineWidth: 0.8)
         )
-        .shadow(color: .black.opacity(colorScheme == .light ? 0.08 : 0.28), radius: 10, y: 4)
+        .shadow(color: Color.black.opacity(colorScheme == .light ? 0.08 : 0.28), radius: 10, y: 4)
     }
 
     // MARK: - Header Bar
@@ -74,7 +74,7 @@ struct RadialMenuVisualCanvas: View {
             } else {
                 Text(text.pageTitle)
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(Color.white.opacity(0.6))
                     .textCase(.uppercase)
             }
 
@@ -86,7 +86,7 @@ struct RadialMenuVisualCanvas: View {
                 }
                 .buttonStyle(.borderless)
                 .controlSize(.small)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(Color.white.opacity(0.7))
                 .confirmationDialog(
                     text.resetActionsConfirm,
                     isPresented: $showingResetConfirm,
@@ -149,7 +149,7 @@ struct RadialMenuVisualCanvas: View {
                     .strokeBorder(Color.white.opacity(0.12), lineWidth: 0.8)
             )
             .frame(width: wheelDiameter, height: wheelDiameter)
-            .shadow(color: .black.opacity(0.4), radius: 14, y: 4)
+            .shadow(color: Color.black.opacity(0.4), radius: 14, y: 4)
     }
 
     // MARK: - Dividers
@@ -273,7 +273,7 @@ struct RadialMenuVisualCanvas: View {
                     Circle()
                         .strokeBorder(Color.white.opacity(0.16), lineWidth: 0.8)
                 )
-                .shadow(color: .black.opacity(0.3), radius: 6, y: 2)
+                .shadow(color: Color.black.opacity(0.3), radius: 6, y: 2)
 
             hubContent
         }
@@ -312,7 +312,7 @@ struct RadialMenuVisualCanvas: View {
                     .multilineTextAlignment(.center)
                 Text(kindLabel(for: item))
                     .font(.system(size: 8, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(Color.white.opacity(0.6))
             }
             .padding(.horizontal, 6)
         } else if openSubmenu != nil {
@@ -322,7 +322,7 @@ struct RadialMenuVisualCanvas: View {
                     .foregroundStyle(profileColor)
                 Text(text.backButton)
                     .font(.system(size: 9, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Color.white.opacity(0.7))
             }
         } else if items.isEmpty {
             VStack(spacing: 3) {
@@ -331,7 +331,7 @@ struct RadialMenuVisualCanvas: View {
                     .foregroundStyle(profileColor)
                 Text(text.addButton)
                     .font(.system(size: 8, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Color.white.opacity(0.7))
             }
         } else {
             BrandMark(width: 28, tint: Color.white.opacity(0.85))
@@ -395,7 +395,7 @@ private struct RadialCanvasChip: View {
                             lineWidth: isHighlighted ? 1.4 : 0.8
                         )
                 )
-                .shadow(color: .black.opacity(0.35), radius: 4, y: 2)
+                .shadow(color: Color.black.opacity(0.35), radius: 4, y: 2)
 
             chipIcon
         }
@@ -407,7 +407,7 @@ private struct RadialCanvasChip: View {
         if item.mediaKey == .nowPlaying {
             Image(systemName: "music.note")
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(isHighlighted ? AnyShapeStyle(.white) : AnyShapeStyle(.white.opacity(0.9)))
+                .foregroundStyle(isHighlighted ? AnyShapeStyle(.white) : AnyShapeStyle(Color.white.opacity(0.9)))
         } else if item.symbolName.isEmpty, let customImage = RadialMenuIconStore.customIcon(for: item) {
             Image(nsImage: customImage)
                 .resizable()
@@ -421,7 +421,7 @@ private struct RadialCanvasChip: View {
         } else {
             Image(systemName: item.effectiveSymbolName)
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(isHighlighted ? AnyShapeStyle(.white) : AnyShapeStyle(.white.opacity(0.9)))
+                .foregroundStyle(isHighlighted ? AnyShapeStyle(.white) : AnyShapeStyle(Color.white.opacity(0.9)))
         }
     }
 }

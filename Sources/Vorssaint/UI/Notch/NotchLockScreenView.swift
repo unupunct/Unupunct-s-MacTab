@@ -57,8 +57,8 @@ struct NotchLockScreenIsland: View {
                     Image(systemName: model.padlockOpen ? "lock.open.fill" : "lock.fill")
                         .font(.system(size: min(13, size.height * 0.42), weight: .semibold))
                         .foregroundStyle(.white)
-                        .contentTransition(.symbolEffect(.replace))
-                        .symbolEffect(.bounce, options: .speed(1.4), value: reduceMotion ? false : model.padlockOpen)
+                        .contentTransitionSymbolReplaceCompat()
+                        .symbolBounceCompat(speed: 1.4, value: reduceMotion ? false : model.padlockOpen)
                         .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: model.padlockOpen)
                         .frame(width: padlockSide, height: padlockSide)
                         .padding(.leading, max(0, min(geometry.compactMusicArtworkInset, wing - padlockSide)))
@@ -100,12 +100,12 @@ private struct NotchLockScreenGlass: ViewModifier {
                 } else {
                     ZStack {
                         glass(shape)
-                        shape.fill(.black.opacity(contrast == .increased ? 0.5 : 0.24))
+                        shape.fill(Color.black.opacity(contrast == .increased ? 0.5 : 0.24))
                     }
                 }
             }
             .overlay {
-                shape.strokeBorder(.white.opacity(contrast == .increased ? 0.45 : 0), lineWidth: 0.75)
+                shape.strokeBorder(Color.white.opacity(contrast == .increased ? 0.45 : 0), lineWidth: 0.75)
                     .allowsHitTesting(false)
             }
     }
@@ -200,7 +200,7 @@ struct NotchLockScreenPlayer: View {
             if let artist = playback.track.artist ?? playback.track.album {
                 Text(artist)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.72))
+                    .foregroundStyle(Color.white.opacity(0.72))
                     .lineLimit(1)
                     .padding(.top, 2)
             }
@@ -221,7 +221,7 @@ struct NotchLockScreenPlayer: View {
                     Text(playback.track.title ?? text.mediaNowPlaying)
                         .font(.system(size: 16, weight: .bold))
                     if let artist = playback.track.artist ?? playback.track.album {
-                        Text(artist).font(.system(size: 13, weight: .medium)).foregroundStyle(.white.opacity(0.72))
+                        Text(artist).font(.system(size: 13, weight: .medium)).foregroundStyle(Color.white.opacity(0.72))
                     }
                 }
                 .lineLimit(1)
@@ -269,7 +269,7 @@ struct NotchLockScreenPlayer: View {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .semibold))
                 .foregroundStyle(.white)
-                .contentTransition(.symbolEffect(.replace))
+                .contentTransitionSymbolReplaceCompat()
                 .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: symbol)
                 .frame(width: 48, height: 44)
                 .contentShape(RoundedRectangle(cornerRadius: 14))
@@ -344,7 +344,7 @@ struct NotchLockScreenActivities: View {
         }
         .font(.system(size: 15, weight: .semibold))
         .monospacedDigit()
-        .foregroundStyle(.white.opacity(0.92))
+        .foregroundStyle(Color.white.opacity(0.92))
         .lineLimit(1)
         .fixedSize()
         .legibleOnWallpaper()
@@ -376,7 +376,7 @@ struct NotchLockScreenActivities: View {
                         .frame(maxWidth: 240, alignment: .leading)
                         .fixedSize(horizontal: false, vertical: true)
                     Text(NotchCalendarSupport.countdownText(until: countdown.target, now: date))
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(Color.white.opacity(0.7))
                 }
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(countdown.ongoing ? text.ongoing : text.next)
@@ -418,6 +418,6 @@ private extension View {
     /// White type over any wallpaper, the way the lock screen's own clock
     /// stays readable over a bright photo.
     func legibleOnWallpaper() -> some View {
-        shadow(color: .black.opacity(0.3), radius: 8, y: 1)
+        shadow(color: Color.black.opacity(0.3), radius: 8, y: 1)
     }
 }

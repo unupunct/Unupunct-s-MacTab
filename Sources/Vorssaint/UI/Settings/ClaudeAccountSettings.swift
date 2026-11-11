@@ -99,7 +99,7 @@ struct ClaudeAccountSettings: View {
         let profile = ClaudeAccountProfile(directory: folder.path)
         // The ordinary ~/.claude folder uses ~/.claude.json. An explicit
         // profile in that folder instead has its own nested .claude.json.
-        if folder.standardizedFileURL == home.appending(path: ".claude", directoryHint: .isDirectory).standardizedFileURL,
+        if folder.standardizedFileURL == home.appendingCompat(path: ".claude", directoryHint: .isDirectory).standardizedFileURL,
            !FileManager.default.fileExists(atPath: profile.profileURL(home: home).path) {
             selected = ""
         } else if profile.isAvailable(home: home) {

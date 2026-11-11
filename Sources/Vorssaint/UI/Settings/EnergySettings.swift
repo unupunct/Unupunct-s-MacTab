@@ -217,6 +217,7 @@ struct EnergySettings: View {
     /// Everything else Keep Awake can do, one row each.
     private var keepAwakeOptionsCard: some View {
         SettingsCard(title: l10n.s.keepAwakeOptions) {
+            Group {
             SettingsRow(symbol: "play.circle", title: l10n.s.keepAwakeAutoStart,
                         caption: l10n.s.keepAwakeAutoStartCaption) {
                 Toggle(l10n.s.keepAwakeAutoStart, isOn: $keepAwakeAutoStart).labelsHidden()
@@ -251,6 +252,8 @@ struct EnergySettings: View {
             }
             Divider()
             KeepAwakeIconPicker(iconValue: $keepAwakeActiveIcon, tintValue: $keepAwakeIconTint)
+            }
+            Group {
             if PowerSampler.hasInternalBattery {
                 Divider()
                 SettingsRow(symbol: "battery.25percent", title: l10n.s.batteryDisableBelow,
@@ -285,6 +288,7 @@ struct EnergySettings: View {
                         .labelsHidden()
                 }
                 .padding(.leading, settingsRowTextInset)
+            }
             }
         }
     }

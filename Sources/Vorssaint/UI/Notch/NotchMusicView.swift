@@ -295,7 +295,7 @@ struct NotchMusicView: View {
                 // Quiet beside the song, as the timeline's times are. The
                 // bars rest flat while paused, so the title keeps its width.
                 NotchLiveEqualizerBars(isPlaying: playback.isPlaying, bars: 4, barWidth: 2.5, height: 15,
-                                       tint: .white.opacity(0.5))
+                                       tint: Color.white.opacity(0.5))
                 if band.besideCamera { sectionsButton }
             } corner: {
                 extraButtons
@@ -403,10 +403,10 @@ private struct NotchMusicSideButton: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(active ? tint : .white.opacity(isEnabled ? 0.55 : 0.3))
-                .contentTransition(.symbolEffect(.replace))
+                .foregroundStyle(active ? tint : Color.white.opacity(isEnabled ? 0.55 : 0.3))
+                .contentTransitionSymbolReplaceCompat()
                 .frame(width: plate, height: plate)
-                .background(.white.opacity(active ? 0.12 : 0), in: Circle())
+                .background(Color.white.opacity(active ? 0.12 : 0), in: Circle())
                 .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: active)
                 .frame(width: height, height: height)
                 .contentShape(Circle())
@@ -462,7 +462,7 @@ private struct NotchMusicOutputButton: View {
         NotchMenuButton(title: l10n.s.mixerSystemOutputTitle, items: items, cornerRadius: 22) {
             Image(systemName: symbol)
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.55))
+                .foregroundStyle(Color.white.opacity(0.55))
                 .frame(width: 44, height: 44)
                 .contentShape(Circle())
         }
@@ -582,7 +582,7 @@ private struct NotchMusicTransport: View {
             Image(systemName: showsPlaying ? "pause.fill" : "play.fill")
                 .font(.system(size: compact ? 22 : slot == nil ? 26 : 28, weight: .semibold))
                 .foregroundStyle(.white)
-                .contentTransition(.symbolEffect(.replace))
+                .contentTransitionSymbolReplaceCompat()
                 .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: showsPlaying)
                 .frame(width: height, height: height)
                 .contentShape(Circle())
@@ -680,7 +680,7 @@ struct NotchMusicTimeline: View {
                 guard pendingSeek != nil else { return }
                 // Keep the released thumb still while the player responds,
                 // but always return to observed playback if it ignores seeking.
-                try? await Task.sleep(for: .seconds(1))
+                try? await Task.sleepCompat(seconds: 1)
                 guard !Task.isCancelled else { return }
                 clearScrub()
             }

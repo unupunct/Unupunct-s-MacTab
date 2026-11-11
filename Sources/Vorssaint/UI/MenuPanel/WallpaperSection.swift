@@ -323,7 +323,7 @@ private struct WallpaperThumbButton: View {
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(.white, .red)
                         .font(.system(size: 16))
-                        .shadow(color: .black.opacity(0.35), radius: 1, y: 1)
+                        .shadow(color: Color.black.opacity(0.35), radius: 1, y: 1)
                 }
                 .buttonStyle(.plain)
                 .offset(x: 4, y: -4)

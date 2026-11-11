@@ -119,7 +119,7 @@ struct RadialMenuView: View {
             .overlay(Circle().strokeBorder(PanelSurface.border(for: colorScheme), lineWidth: 0.8))
             .overlay(sliceGuides)
             .frame(width: RadialMenuLayout.wheelDiameter, height: RadialMenuLayout.wheelDiameter)
-            .shadow(color: .black.opacity(colorScheme == .light ? 0.22 : 0.55), radius: 24, y: 8)
+            .shadow(color: Color.black.opacity(colorScheme == .light ? 0.22 : 0.55), radius: 24, y: 8)
     }
 
     @ViewBuilder
@@ -341,7 +341,7 @@ private struct RadialChipView: View {
             } else {
                 Image(systemName: "music.note")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(highlighted ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+                    .foregroundStyle(highlighted ? AnyShapeStyle(.white) : AnyShapeStyle(HierarchicalShapeStyle.primary))
             }
         } else if item.symbolName.isEmpty, let customImage = RadialMenuIconStore.customIcon(for: item) {
             Image(nsImage: customImage)
@@ -356,7 +356,7 @@ private struct RadialChipView: View {
         } else {
             Image(systemName: item.effectiveSymbolName)
                 .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(highlighted ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+                .foregroundStyle(highlighted ? AnyShapeStyle(.white) : AnyShapeStyle(HierarchicalShapeStyle.primary))
         }
     }
 }

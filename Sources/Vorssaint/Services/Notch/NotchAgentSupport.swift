@@ -436,7 +436,7 @@ enum AgentFormat {
     /// day wherever the Mac is.
     static func day(_ date: Date, locale: Locale) -> String {
         var style = Date.FormatStyle(date: .abbreviated, time: .omitted).locale(locale)
-        style.timeZone = .gmt
+        style.timeZone = .gmtCompat
         return date.formatted(style)
     }
 }

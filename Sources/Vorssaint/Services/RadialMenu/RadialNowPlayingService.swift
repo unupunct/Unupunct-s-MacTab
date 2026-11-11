@@ -303,7 +303,7 @@ enum RadialNowPlayingApplication {
             let showsNoWindow = !application.isHidden && !hasWindowOnScreen(pid: application.processIdentifier)
             if application.isHidden { application.unhide() }
             ActivationHandoff.yield(to: application)
-            if !application.activate(from: NSRunningApplication.current, options: [.activateAllWindows]) {
+            if !application.activateCompat(from: NSRunningApplication.current, options: [.activateAllWindows]) {
                 application.activate(options: [.activateAllWindows])
             }
             // Like a Dock click, a player that keeps playing with its window

@@ -60,6 +60,7 @@ enum RecorderAudioProbe {
     }
 }
 
+#if compiler(>=5.9)
 /// The sound of the Mac for a recording, read from the audio system as one
 /// mix of every process but this one. A recording of one window hears only
 /// the app that owns it, so the sound follows the picture. An app that has
@@ -193,7 +194,7 @@ final class RecorderSystemAudioTap: @unchecked Sendable {
         } else {
             description = CATapDescription(stereoGlobalTapButExcludeProcesses: [ownProcess])
         }
-        description.name = "Vorssaint Recorder"
+        description.name = "Unupunct MacTab Recorder"
         description.isPrivate = true
         var tapID = AudioObjectID(0)
         guard AudioHardwareCreateProcessTap(description, &tapID) == noErr, tapID != 0 else {
@@ -281,7 +282,7 @@ final class RecorderSystemAudioTap: @unchecked Sendable {
         guard aggregateID == 0, let clock,
               let hostUID = Self.hostDeviceUID() else { return }
         let aggregate: [String: Any] = [
-            kAudioAggregateDeviceNameKey: "Vorssaint Recorder",
+            kAudioAggregateDeviceNameKey: "Unupunct MacTab Recorder",
             kAudioAggregateDeviceUIDKey: UUID().uuidString,
             kAudioAggregateDeviceIsPrivateKey: true,
             kAudioAggregateDeviceMainSubDeviceKey: hostUID,
@@ -710,3 +711,19 @@ final class RecorderSystemAudioTap: @unchecked Sendable {
         return uid as String
     }
 }
+#else
+/// Process taps need macOS 14.2. On older systems there is no tap: `make`
+/// returns nil and the recorder falls back to the capture stream's audio.
+final class RecorderSystemAudioTap: @unchecked Sendable {
+    var onSample: ((CMSampleBuffer) -> Void)?
+    var onReaderLost: (() -> Void)?
+    var heardSound: Bool { false }
+    var hearsOneApp: Bool { false }
+    var pipelineStart: UInt64 { 0 }
+    var ranPipeline: Bool { false }
+    static func make(hearing pid: pid_t?) async -> RecorderSystemAudioTap? { nil }
+    @discardableResult
+    func start(synchronizingTo clock: CMClock) async -> Bool { false }
+    func stop() async {}
+}
+#endif

@@ -18,7 +18,7 @@ enum LaunchAtLogin {
 
     /// What the system holds for this app right now.
     static var registration: LaunchAtLoginSupport.Registration {
-        switch SMAppService.mainApp.status {
+        switch AppServiceCompat.mainApp.status {
         case .enabled: return .enabled
         case .requiresApproval: return .needsApproval
         default: return .off
@@ -74,9 +74,9 @@ enum LaunchAtLogin {
         var failure: Error?
         do {
             if enabled {
-                try SMAppService.mainApp.register()
+                try AppServiceCompat.mainApp.register()
             } else {
-                try SMAppService.mainApp.unregister()
+                try AppServiceCompat.mainApp.unregister()
             }
         } catch {
             failure = error
@@ -116,7 +116,7 @@ enum LaunchAtLogin {
         case .adoptEnabled:
             defaults.set(true, forKey: DefaultsKey.launchAtLoginWanted)
         case .register:
-            try? SMAppService.mainApp.register()
+            try? AppServiceCompat.mainApp.register()
         }
     }
 

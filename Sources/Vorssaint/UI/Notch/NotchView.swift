@@ -24,7 +24,7 @@ struct NotchView: View {
             // own departure. A companion that stays to react is drawn over the
             // new strip where it stood, so the swap under it is left
             // unanimated: two of it crossfading in one place would dim it.
-            .transaction(value: service.compactActivity) { transaction in
+            .transactionCompat(value: service.compactActivity) { transaction in
                 guard !reduceMotion, !service.mascotLingers else { return }
                 let arrives = service.compactActivity != nil && service.mascotJustRested
                 let leaves = service.compactActivity == nil && service.mascotAtRest
@@ -121,7 +121,7 @@ struct NotchView: View {
                 .frame(maxWidth: .infinity, minHeight: 52)
                 .overlay {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(.white.opacity(0.24),
+                        .strokeBorder(Color.white.opacity(0.24),
                                       style: StrokeStyle(lineWidth: 1, dash: [5, 4]))
                         .allowsHitTesting(false)
                 }
@@ -180,7 +180,7 @@ struct NotchView: View {
                         activityStrip(activity, size: strip)
                             .frame(width: strip.width, height: layout.headerHeight, alignment: .top)
                             .id(NotchPickedStrip(activity: activity, companion: service.compactCompanion))
-                            .transition(.blurReplace)
+                            .transition(.blurReplaceCompat)
                     }
                     .frame(height: layout.headerHeight, alignment: .top)
                     NotchActivityPicker(activities: service.compactActivities, selected: activity,
@@ -313,7 +313,7 @@ struct NotchView: View {
             .contextMenu { islandMenu }
             // Opening the island makes its panel key, so Keyboard navigation would ring
             // the first control. Show the ring once keyboard input begins.
-            .focusEffectDisabled(!service.showsKeyboardFocus)
+            .focusEffectDisabledCompat(!service.showsKeyboardFocus)
             .onAppear { UpdateService.shared.checkIfStale() }
     }
 
@@ -334,7 +334,7 @@ struct NotchView: View {
                     .padding(.bottom, 4)
                     .contentShape(Rectangle())
             }
-            .scrollIndicators(.automatic)
+            .scrollIndicatorsCompat(.automatic)
             .notchScrollEdgeFade()
         } else {
             content
@@ -537,7 +537,7 @@ struct NotchView: View {
             HStack(spacing: 9) {
                 Image(systemName: "square.grid.2x2")
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(Color.white.opacity(0.7))
                 Text(navigationTitle)
                     .font(.system(size: 16, weight: .semibold))
                     .lineLimit(1)
@@ -637,7 +637,7 @@ enum NotchRestingBattery {
                                            early: early, earlyThreshold: earlyThreshold) {
         case .low: return .red
         case .early: return .orange
-        case .none: return .white.opacity(0.9)
+        case .none: return Color.white.opacity(0.9)
         }
     }
 
@@ -760,7 +760,7 @@ struct NotchRestingStrip: View {
                     .allowsHitTesting(false)
             }
         }
-        .foregroundStyle(.white.opacity(0.9))
+        .foregroundStyle(Color.white.opacity(0.9))
         // The strip stays in its band at the top: hover grows the island
         // around it, and centring it in the taller shape dropped it half
         // the growth in one frame.
@@ -886,7 +886,7 @@ struct NotchActivityPicker: View {
                     Label(combination?.title(language) ?? FeatureStrings.notch(language).combineActivities,
                           systemImage: combination == nil ? "plus" : "checkmark")
                         .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(.white.opacity(combination == nil ? 0.75 : 1))
+                        .foregroundStyle(Color.white.opacity(combination == nil ? 0.75 : 1))
                         .frame(height: NotchActivityPickerLayout.combinationHeight)
                 }
                 .menuStyle(.borderlessButton)

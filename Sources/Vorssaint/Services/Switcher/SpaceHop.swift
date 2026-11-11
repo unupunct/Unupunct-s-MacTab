@@ -116,7 +116,7 @@ final class SpaceHop {
         let options: NSApplication.ActivationOptions =
             appIsAlreadyHere || directRaiseSucceeded ? [] : [.activateAllWindows]
         ActivationHandoff.yield(to: app)
-        if !app.activate(from: NSRunningApplication.current, options: options) {
+        if !app.activateCompat(from: NSRunningApplication.current, options: options) {
             app.activate(options: options)
         }
         switch firstStage {

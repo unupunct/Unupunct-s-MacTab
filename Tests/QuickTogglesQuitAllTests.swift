@@ -15,7 +15,7 @@ enum QuickTogglesQuitAllTests {
                 "  com.apple.Safari  ", "com.apple.Safari", finder, "",
                 "com.vorssaint.utils", "com.example.Keep", "com.vorssaint.utils.dev",
             ]) == [finder, phone, "com.apple.Safari", "com.example.Keep"],
-            "quit-all exceptions lead with Finder and Phone, trim, dedupe and drop Vorssaint ids")
+            "quit-all exceptions lead with Finder and Phone, trim, dedupe and drop Unupunct MacTab ids")
 
         let exceptions = Set(QuickTogglesSupport.sanitizedQuitAllExceptions(["com.apple.Safari"]))
         func quits(_ id: String?, policy: Int? = nil, terminated: Bool = false) -> Bool {
@@ -26,7 +26,7 @@ enum QuickTogglesQuitAllTests {
             quits("com.apple.TextEdit") && !quits("com.apple.Safari") && !quits(finder) && !quits(phone),
             "a regular app outside the list is quit; user exceptions, Finder and Phone are skipped")
         suite.expect(vorssaint.allSatisfy { !exceptions.contains($0) && !quits($0) },
-                     "Vorssaint never quits itself, even though it is not in the exception list")
+                     "Unupunct MacTab never quits itself, even though it is not in the exception list")
         suite.expect(
             !quits("com.apple.TextEdit", policy: 1) && !quits("com.apple.TextEdit", policy: 2)
                 && !quits("com.apple.TextEdit", terminated: true) && !quits(nil) && !quits(""),
@@ -41,7 +41,7 @@ enum QuickTogglesQuitAllTests {
                 && vorssaint.allSatisfy { !lists($0) }
                 && !lists("com.apple.TextEdit", policy: 1)
                 && !lists("com.apple.TextEdit", terminated: true) && !lists(nil),
-            "the window lists regular apps and kept exceptions, never Finder, Vorssaint or hidden apps")
+            "the window lists regular apps and kept exceptions, never Finder, Unupunct MacTab or hidden apps")
 
         func app(_ pid: Int32, _ id: String, policy: Int? = nil) -> QuitAppsCandidate {
             QuitAppsCandidate(pid: pid, bundleIdentifier: id, activationPolicyRawValue: policy ?? regular,

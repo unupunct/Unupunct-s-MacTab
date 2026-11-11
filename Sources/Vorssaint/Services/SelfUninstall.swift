@@ -203,7 +203,7 @@ enum SelfUninstall {
         // intent goes with it, or the startup repair would quietly register
         // the item again after the user asked for a clean detach.
         UserDefaults.standard.set(false, forKey: DefaultsKey.launchAtLoginWanted)
-        try? SMAppService.mainApp.unregister()
+        try? AppServiceCompat.mainApp.unregister()
     }
 
     /// Puts normal sleep back before the app goes.

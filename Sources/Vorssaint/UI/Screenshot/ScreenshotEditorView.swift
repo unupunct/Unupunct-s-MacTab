@@ -57,7 +57,7 @@ struct ScreenshotEditorView: View {
                     ScrollView(.vertical) {
                         toolRail
                     }
-                    .scrollIndicators(.never)
+                    .scrollIndicatorsCompat(.never)
                     .fixedSize(horizontal: true, vertical: false)
                     .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { railColumnHeight = $0 }
                     .padding(.leading, 10)
@@ -141,7 +141,7 @@ struct ScreenshotEditorView: View {
                     .frame(width: canvasSize.width, height: canvasSize.height)
                     .padding(canvasInsets(available: available, canvas: canvasSize))
             }
-            .scrollIndicators(.never)
+            .scrollIndicatorsCompat(.never)
             .frame(width: available.width, height: available.height, alignment: .topLeading)
             // Trackpad pinch, anchored at the zoom the gesture started from.
             .simultaneousGesture(
@@ -213,8 +213,8 @@ struct ScreenshotEditorView: View {
             RoundedRectangle(cornerRadius: outerRadius, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.14), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.30), radius: 24, y: 10)
-        .shadow(color: .black.opacity(0.18), radius: 3, y: 1)
+        .shadow(color: Color.black.opacity(0.30), radius: 24, y: 10)
+        .shadow(color: Color.black.opacity(0.18), radius: 3, y: 1)
         .scaleEffect(appeared ? 1 : 0.965)
         .opacity(appeared ? 1 : 0)
         .onAppear {
@@ -250,7 +250,7 @@ struct ScreenshotEditorView: View {
             }
         }
         .gesture(canvasGesture(zoom: zoom, available: available))
-        .onContinuousHover { phase in
+        .onContinuousHoverCompat { phase in
             switch phase {
             case .active(let location):
                 updateHoverCursor(at: imagePoint(from: location, zoom: zoom))
@@ -528,7 +528,7 @@ struct ScreenshotEditorView: View {
                     RoundedRectangle(cornerRadius: 9, style: .continuous)
                         .strokeBorder(Color.white.opacity(0.9), lineWidth: 1.5)
                 )
-                .shadow(color: .black.opacity(0.45), radius: 8, y: 3)
+                .shadow(color: Color.black.opacity(0.45), radius: 8, y: 3)
                 .position(cropLoupePosition(for: point, zoom: zoom, canvasSize: canvasSize))
                 .allowsHitTesting(false)
                 .transition(.opacity.combined(with: .scale(scale: 0.92)))
@@ -649,7 +649,7 @@ struct ScreenshotEditorView: View {
                 .frame(minWidth: 130)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 3)
-                .background(.black.opacity(0.35),
+                .background(Color.black.opacity(0.35),
                             in: RoundedRectangle(cornerRadius: 6, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -727,7 +727,7 @@ struct ScreenshotEditorView: View {
             RoundedRectangle(cornerRadius: 15, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.18), radius: 16, y: 5)
+        .shadow(color: Color.black.opacity(0.18), radius: 16, y: 5)
     }
 
     private func selectTool(_ tool: ScreenshotSupport.Tool) {
@@ -747,7 +747,7 @@ struct ScreenshotEditorView: View {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: tool.screenshotSymbolName)
                     .font(.system(size: 13.5, weight: .medium))
-                    .symbolEffect(.bounce, value: isActive)
+                    .symbolBounceCompat(value: isActive)
                     .frame(width: 33, height: height)
                 if let shortcutLabel {
                     Text(shortcutLabel)
@@ -803,7 +803,7 @@ struct ScreenshotEditorView: View {
         }
         // A borderless menu draws its label as a small pop-up button; a
         // plain one keeps the whole row as the target, like the other tools.
-        .menuStyle(.button)
+        .menuStyleButtonCompat()
         .buttonStyle(.plain)
         .menuIndicator(.hidden)
         .screenshotSafeHelp(strings.moreTools)
@@ -831,6 +831,8 @@ struct ScreenshotEditorView: View {
 
     private var actionCluster: some View {
         HStack(spacing: 4) {
+            Group {
+            Group {
             Button {
                 RecentCaptureService.shared.showHistoryWindow()
             } label: {
@@ -880,8 +882,12 @@ struct ScreenshotEditorView: View {
                     .transition(.scale.combined(with: .opacity))
             }
 
+            }
+            Group {
             Divider().frame(height: 16).padding(.horizontal, 3)
 
+            }
+            Group {
             Button {
                 commitEditingTextIfNeeded()
                 controller.pin()
@@ -890,7 +896,7 @@ struct ScreenshotEditorView: View {
                     .frame(width: 24, height: 24)
             }
             .buttonStyle(.borderless)
-            .screenshotSafeHelp(strings.pinButton + "  (⌘P)")
+            .screenshotSafeHelp("\(strings.pinButton)  (⌘P)")
             .accessibilityLabel(strings.pinButton)
 
             Divider().frame(height: 16).padding(.horizontal, 3)
@@ -942,12 +948,16 @@ struct ScreenshotEditorView: View {
             .fixedSize()
             .screenshotSafeHelp("⌘S")
 
+            }
+            Group {
             Button(strings.copyButton) {
                 commitEditingTextIfNeeded()
                 controller.copyToClipboard()
             }
             .buttonStyle(.borderedProminent)
             .screenshotSafeHelp("⏎")
+            }
+            }
         }
         .padding(.horizontal, 9)
         .padding(.vertical, 6)
@@ -956,7 +966,7 @@ struct ScreenshotEditorView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.16), radius: 14, y: 4)
+        .shadow(color: Color.black.opacity(0.16), radius: 14, y: 4)
     }
 
     private var shareMenu: some View {
@@ -1148,7 +1158,7 @@ struct ScreenshotEditorView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(.regularMaterial, in: Capsule(style: .continuous))
-        .shadow(color: .black.opacity(0.16), radius: 12, y: 3)
+        .shadow(color: Color.black.opacity(0.16), radius: 12, y: 3)
     }
 
     private func updateExpansionFill() {
@@ -1164,6 +1174,7 @@ struct ScreenshotEditorView: View {
 
     private var styleBar: some View {
         HStack(spacing: 10) {
+            Group {
             if showsArrowStyleControls {
                 arrowStyleMenu
                 Divider().frame(height: 16)
@@ -1211,9 +1222,12 @@ struct ScreenshotEditorView: View {
             }
             annotationShadowButton
             Divider().frame(height: 16)
+            }
+            Group {
             backdropButton
             Divider().frame(height: 16)
             watermarkButton
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -1222,7 +1236,7 @@ struct ScreenshotEditorView: View {
             Capsule(style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.16), radius: 12, y: 3)
+        .shadow(color: Color.black.opacity(0.16), radius: 12, y: 3)
     }
 
     /// The same kind of menu as the sticker picker: an inline picker gives
@@ -1304,7 +1318,7 @@ struct ScreenshotEditorView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(.regularMaterial, in: Capsule(style: .continuous))
-        .shadow(color: .black.opacity(0.16), radius: 12, y: 3)
+        .shadow(color: Color.black.opacity(0.16), radius: 12, y: 3)
     }
 
     private func colorDot(_ colorID: ScreenshotSupport.ColorID) -> some View {
@@ -1337,10 +1351,11 @@ struct ScreenshotEditorView: View {
     /// Line-weight glyphs with three increasing stroke widths.
     private func strokeGlyph(_ stroke: ScreenshotSupport.StrokeID) -> some View {
         let selected = model.stroke == stroke
-        let height: CGFloat = switch stroke {
-        case .small: 1.8
-        case .medium: 3.4
-        case .large: 5.4
+        let height: CGFloat
+        switch stroke {
+        case .small: height = 1.8
+        case .medium: height = 3.4
+        case .large: height = 5.4
         }
         return Button {
             model.stroke = stroke
@@ -1526,7 +1541,7 @@ struct ScreenshotEditorView: View {
         }
         .buttonStyle(.borderless)
         .disabled(next == nil)
-        .accessibilityLabel(strings.fontSizeLabel + (up ? " +" : " −"))
+        .accessibilityLabel(up ? "\(strings.fontSizeLabel) +" : "\(strings.fontSizeLabel) −")
     }
 
     private var annotationShadowButton: some View {
@@ -1572,7 +1587,7 @@ struct ScreenshotEditorView: View {
                         .frame(width: 21, height: 14)
                         .overlay(
                             RoundedRectangle(cornerRadius: 4.5, style: .continuous)
-                                .strokeBorder(.white.opacity(0.7), lineWidth: 1)
+                                .strokeBorder(Color.white.opacity(0.7), lineWidth: 1)
                         )
                 }
             }
@@ -1652,7 +1667,7 @@ struct ScreenshotEditorView: View {
         .padding(.horizontal, 9)
         .padding(.vertical, 6)
         .background(.regularMaterial, in: Capsule(style: .continuous))
-        .shadow(color: .black.opacity(0.12), radius: 8, y: 2)
+        .shadow(color: Color.black.opacity(0.12), radius: 8, y: 2)
     }
 
     private var zoomChip: some View {
@@ -1678,7 +1693,7 @@ struct ScreenshotEditorView: View {
         }
         .padding(4)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
-        .shadow(color: .black.opacity(0.12), radius: 8, y: 2)
+        .shadow(color: Color.black.opacity(0.12), radius: 8, y: 2)
         .screenshotSafeHelp("⌃ scroll · ⌘+ ⌘-")
     }
 

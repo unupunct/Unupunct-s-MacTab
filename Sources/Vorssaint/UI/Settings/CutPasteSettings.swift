@@ -145,7 +145,7 @@ struct CutPasteSettings: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .onChange(of: l10n.language) { _, _ in renameError = nil }
     }
 

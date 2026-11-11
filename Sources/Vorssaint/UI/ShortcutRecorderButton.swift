@@ -55,6 +55,7 @@ struct ShortcutRecorderButton: NSViewRepresentable {
     /// intrinsic size otherwise wins over the frame, so the field grew with
     /// its own text and slid over the column beside it (issue #308). The
     /// height is the bezel's own, so the control is never drawn short.
+    @available(macOS 13.0, *)
     func sizeThatFits(_ proposal: ProposedViewSize,
                       nsView: RecorderButton,
                       context: Context) -> CGSize? {

@@ -58,7 +58,10 @@ enum FeedbackError: Error {
 final class FeedbackService {
     static let shared = FeedbackService()
 
-    private let endpoint = URL(string: "https://screenshots.vorssaint.com/v1/feedback")!
+    /// Upstream's feedback inbox. The unofficial port never sends to it (reserved address that cannot resolve).
+    private let endpoint = AppInfo.isUnofficialPort
+        ? URL(string: "https://feedback.invalid/v1/feedback")!
+        : URL(string: "https://screenshots.vorssaint.com/v1/feedback")!
     private let session: URLSession
     private let encoder = JSONEncoder()
 

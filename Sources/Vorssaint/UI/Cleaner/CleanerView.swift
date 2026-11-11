@@ -150,8 +150,7 @@ struct CleanerView: View {
             Image(systemName: "sparkles")
                 .font(.system(size: size, weight: .light))
                 .foregroundStyle(.secondary)
-                .symbolEffect(.variableColor.iterative.reversing,
-                              options: .repeating, isActive: animating)
+                .symbolVariableColorCompat(reversing: true, isActive: animating)
         }
     }
 
@@ -248,6 +247,7 @@ struct CleanerView: View {
 
     private var idleState: some View {
         VStack(spacing: compact ? 12 : 18) {
+            Group {
             if !compact { Spacer() }
             SparkleGlyph(size: compact ? 34 : 46)
             Text(l10n.s.cleanerIntroTitle)
@@ -267,11 +267,14 @@ struct CleanerView: View {
             // The Settings page has its own full tool for these downloads;
             // the panel gets this one-line home so the feature is findable
             // without opening Settings.
+            }
+            Group {
             if compact, whatsAppEnabled { whatsAppCard }
             if !permissions.fullDiskAccess {
                 FullDiskAccessNote(compact: compact).frame(maxWidth: 380)
             }
             if !compact { Spacer() }
+            }
         }
         .padding(compact ? 14 : 28)
         .frame(maxWidth: .infinity)

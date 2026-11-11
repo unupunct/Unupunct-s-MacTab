@@ -286,11 +286,12 @@ private final class NotchAudioLevelReader {
 
     private func buildTap() -> Bool {
         guard #available(macOS 14.4, *), tapID == 0 else { return false }
+#if compiler(>=5.9) // process taps need the macOS 14.4 SDK
         let objects = Self.processObjects(for: pid)
         guard !objects.isEmpty else { return false }
         tapped = objects
         let description = CATapDescription(stereoMixdownOfProcesses: objects)
-        description.name = "Vorssaint Island Levels"
+        description.name = "Unupunct MacTab Island Levels"
         description.isPrivate = true
         description.muteBehavior = .unmuted
         var tapID = AudioObjectID(0)
@@ -303,6 +304,9 @@ private final class NotchAudioLevelReader {
         }
         followLevel(of: objects)
         return true
+#else
+        return false
+#endif
     }
 
     /// The mixdown divides what the player plays on an output with more than
@@ -330,8 +334,9 @@ private final class NotchAudioLevelReader {
 
     private func buildPipeline() -> Bool {
         guard aggregateID == 0, tapID != 0, let hostUID = Self.hostDeviceUID() else { return false }
+#if compiler(>=5.9) // process taps need the macOS 14.4 SDK
         let aggregate: [String: Any] = [
-            kAudioAggregateDeviceNameKey: "Vorssaint Island Levels",
+            kAudioAggregateDeviceNameKey: "Unupunct MacTab Island Levels",
             kAudioAggregateDeviceUIDKey: UUID().uuidString,
             kAudioAggregateDeviceIsPrivateKey: true,
             kAudioAggregateDeviceMainSubDeviceKey: hostUID,
@@ -375,6 +380,9 @@ private final class NotchAudioLevelReader {
         samples = [Float](repeating: 0, count: analyzer.size)
         watchSampleRate(of: aggregateID)
         return true
+#else
+        return false
+#endif
     }
 
     private func teardownPipeline() {
@@ -575,7 +583,9 @@ private final class NotchAudioLevelReader {
                 AudioHardwareDestroyAggregateDevice(aggregateID)
             }
             if tapID != 0, #available(macOS 14.4, *) {
+#if compiler(>=5.9)
                 AudioHardwareDestroyProcessTap(tapID)
+#endif
             }
         }
     }

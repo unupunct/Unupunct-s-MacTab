@@ -500,7 +500,7 @@ enum NotchScreenRefreshContract {
         pointerFollowContracts(suite)
         relocationContracts(suite)
 
-        let source = (try? String(contentsOfFile: "Sources/Vorssaint/Services/Notch/NotchService.swift",
+        let source = (try? String(contentsOfFile: "Sources/Unupunct MacTab/Services/Notch/NotchService.swift",
                                   encoding: .utf8)) ?? ""
         let code = source.components(separatedBy: "\n")
             .map { line in line.range(of: "//").map { String(line[..<$0.lowerBound]) } ?? line }

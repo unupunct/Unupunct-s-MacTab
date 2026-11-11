@@ -228,7 +228,7 @@ final class NotchDownloadService: ObservableObject {
                 self.refreshItems()
             }
         }
-        let callbacks = MainActor.assumeIsolated { ProgressCallbacks(owner: self, generation: generation) }
+        let callbacks = MainActorCompat.assumeIsolated { ProgressCallbacks(owner: self, generation: generation) }
         subscriber = Progress.addSubscriber(forFileURL: url) { published in
             let id = UUID()
             DispatchQueue.main.async {

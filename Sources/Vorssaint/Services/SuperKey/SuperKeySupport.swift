@@ -15,41 +15,41 @@ enum SuperKeySource: String, CaseIterable, Identifiable {
 
     var usage: UInt64 {
         switch self {
-        case .capsLock: 0x700000039
-        case .rightControl: 0x7000000E4
-        case .rightShift: 0x7000000E5
-        case .rightOption: 0x7000000E6
-        case .rightCommand: 0x7000000E7
+        case .capsLock: return 0x700000039
+        case .rightControl: return 0x7000000E4
+        case .rightShift: return 0x7000000E5
+        case .rightOption: return 0x7000000E6
+        case .rightCommand: return 0x7000000E7
         }
     }
 
     var systemImage: String {
         switch self {
-        case .capsLock: "capslock"
-        case .rightCommand: "command"
-        case .rightOption: "option"
-        case .rightControl: "control"
-        case .rightShift: "shift"
+        case .capsLock: return "capslock"
+        case .rightCommand: return "command"
+        case .rightOption: return "option"
+        case .rightControl: return "control"
+        case .rightShift: return "shift"
         }
     }
 
     var keyCode: Int64 {
         switch self {
-        case .capsLock: Int64(kVK_CapsLock)
-        case .rightCommand: Int64(kVK_RightCommand)
-        case .rightOption: Int64(kVK_RightOption)
-        case .rightControl: Int64(kVK_RightControl)
-        case .rightShift: Int64(kVK_RightShift)
+        case .capsLock: return Int64(kVK_CapsLock)
+        case .rightCommand: return Int64(kVK_RightCommand)
+        case .rightOption: return Int64(kVK_RightOption)
+        case .rightControl: return Int64(kVK_RightControl)
+        case .rightShift: return Int64(kVK_RightShift)
         }
     }
 
     var symbol: String? {
         switch self {
-        case .capsLock: nil
-        case .rightCommand: "⌘"
-        case .rightOption: "⌥"
-        case .rightControl: "⌃"
-        case .rightShift: "⇧"
+        case .capsLock: return nil
+        case .rightCommand: return "⌘"
+        case .rightOption: return "⌥"
+        case .rightControl: return "⌃"
+        case .rightShift: return "⇧"
         }
     }
 }

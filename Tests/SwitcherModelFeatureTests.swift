@@ -146,11 +146,11 @@ enum SwitcherModelFeatureTests {
                 .filter { !$0.trimmingCharacters(in: .whitespaces).hasPrefix("//") }
                 .joined(separator: "\n")
         }
-        let switcher = code("Sources/Vorssaint/Services/Switcher/AppSwitcher.swift")
+        let switcher = code("Sources/Unupunct MacTab/Services/Switcher/AppSwitcher.swift")
         suite.expect(switcher.contains("CGEventType.scrollWheel.rawValue") && switcher.contains("case .scrollWheel:"),
                      "the switcher subscribes to and handles scroll-wheel events")
-        for path in ["Sources/Vorssaint/Services/SmoothScrollService.swift",
-                     "Sources/Vorssaint/Services/MouseButtons/MouseButtonShortcutService.swift"] {
+        for path in ["Sources/Unupunct MacTab/Services/SmoothScrollService.swift",
+                     "Sources/Unupunct MacTab/Services/MouseButtons/MouseButtonShortcutService.swift"] {
             suite.expect(code(path).contains("AppSwitcher.shared.scrollNavigationActive"),
                          "\(path) yields scrolling to the open switcher")
         }
@@ -446,7 +446,7 @@ enum SwitcherModelFeatureTests {
 
         // The standalone suite links the production rules above; these checks
         // also keep their live adapter and every cleanup path connected.
-        let source = (try? String(contentsOfFile: "Sources/Vorssaint/Services/Switcher/AppSwitcher.swift",
+        let source = (try? String(contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/AppSwitcher.swift",
                                   encoding: .utf8)) ?? ""
         func body(_ opening: String) -> String {
             guard let start = source.range(of: opening) else { return "" }
@@ -879,7 +879,7 @@ enum SwitcherModelFeatureTests {
         // scope must be assigned before the layout pass or a window-scoped
         // panel is sized for the grouped layout on its first frame.
         let switcherSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/Switcher/AppSwitcher.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/AppSwitcher.swift",
             encoding: .utf8)) ?? ""
         // Ends on whatever declaration comes next rather than naming the
         // neighbour: a rename would find no separator, leave the slice running
@@ -914,7 +914,7 @@ enum SwitcherModelFeatureTests {
                                                                 windowRow: false),
                "App Switcher main shortcut steps through simple window rows without app grouping")
         let previewProviderCode = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/Switcher/WindowPreviewProvider.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/WindowPreviewProvider.swift",
             encoding: .utf8)) ?? ""
         // The warm task itself may be detached (its image work must stay off
         // the main thread); what must never run on a shared task thread is the
@@ -1038,7 +1038,7 @@ enum SwitcherModelFeatureTests {
         // The bridge's window query cannot run here, so its answer must go
         // through that filter, and only on macOS 26 and later.
         let hiddenWithAppBody = ((try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/Switcher/SpaceWindowBridge.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/SpaceWindowBridge.swift",
             encoding: .utf8)) ?? "")
             .components(separatedBy: "static func windowsHiddenWithApp(among windowIDs: [CGWindowID]) -> Set<CGWindowID>? {\n")
             .dropFirst().first?
@@ -1298,7 +1298,7 @@ enum SwitcherModelFeatureTests {
                && !embeddedWindow.isMinimizedForPlacement(treatHiddenAppsLikeMinimized: true),
                "hidden apps follow minimized-window placement only when selected, while actual minimized windows always follow it")
         let placementCode = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/Switcher/WindowEnumerator.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/WindowEnumerator.swift",
             encoding: .utf8)) ?? ""
         suite.expect(placementCode.contains("forKey: DefaultsKey.switcherTreatHiddenAppsLikeMinimized")
                && placementCode.contains("item.isMinimizedForPlacement(treatHiddenAppsLikeMinimized: treatHiddenAppsLikeMinimized)"),
@@ -1871,7 +1871,7 @@ enum SwitcherModelFeatureTests {
             .prefix(24)).map(\.id) == ["right"],
                "windows on other monitors cannot exhaust the local display's entry limit")
         let enumeratorCode = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/Switcher/WindowEnumerator.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/WindowEnumerator.swift",
             encoding: .utf8)) ?? ""
         let displayFilter = enumeratorCode.range(of: "SwitcherSupport.itemsOnDisplay(filtered,")
         let grouping = enumeratorCode.range(of: "groupedByApp(orderedPrimary)")
@@ -2326,7 +2326,7 @@ enum SwitcherModelFeatureTests {
         // gesture from an ordinary one -- which is the thing being fixed, so a
         // branch is what this guards against.
         let placeSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/Switcher/WindowActivator.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/WindowActivator.swift",
             encoding: .utf8)) ?? ""
         let placeBody = (placeSource.components(separatedBy: "static func place(_ item: SwitcherItem")
             .last ?? "").components(separatedBy: "\n    @discardableResult").first ?? ""
@@ -2359,7 +2359,7 @@ enum SwitcherModelFeatureTests {
         // title both over the thumbnail and under it. In a panel every card
         // belongs to one app, so both said the same thing once per window.
         let dockPreviewCardSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/UI/Switcher/DockPreviewPanelView.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/UI/Switcher/DockPreviewPanelView.swift",
             encoding: .utf8)) ?? ""
         let dockPreviewCardCode = dockPreviewCardSource
             .split(separator: "\n", omittingEmptySubsequences: false)
@@ -2803,13 +2803,13 @@ enum SwitcherModelFeatureTests {
                "an app the person switched to while the panel was open keeps activation")
         suite.expect(!StatusItemAnchorSupport.shouldReturnActivation(to: 501, ownPID: 900, frontmostPID: 900,
                                                                      ownWindowIsKey: true, closeReason: .escape),
-               "a Vorssaint window that took focus from the panel keeps Vorssaint active")
+               "a Unupunct MacTab window that took focus from the panel keeps Unupunct MacTab active")
         suite.expect(!StatusItemAnchorSupport.shouldReturnActivation(to: nil, ownPID: 900, frontmostPID: 900,
                                                                      ownWindowIsKey: false, closeReason: .escape),
-               "a panel opened while Vorssaint was already in front has nothing to hand back")
+               "a panel opened while Unupunct MacTab was already in front has nothing to hand back")
         suite.expect(!StatusItemAnchorSupport.shouldReturnActivation(to: 900, ownPID: 900, frontmostPID: 900,
                                                                      ownWindowIsKey: false, closeReason: .escape),
-               "Vorssaint never hands activation back to itself")
+               "Unupunct MacTab never hands activation back to itself")
         suite.expect(!StatusItemAnchorSupport.shouldReturnActivation(to: 501, ownPID: 900, frontmostPID: nil,
                                                                      ownWindowIsKey: false, closeReason: .escape),
                "no known frontmost app means nothing is taken from anyone")
@@ -2823,7 +2823,7 @@ enum SwitcherModelFeatureTests {
         }
         suite.expect(!StatusItemAnchorSupport.shouldReturnActivation(to: 501, ownPID: 900, frontmostPID: 900,
                                                                      ownWindowIsKey: false, closeReason: nil),
-               "a close Vorssaint did not ask for leaves activation alone")
+               "a close Unupunct MacTab did not ask for leaves activation alone")
 
         let showing: Set<UInt64> = [3, 7]
         suite.expect(StatusItemAnchorSupport.handbackWouldSwitchDesktop(windowSpaces: [[1], [2]],
@@ -2851,7 +2851,7 @@ enum SwitcherModelFeatureTests {
                "another app becoming active while the panel is open replaces the remembered app")
         suite.expect(StatusItemAnchorSupport.panelActivationSource(after: .appActivated(900), current: 501,
                                                                    isOwnApp: ownApp) == 501,
-               "Vorssaint taking activation back from the panel keeps the remembered app")
+               "Unupunct MacTab taking activation back from the panel keeps the remembered app")
         suite.expect(StatusItemAnchorSupport.panelActivationSource(after: .appActivated(777), current: nil,
                                                                    isOwnApp: ownApp) == 777,
                "an app activated after the remembered one was dropped becomes the one to return to")
@@ -2898,7 +2898,7 @@ enum SwitcherModelFeatureTests {
         // These AppKit owners are not part of the pure-helper test binary, so
         // pin that neither caller can consume a parked status-item frame.
         let statusAnchorAppDelegateSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/App/AppDelegate.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/App/AppDelegate.swift",
             encoding: .utf8)) ?? ""
         let stripCommentLines: (String) -> String = {
             $0.split(separator: "\n", omittingEmptySubsequences: false)
@@ -2912,7 +2912,7 @@ enum SwitcherModelFeatureTests {
             .components(separatedBy: "ShelfService.shared.statusItemFrameProvider =").last ?? "")
             .components(separatedBy: "\n        }").first ?? "")
         let statusControllerSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/App/StatusItemController.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/App/StatusItemController.swift",
             encoding: .utf8)) ?? ""
         let statusHitTestCode = stripCommentLines((statusControllerSource
             .components(separatedBy: "func containsStatusItem(at screenPoint: NSPoint) -> Bool {").last ?? "")
@@ -2938,7 +2938,7 @@ enum SwitcherModelFeatureTests {
         suite.expect(popoverSetUpCode.contains("popover.hasFullSizeContent = PanelSurface.popoverHostsFullSizeContent"),
                "the panel is hosted across the whole popover, arrow band included, where AppKit supports it")
         let panelThemeSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/UI/Theme.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/UI/Theme.swift",
             encoding: .utf8)) ?? ""
         // macOS 15 publishes the full-size safe area but leaves the view at its
         // content size in the frame's corner, so the popover grows and shows a
@@ -2963,7 +2963,7 @@ enum SwitcherModelFeatureTests {
                    && panelGlassCode.contains("Rectangle()\n            .fill(.regularMaterial)"),
                "both the standard and the Liquid Glass surface fill the whole balloon, no shape of their own")
         let panelViewSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/UI/MenuPanel/MenuPanelView.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/UI/MenuPanel/MenuPanelView.swift",
             encoding: .utf8)) ?? ""
         let panelBodyCode: (String) -> String = { header in
             stripCommentLines((panelViewSource.components(separatedBy: header).last ?? "")
@@ -3822,7 +3822,7 @@ enum SwitcherModelFeatureTests {
         suite.expect(rightFrame.maxX < 1360,
                "Dock Preview right panel sits to the left of the Dock")
         let dockPreviewServiceSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/DockPreview/DockPreviewService.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/DockPreview/DockPreviewService.swift",
             encoding: .utf8)) ?? ""
         let dockPreviewServiceCode = dockPreviewServiceSource
             .split(separator: "\n", omittingEmptySubsequences: false)
@@ -3877,12 +3877,12 @@ enum SwitcherModelFeatureTests {
         // Both panels show windows of the same kind, so a name too long for its
         // room behaves the same in each. One view, two callers, two widths.
         let scrollingTitleSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/UI/Switcher/ScrollingTitle.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/UI/Switcher/ScrollingTitle.swift",
             encoding: .utf8)) ?? ""
         suite.expect(scrollingTitleSource.contains("struct ScrollingTitle: View"),
                "the scrolling name is one view, not a copy in each panel")
         let switcherCardSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/UI/Switcher/SwitcherView.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/UI/Switcher/SwitcherView.swift",
             encoding: .utf8)) ?? ""
         suite.expect(switcherCardSource.contains("ScrollingTitle(")
                && dockPreviewCardSource.contains("ScrollingTitle("),
@@ -4564,7 +4564,7 @@ enum SwitcherModelFeatureTests {
         // rather than the bare call it replaced. Asserted positively: the call
         // it must not use is named in the doc comment right above it.
         let dockClickSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/DockClick/DockClickService.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/DockClick/DockClickService.swift",
             encoding: .utf8)) ?? ""
         suite.expect(dockClickSource.contains("ActivationHandoff.yield(to: app)"),
                "a Dock click restore yields this app's activation first")
@@ -4575,7 +4575,7 @@ enum SwitcherModelFeatureTests {
         // and every yield goes through it. A bare yield added on a new path
         // would bring the refused-handoff bug back on that path alone.
         let activationHandoffSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/ActivationHandoff.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/ActivationHandoff.swift",
             encoding: .utf8)) ?? ""
         let selfActivation = activationHandoffSource.range(of: "NSApp.activate(ignoringOtherApps: true)")
         let yieldOnward = activationHandoffSource.range(of: "NSApp.yieldActivation(to: app)")
@@ -4589,7 +4589,7 @@ enum SwitcherModelFeatureTests {
         // Only the activation the handoff caused stays out of the history; the
         // Dock icon, Settings and Vorssaint's own windows are real uses.
         let useTrackerSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/Switcher/WindowUseTracker.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/Switcher/WindowUseTracker.swift",
             encoding: .utf8)) ?? ""
         suite.expect(useTrackerSource.contains(
                    "pid == ProcessInfo.processInfo.processIdentifier && ActivationHandoff.isHandingOff"),
@@ -4944,7 +4944,7 @@ enum SwitcherModelFeatureTests {
                && DockPreviewSupport.mouseMoveSampleInterval < DockPreviewSupport.switchDelay,
                "Dock Preview samples high-rate mouse movement faster than hover intent")
         let dockPreviewSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/DockPreview/DockPreviewService.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/DockPreview/DockPreviewService.swift",
             encoding: .utf8)) ?? ""
         suite.expect(dockPreviewSource.contains("DockClickSupport.dockOwnsPoint("),
                "Dock Preview does not open through fullscreen content covering the Dock")
@@ -6591,7 +6591,7 @@ enum SwitcherModelFeatureTests {
                == [shiftedApps],
                "a shortcut that already uses Shift gets no backward variant, and a shared combination registers once")
         let switcherSettingsSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/UI/Settings/SwitcherSettings.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/UI/Settings/SwitcherSettings.swift",
             encoding: .utf8)) ?? ""
         suite.expect(switcherSettingsSource.contains(
                          "secureInput.holder != .off, !switcherCoversSecureInput {")
@@ -6979,7 +6979,7 @@ enum SwitcherModelFeatureTests {
                "App Switcher leaves unrelated middle-mouse-up events alone")
         let searchRecords = [
             SwitcherSearchRecord(id: "alpha", title: "Inbox", appName: "Alpha"),
-            SwitcherSearchRecord(id: "beta", title: "Vorssaint Roadmap", appName: "Beta"),
+            SwitcherSearchRecord(id: "beta", title: "Unupunct MacTab Roadmap", appName: "Beta"),
             SwitcherSearchRecord(id: "gamma", title: "Café notes", appName: "Gamma"),
         ]
         suite.expect(SwitcherSupport.filteredSearchIDs(records: searchRecords, query: "") == ["alpha", "beta", "gamma"],

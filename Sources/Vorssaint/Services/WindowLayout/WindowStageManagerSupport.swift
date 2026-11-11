@@ -20,7 +20,7 @@ enum WindowStageManagerSupport {
             stageManagerEnabled: windowManagerDefaults?.bool(forKey: "GloballyEnabled") == true,
             autoHide: windowManagerDefaults?.object(forKey: "AutoHide") as? Bool,
             dockPosition: dockDefaults?.string(forKey: "orientation"),
-            rightToLeft: Locale.current.language.characterDirection == .rightToLeft,
+            rightToLeft: NSLocale.characterDirection(forLanguage: Locale.current.languageCode ?? "en") == .rightToLeft,
             stripFrames: currentStripFrames())
     }
 

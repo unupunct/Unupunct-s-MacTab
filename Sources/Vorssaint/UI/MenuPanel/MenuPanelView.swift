@@ -1298,7 +1298,7 @@ struct QuickControlsSection: View {
                 Text(title(for: category).uppercased())
                     .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(.secondary)
-                    .tracking(0.5)
+                    .trackingCompat(0.5)
                 Spacer(minLength: 0)
                 Text("\(enabledCount)/\(categoryItems.count)")
                     .font(.system(size: 9.5, weight: .semibold, design: .rounded))
@@ -2457,7 +2457,7 @@ struct PanelBetaBadge: View {
     var body: some View {
         Text(text.uppercased())
             .font(.system(size: 8, weight: .bold))
-            .tracking(0.4)
+            .trackingCompat(0.4)
             .foregroundStyle(.orange)
             .padding(.horizontal, 5)
             .padding(.vertical, 1.5)
@@ -2630,7 +2630,7 @@ struct UpdateBanner: View {
                         // the same words a second time.
                         Text("\(l10n.s.versionPrefix) \(version)")
                             .font(.system(size: 10.5))
-                            .foregroundStyle(.white.opacity(0.85))
+                            .foregroundStyle(Color.white.opacity(0.85))
                     }
                     Spacer()
                     Text(l10n.s.updateBannerAction)

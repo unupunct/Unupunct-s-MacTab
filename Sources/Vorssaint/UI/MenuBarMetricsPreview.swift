@@ -75,10 +75,10 @@ struct MenuBarMetricsPreview: View {
         HStack(spacing: 12) {
             Spacer()
             Image(systemName: "wifi")
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Color.white.opacity(0.5))
             if PowerSampler.hasInternalBattery {
                 Image(systemName: "battery.75")
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(Color.white.opacity(0.5))
             }
             ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                 linesView(item)
@@ -224,7 +224,7 @@ struct MenuBarMetricsPreview: View {
                 .font(.system(size: MenuBarRenderer.statusFontSize(stacked: stacked),
                               weight: .medium,
                               design: .monospaced))
-                .foregroundStyle(.white.opacity(0.28))
+                .foregroundStyle(Color.white.opacity(0.28))
                 .padding(.horizontal, 5)
         }
     }

@@ -6,11 +6,11 @@ import AppKit
 /// The deadline survives preference changes and suspension, so a completed
 /// alarm cannot be restarted by a redraw, device change or return from sleep.
 final class NotchTimerAlert {
-    static let maximumDuration: Duration = .seconds(5 * 60)
+    static let maximumDuration: TimeInterval = 5 * 60
     private var task: Task<Void, Never>?
-    private var deadline: ContinuousClock.Instant?
-    private let interval: Duration
-    private let now: () -> ContinuousClock.Instant
+    private var deadline: TimeInterval?
+    private let interval: TimeInterval
+    private let now: () -> TimeInterval
     private let sound: () -> Void
     private let stopSound: () -> Void
 
@@ -22,7 +22,7 @@ final class NotchTimerAlert {
         }, stopSound: { tone?.stop() })
     }
 
-    init(interval: Duration = .seconds(2), now: @escaping () -> ContinuousClock.Instant = { .now },
+    init(interval: TimeInterval = 2, now: @escaping () -> TimeInterval = NotchTimerAlert.continuousNow,
          sound: @escaping () -> Void, stopSound: @escaping () -> Void) {
         self.interval = interval
         self.now = now
@@ -30,9 +30,14 @@ final class NotchTimerAlert {
         self.stopSound = stopSound
     }
 
+    /// Monotonic seconds that keep counting through sleep (Monterey has no ContinuousClock).
+    static func continuousNow() -> TimeInterval {
+        Double(clock_gettime_nsec_np(CLOCK_MONOTONIC)) / 1_000_000_000
+    }
+
     func start(enabled: Bool) {
         let current = now()
-        let deadline = self.deadline ?? current.advanced(by: Self.maximumDuration)
+        let deadline = self.deadline ?? current + Self.maximumDuration
         self.deadline = deadline
         guard enabled, current < deadline else { suspend(); return }
         guard task == nil else { return }
@@ -40,7 +45,7 @@ final class NotchTimerAlert {
         task = Task { @MainActor [weak self] in
             while !Task.isCancelled {
                 guard let delay = self?.delay(until: deadline) else { return }
-                do { try await Task.sleep(for: delay, clock: .continuous) }
+                do { try await Task.sleep(nanoseconds: UInt64(max(0, delay) * 1_000_000_000)) }
                 catch { return }
                 guard !Task.isCancelled, let self else { return }
                 guard self.now() < deadline else { self.suspend(); return }
@@ -59,8 +64,8 @@ final class NotchTimerAlert {
         deadline = nil
     }
 
-    private func delay(until deadline: ContinuousClock.Instant) -> Duration {
-        max(.zero, min(interval, now().duration(to: deadline)))
+    private func delay(until deadline: TimeInterval) -> TimeInterval {
+        max(0, min(interval, deadline - now()))
     }
 
     deinit { task?.cancel(); stopSound() }

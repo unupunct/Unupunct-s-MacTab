@@ -310,7 +310,7 @@ struct DisplayPowerButton: View {
                 } label: {
                     Image(systemName: display.isActive ? "power" : "power.circle.fill")
                         .font(.system(size: compact ? 10.5 : 12, weight: .semibold))
-                        .foregroundStyle(display.isActive ? AnyShapeStyle(.secondary)
+                        .foregroundStyle(display.isActive ? AnyShapeStyle(HierarchicalShapeStyle.secondary)
                                                          : AnyShapeStyle(.green))
                         .frame(width: compact ? 16 : 20, height: 18)
                 }

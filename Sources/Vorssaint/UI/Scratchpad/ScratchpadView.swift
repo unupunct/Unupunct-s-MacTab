@@ -378,7 +378,7 @@ struct ScratchpadView: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(tint.map(AnyShapeStyle.init) ?? AnyShapeStyle(.secondary))
+                .foregroundStyle(tint.map(AnyShapeStyle.init) ?? AnyShapeStyle(HierarchicalShapeStyle.secondary))
                 .frame(width: 26, height: 26)
                 .contentShape(Rectangle())
         }

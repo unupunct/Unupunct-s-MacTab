@@ -84,7 +84,7 @@ struct NotchCaptureControlsView: View {
                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
                 .frame(height: 26)
-                .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 7))
+                .background(Color.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 7))
             }
             NotchIconButton(symbol: "chevron.up", title: FeatureStrings.notch(l10n.language).collapse,
                             action: service.collapseCaptureControls)
@@ -101,8 +101,10 @@ private struct NotchRecordingAudioOptions: View {
     var focusedControl: FocusState<NotchCaptureControl?>.Binding
     var body: some View {
         HStack(spacing: 16) {
-            Toggle(FeatureStrings.recorder(l10n.language).systemAudioTrackLabel, isOn: $options.systemAudio)
-                .focused(focusedControl, equals: .systemAudio)
+            if MontereyCapabilities.systemAudioRecording {
+                Toggle(FeatureStrings.recorder(l10n.language).systemAudioTrackLabel, isOn: $options.systemAudio)
+                    .focused(focusedControl, equals: .systemAudio)
+            }
             Toggle(FeatureStrings.recorder(l10n.language).microphoneTrackLabel, isOn: $options.microphone)
                 .focused(focusedControl, equals: .microphone)
         }

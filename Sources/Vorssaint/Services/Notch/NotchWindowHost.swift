@@ -1063,7 +1063,7 @@ private final class NotchQuickAccessContainer: NSView {
         let motion = NotchQuickAccessMotion()
         self.motion = motion
         quickView = NSHostingView(rootView: content(motion, canvas.backdropPresentation))
-        quickView.sizingOptions = []
+        quickView.setPreferredContentSizing(false)
         quickView.wantsLayer = true
         quickView.isHidden = true
         super.init(frame: canvas.frame)
@@ -1132,7 +1132,7 @@ private final class NotchBackdropTick: NSObject {
     init(canvas: NotchCanvas) { self.canvas = canvas }
     /// SwiftUI's drawing of what is set now reaches the screen the frame after
     /// the one being prepared, so the material aims one frame further.
-    @objc func fire(_ sender: CADisplayLink) {
+    @objc func fire(_ sender: DisplayLinkCompat) {
         canvas?.advanceBackdrop(to: sender.targetTimestamp + (sender.targetTimestamp - sender.timestamp))
     }
 }
@@ -1146,7 +1146,7 @@ private final class NotchCanvas: NSView {
     /// the material stayed a frame at its old place when the window grew to
     /// open, cutting the island in half.
     private var stage = CGSize.zero
-    private(set) var backdropDisplayLink: CADisplayLink?
+    private(set) var backdropDisplayLink: DisplayLinkCompat?
     private lazy var backdropTick = NotchBackdropTick(canvas: self)
     private(set) var backdropTicks = 0
     private let activationButton = NotchActivationButton()
@@ -1179,11 +1179,11 @@ private final class NotchCanvas: NSView {
     init(content: AnyView, background: (NotchBackdropPresentation) -> AnyView, size: CGSize) {
         contentSize = size
         backdrop = NotchHostingView(rootView: background(backdropPresentation))
-        backdrop.sizingOptions = []
+        backdrop.setPreferredContentSizing(false)
         backdrop.wantsLayer = true
         backdrop.autoresizingMask = []
         host = NotchHostingView(rootView: content)
-        host.sizingOptions = []
+        host.setPreferredContentSizing(false)
         host.wantsLayer = true
         host.autoresizingMask = []
         super.init(frame: CGRect(origin: .zero, size: size))
@@ -1492,7 +1492,7 @@ private final class NotchCanvas: NSView {
         if let from { setBackdropContour(inCanvas(from)) }
         // Only the material follows the display link; content layout and the
         // native window remain fixed for the duration of the animation.
-        let link = displayLink(target: backdropTick, selector: #selector(NotchBackdropTick.fire(_:)))
+        let link = displayLinkCompat(target: backdropTick, selector: #selector(NotchBackdropTick.fire(_:)))
         backdropDisplayLink = link
         link.add(to: .main, forMode: .common)
         if let borderAnimation = animation.copy() as? CAAnimation {

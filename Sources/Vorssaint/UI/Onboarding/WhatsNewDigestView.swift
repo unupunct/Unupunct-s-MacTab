@@ -47,17 +47,17 @@ struct WhatsNewDigestView: View {
             sidebar
                 // The window does not resize, so the sidebar has one width,
                 // a little wider than Settings' for longer feature names.
-                .navigationSplitViewColumnWidth(230)
+                .navigationSplitViewColumnWidthCompat(230)
         } detail: {
             detail
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .safeAreaInset(edge: .bottom, spacing: 0) { footer }
         }
-        .navigationSplitViewStyle(.balanced)
+        .navigationSplitViewStyleCompat(.balanced)
         // The columns stay as they are, so a sidebar button would do nothing.
         // Removed here, on the split view: on the sidebar it also drops the
         // column width.
-        .toolbar(removing: .sidebarToggle)
+        .toolbarRemovingSidebarToggleCompat()
         .frame(width: size.width, height: size.height)
         .onExitCommand(perform: onFinish)
         .onChange(of: selection) { _, selected in
@@ -87,10 +87,23 @@ struct WhatsNewDigestView: View {
             if !sections.notInstalled.isEmpty {
                 // Collapsed until asked for. The sidebar's own disclosure,
                 // unlike a header button, also opens from VoiceOver.
-                Section(isExpanded: $showsNotInstalled) {
-                    ForEach(sections.notInstalled) { sidebarRow($0, installed: false) }
+                Section {
+                    if showsNotInstalled {
+                        ForEach(sections.notInstalled) { sidebarRow($0, installed: false) }
+                    }
                 } header: {
-                    Text(text.notInstalled)
+                    Button {
+                        withAnimation { showsNotInstalled.toggle() }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text(text.notInstalled)
+                            Spacer()
+                            Image(systemName: showsNotInstalled ? "chevron.down" : "chevron.right")
+                                .font(.caption2)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -103,7 +116,7 @@ struct WhatsNewDigestView: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text("\(AppInfo.name) \(digest.version)")
-                    .fontWeight(.semibold)
+                    .fontWeightCompat(.semibold)
                     .foregroundStyle(.primary)
                 if let previous = digest.previousVersion {
                     Text(String(format: text.updatedFromFormat, previous))
@@ -120,11 +133,11 @@ struct WhatsNewDigestView: View {
         let isUnread = unread.contains(row.id)
         return HStack(spacing: 9) {
             Image(systemName: row.icon)
-                .foregroundStyle(isSelected ? AnyShapeStyle(.primary)
-                    : installed ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                .foregroundStyle(isSelected ? AnyShapeStyle(HierarchicalShapeStyle.primary)
+                    : installed ? AnyShapeStyle(TintShapeStyle()) : AnyShapeStyle(HierarchicalShapeStyle.secondary))
                 .frame(width: 18)
             Text(title(of: row))
-                .foregroundStyle(installed || isSelected ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+                .foregroundStyle(installed || isSelected ? AnyShapeStyle(HierarchicalShapeStyle.primary) : AnyShapeStyle(HierarchicalShapeStyle.secondary))
             Spacer(minLength: 4)
             if isUnread {
                 Circle()
@@ -267,7 +280,7 @@ private struct WhatsNewFeaturePage: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
     }
 
     private func changeRow(_ change: ReleaseChange) -> some View {

@@ -36,7 +36,7 @@ struct CleaningOverlayView: View {
 
             Text(l10n.s.cleaningOverlaySubtitle)
                 .font(.system(size: 15))
-                .foregroundStyle(.white.opacity(0.75))
+                .foregroundStyle(Color.white.opacity(0.75))
                 .multilineTextAlignment(.center)
 
             fullProgressDots
@@ -59,7 +59,7 @@ struct CleaningOverlayView: View {
 
             Text(l10n.s.cleaningOverlayMouseHint)
                 .font(.system(size: 12))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Color.white.opacity(0.5))
         }
         .padding(44)
         .frame(maxWidth: 460)

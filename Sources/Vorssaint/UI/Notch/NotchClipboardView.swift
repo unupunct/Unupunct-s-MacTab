@@ -89,8 +89,8 @@ struct NotchClipboardView: View {
                             }
                         }
                     }
-                    .scrollIndicators(.automatic)
-                    .coordinateSpace(.named(Self.listSpace))
+                    .scrollIndicatorsCompat(.automatic)
+                    .coordinateSpace(name: Self.listSpace)
                     .onChange(of: highlightedID) { previous, id in
                         guard let id else { return }
                         follow(id, from: previous, in: proxy)
@@ -119,7 +119,7 @@ struct NotchClipboardView: View {
         .task(id: highlightedID) {
             keyExpandedID = nil
             guard !preview, !comfortable, keysMoved, let id = highlightedID else { return }
-            try? await Task.sleep(for: .seconds(NotchClipboardCardSize.keyDwell))
+            try? await Task.sleepCompat(seconds: NotchClipboardCardSize.keyDwell)
             guard !Task.isCancelled else { return }
             setOpen(keyID: id)
         }
@@ -160,7 +160,7 @@ struct NotchClipboardView: View {
             // The tick confirms one copy; leaving it on the row forever would
             // read as a permanent state instead of an answer.
             guard copiedID != nil else { return }
-            try? await Task.sleep(for: .seconds(1.6))
+            try? await Task.sleepCompat(seconds: 1.6)
             guard !Task.isCancelled else { return }
             copiedID = nil
         }
@@ -244,7 +244,7 @@ struct NotchClipboardView: View {
     /// they still leave almost a point.
     private func openCard(_ entry: ClipboardHistoryEntry, place: Int) -> some View {
         GeometryReader { proxy in
-            let visible = proxy.bounds(of: .named(Self.listSpace))?.height ?? size.height
+            let visible = proxy.visibleHeightCompat(inSpace: Self.listSpace) ?? size.height
             let height = min(openHeight(entry), visible)
             card(entry, lifted: true) { expandedCard(entry, place: place) }
                 .frame(height: height)
@@ -253,7 +253,7 @@ struct NotchClipboardView: View {
                     Group {
                         if glassSurface { backing.fill(.ultraThickMaterial) } else { backing.fill(.black) }
                     }
-                    .shadow(color: .black.opacity(0.5), radius: 10, y: 4)
+                    .shadow(color: Color.black.opacity(0.5), radius: 10, y: 4)
                 }
                 .offset(y: NotchSupport.clipboardOpenOffset(rowTop: proxy.frame(in: .named(Self.listSpace)).minY,
                                                             rowHeight: proxy.size.height,
@@ -309,7 +309,7 @@ struct NotchClipboardView: View {
             hoveredID = entry.id
             guard expandedID != entry.id else { return }
             dwell = (entry.id, Task { @MainActor in
-                try? await Task.sleep(for: .seconds(NotchClipboardCardSize.dwell))
+                try? await Task.sleepCompat(seconds: NotchClipboardCardSize.dwell)
                 guard !Task.isCancelled, hoveredID == entry.id else { return }
                 withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { expandedID = entry.id }
             })
@@ -322,7 +322,7 @@ struct NotchClipboardView: View {
             guard expandedID == entry.id else { return }
             closing?.task.cancel()
             closing = (entry.id, Task { @MainActor in
-                try? await Task.sleep(for: .milliseconds(150))
+                try? await Task.sleepCompat(seconds: Double(150) / 1000)
                 guard !Task.isCancelled, expandedID == entry.id else { return }
                 withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { expandedID = nil }
             })
@@ -364,8 +364,8 @@ struct NotchClipboardView: View {
             }
             .overlay {
                 ZStack {
-                    if lifted { shape.strokeBorder(.white.opacity(0.14), lineWidth: 0.5) }
-                    shape.strokeBorder(.white.opacity(highlightedID == entry.id ? 0.34 : 0), lineWidth: 1)
+                    if lifted { shape.strokeBorder(Color.white.opacity(0.14), lineWidth: 0.5) }
+                    shape.strokeBorder(Color.white.opacity(highlightedID == entry.id ? 0.34 : 0), lineWidth: 1)
                 }
                 .allowsHitTesting(false)
             }
@@ -509,7 +509,7 @@ struct NotchClipboardView: View {
         .modifier(NotchControlSurface(cornerRadius: 14))
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(.white.opacity(searching ? 0.34 : 0), lineWidth: 1)
+                .strokeBorder(Color.white.opacity(searching ? 0.34 : 0), lineWidth: 1)
                 .allowsHitTesting(false)
         }
         .animation(.easeOut(duration: 0.15), value: searching)

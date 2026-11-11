@@ -240,10 +240,17 @@ enum ScratchpadSupport {
         guard !text.isEmpty else { return [] }
         // Source positions say where each task's box sits in the text. They
         // leave the blocks once read, so the reading never carries them.
-        let options = AttributedString.MarkdownParsingOptions(
+        // macOS 12 has no source positions: the preview still renders, but task
+        // checkboxes in it are not clickable there.
+        var options = AttributedString.MarkdownParsingOptions(
             interpretedSyntax: .full,
-            failurePolicy: .returnPartiallyParsedIfPossible,
-            appliesSourcePositionAttributes: true)
+            failurePolicy: .returnPartiallyParsedIfPossible)
+        if #available(macOS 13.0, *) {
+            options = AttributedString.MarkdownParsingOptions(
+                interpretedSyntax: .full,
+                failurePolicy: .returnPartiallyParsedIfPossible,
+                appliesSourcePositionAttributes: true)
+        }
         guard let parsed = try? AttributedString(markdown: text, options: options) else {
             return [ScratchpadMarkdownBlock(kind: .paragraph,
                                             containerID: nil,
@@ -315,6 +322,10 @@ enum ScratchpadSupport {
     /// line a box belongs to. Source positions leave the block here.
     private static func withTask(_ block: ScratchpadMarkdownBlock, in source: String,
                                  lineStarts: [String.Index]) -> ScratchpadMarkdownBlock {
+        guard #available(macOS 13.0, *) else {
+            return ScratchpadMarkdownBlock(kind: block.kind, containerID: block.containerID, text: block.text,
+                                           quoteDepth: block.quoteDepth)
+        }
         var text = block.text
         let first = text.runs.first
         text.markdownSourcePosition = nil

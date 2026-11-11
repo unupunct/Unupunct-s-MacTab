@@ -207,7 +207,7 @@ final class RecorderEditorModel: ObservableObject, BackdropEditing {
             for seconds in times {
                 if Task.isCancelled { return }
                 let time = CMTime(seconds: seconds, preferredTimescale: 600)
-                guard let image = try? await generator.image(at: time).image else { continue }
+                guard let image = try? await generator.imageCompat(at: time) else { continue }
                 images.append(image)
             }
             let result = images

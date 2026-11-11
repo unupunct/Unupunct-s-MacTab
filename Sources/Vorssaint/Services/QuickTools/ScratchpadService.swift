@@ -466,7 +466,7 @@ final class ScratchpadService: NSObject, ObservableObject, NSWindowDelegate {
                                            styleMask: [.borderless, .nonactivatingPanel, .resizable],
                                            backing: .buffered,
                                            defer: false)
-        panel.title = "Vorssaint"
+        panel.title = "Unupunct MacTab"
         panel.isReleasedWhenClosed = false
         // Dragging inside the pad must select text, never move the window;
         // the header strip is the handle.
@@ -483,7 +483,7 @@ final class ScratchpadService: NSObject, ObservableObject, NSWindowDelegate {
         let host = NSHostingController(rootView: ScratchpadView())
         // No preferred-size tracking: the pad is user-resizable and the view
         // fills whatever frame the panel has.
-        host.sizingOptions = []
+        host.setPreferredContentSizing(false)
         panel.contentViewController = host
         // Assigning the content controller shrinks the window to the view's
         // minimum; restore the pad's starting size.

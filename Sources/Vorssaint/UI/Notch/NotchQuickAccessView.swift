@@ -44,7 +44,9 @@ final class NotchQuickAccessMotion: ObservableObject {
         let animation: Animation? = animated
             ? (visible ? .spring(duration: 0.38, bounce: 0.12).delay(delay) : .easeIn(duration: NotchQuickAccessLayout.withdrawalDuration))
             : nil
-        withAnimation(animation, completionCriteria: .logicallyComplete) {
+        let approximateDuration: TimeInterval = animated
+            ? (visible ? 0.38 + Double(delay) : Double(NotchQuickAccessLayout.withdrawalDuration)) : 0
+        withAnimationCompat(animation, approximateDuration: approximateDuration) {
             progress = visible ? 1 : 0
         } completion: { [weak self] in
             guard let self, self.generation == token else { return }
@@ -148,7 +150,7 @@ struct NotchQuickAccessView: View {
                 // the app behind, not just the glyph.
                 .background(followsGlass ? Color.black.opacity(0.02) : Color.black, in: Circle())
                 .overlay {
-                    Circle().strokeBorder(.white.opacity(selected || contrast == .increased ? 0.6 : 0.16), lineWidth: 0.75)
+                    Circle().strokeBorder(Color.white.opacity(selected || contrast == .increased ? 0.6 : 0.16), lineWidth: 0.75)
                         .allowsHitTesting(false)
                 }
                 .contentShape(Circle())

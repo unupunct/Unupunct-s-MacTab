@@ -30,7 +30,7 @@ struct NotchEditorItem: View {
                         // the full reason is also in the tooltip.
                         Text(unavailableReason ?? " ").font(.caption2)
                             .foregroundStyle(unavailableAction == nil ? Color.secondary : Color.accentColor)
-                            .multilineTextAlignment(.center).lineLimit(3, reservesSpace: true)
+                            .multilineTextAlignment(.center).lineLimitCompat(3, reservesSpace: true)
                             .accessibilityHidden(unavailableReason == nil)
                     }
                 }.frame(maxWidth: .infinity, minHeight: 76).padding(10)

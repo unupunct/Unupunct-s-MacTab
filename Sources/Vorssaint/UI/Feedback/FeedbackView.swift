@@ -72,7 +72,7 @@ struct FeedbackView: View {
                         ZStack(alignment: .topLeading) {
                             TextEditor(text: $message)
                                 .font(.body)
-                                .scrollContentBackground(.hidden)
+                                .scrollContentBackgroundHiddenCompat()
                                 .padding(6)
                             if message.isEmpty {
                                 Text(kind == .bug ? strings.bugPlaceholder : strings.featurePlaceholder)
@@ -83,7 +83,7 @@ struct FeedbackView: View {
                             }
                         }
                         .frame(minHeight: 145)
-                        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 9))
+                        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 9))
                         .overlay {
                             RoundedRectangle(cornerRadius: 9)
                                 .strokeBorder(.separator, lineWidth: 1)
@@ -119,7 +119,7 @@ struct FeedbackView: View {
                             .foregroundStyle(.secondary)
                     }
                     .padding(16)
-                    .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color.quaternaryFill(0.45), in: RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(24)
             }
@@ -167,7 +167,7 @@ struct FeedbackView: View {
 
     private var diagnosticsPreview: some View {
         Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 5) {
-            diagnosticRow("Vorssaint", "\(diagnostics.appVersion) (\(diagnostics.appBuild))")
+            diagnosticRow("Unupunct MacTab", "\(diagnostics.appVersion) (\(diagnostics.appBuild))")
             diagnosticRow("macOS", diagnostics.macOS)
             if let model = diagnostics.macModel { diagnosticRow("Mac", model) }
             diagnosticRow(l10n.s.languageLabel, diagnostics.language)

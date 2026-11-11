@@ -208,7 +208,7 @@ final class BoostLookaheadBufferListLimiter {
         guard frames > 0, channels > 0, channels <= channelCapacity else { return false }
         if channels != activeChannels {
             delay.withUnsafeMutableBufferPointer {
-                $0.baseAddress?.update(repeating: 0, count: $0.count)
+                $0.baseAddress?.assign(repeating: 0, count: $0.count)
             }
             position = 0
             filledFrames = 0

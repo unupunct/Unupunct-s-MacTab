@@ -14,6 +14,7 @@ struct NotchScrollEdgeFade: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
+        #if compiler(>=6.0)
         if #available(macOS 15, *) {
             content
                 .onScrollGeometryChange(for: Edges.self) { geometry in
@@ -29,6 +30,9 @@ struct NotchScrollEdgeFade: ViewModifier {
         } else {
             content
         }
+        #else
+        content
+        #endif
     }
 
     private struct Edges: Equatable { var start: Bool; var end: Bool }

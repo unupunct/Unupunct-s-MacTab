@@ -28,7 +28,7 @@ struct QuickLauncherView: View {
         Array(repeating: GridItem(.flexible(), spacing: notchSize == nil ? 10 : 6), count: notchSize == nil ? QuickLauncherService.columns : NotchSupport.toolColumns)
     }
 
-    var body: some View {
+    private var part0: some View {
         VStack(alignment: .leading, spacing: 12) {
             // In the notch the island's top row holds the customize toggle,
             // and with a utility open the way back and the utility's name, so
@@ -70,6 +70,10 @@ struct QuickLauncherView: View {
                 }
             }
         })
+    }
+
+    private var part1: some View {
+        part0
         .onChange(of: features.revision, initial: true) { launcher.refreshAvailability() }
         .onChange(of: launcher.presentationID) { _, _ in
             hoveredItem = nil
@@ -86,6 +90,10 @@ struct QuickLauncherView: View {
         // by hand (no autoresizing window): recompute after open and close,
         // and also when rows inside the card appear or disappear (the
         // clipboard limit picker and the bare-hex toggle are conditional).
+    }
+
+    var body: some View {
+        part1
         .onChange(of: launcher.editingOptionsItem) { _, _ in
             launcher.refreshPanelLayout()
         }
@@ -316,7 +324,7 @@ struct QuickLauncherView: View {
                     .font(.system(size: notchSize == nil ? 10.5 : 10, weight: .medium))
                     .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
-                    .lineLimit(2, reservesSpace: true)
+                    .lineLimitCompat(2, reservesSpace: true)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, titleInset)
             }
@@ -351,7 +359,7 @@ struct QuickLauncherView: View {
             Text(l10n.s.launcherAddSection.uppercased())
                 .font(.system(size: 9, weight: .bold))
                 .foregroundStyle(.secondary)
-                .tracking(0.5)
+                .trackingCompat(0.5)
             FlowLayoutLite(spacing: 6) {
                 ForEach(launcher.hiddenItems) { item in
                     Button {
@@ -551,11 +559,11 @@ struct QuickLauncherView: View {
     private func iconColor(_ item: QuickLauncherItem) -> Color {
         if item == .micMute, micMute.isMuted { return .red }
         if isActive(item) { return .accentColor }
-        return .primary.opacity(0.85)
+        return Color.primary.opacity(0.85)
     }
 
     private func iconBackground(_ item: QuickLauncherItem, isSelected: Bool, isHovered: Bool) -> Color {
-        if notchSize != nil { return .white.opacity(isSelected || isHovered ? 0.14 : 0.065) }
+        if notchSize != nil { return Color.white.opacity(isSelected || isHovered ? 0.14 : 0.065) }
         if isActive(item) { return Color.accentColor.opacity(0.18) }
         if isSelected || isHovered { return Color.primary.opacity(0.1) }
         return Color.primary.opacity(0.07)
@@ -563,7 +571,8 @@ struct QuickLauncherView: View {
 }
 
 /// Minimal wrapping layout for the hidden-item chips.
-struct FlowLayoutLite: Layout {
+@available(macOS 13.0, *)
+struct FlowLayoutLiteImpl: Layout {
     var spacing: CGFloat = 6
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {

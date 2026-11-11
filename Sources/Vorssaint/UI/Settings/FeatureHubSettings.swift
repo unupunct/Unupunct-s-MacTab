@@ -754,7 +754,7 @@ private struct FeatureHubRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     Text(feature.hubTitle(l10n.s, hub: hub))
-                        .foregroundStyle(installed ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+                        .foregroundStyle(installed ? AnyShapeStyle(HierarchicalShapeStyle.primary) : AnyShapeStyle(HierarchicalShapeStyle.secondary))
                     if feature == .notch {
                         Text(hub.experimentalBadge.uppercased())
                             .font(.system(size: 9, weight: .bold))
@@ -991,7 +991,7 @@ private struct PermissionPortalRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
                     Text(permission.name(hub))
-                        .fontWeight(.medium)
+                        .fontWeightCompat(.medium)
                     statusChip
                 }
                 Text(permission.explainer(hub))

@@ -5,10 +5,20 @@ import Foundation
 
 /// Static identity of the app, shared by UI, notifications and tooling.
 enum AppInfo {
-    static let name = "Vorssaint"
-    static let copyright = "© 2026 Vorssaint"
-    static let websiteURL = URL(string: "https://vorssaint.com")!
-    static let repositoryURL = URL(string: "https://github.com/vorssaint/vorssaint-utils")!
+    // Unofficial Monterey port: its own name and bundle identifier (TRADEMARKS.md).
+    static let name = "Unupunct MacTab"
+    static let copyright = "© 2026 Unupunct MacTab contributors (GPL-3.0-or-later). Unofficial macOS 12 port."
+    /// This fork's bundle identifier. Never the upstream app's.
+    static let portBundleID = "local.unupunct.mactab"
+    /// True for the Monterey port: it has no update feed of its own, so it never
+    /// checks for, downloads or installs an update.
+    static var isUnofficialPort: Bool { Bundle.main.bundleIdentifier == portBundleID }
+    static let websiteURL = URL(string: "https://github.com/unupunct/Unupunct-s-MacTab")!
+    static let releasesURL = URL(string: "https://github.com/unupunct/Unupunct-s-MacTab/releases")!
+    /// Where this program's source lives (the GPL source offer): the port's own repository.
+    static let repositoryURL = URL(string: "https://github.com/unupunct/Unupunct-s-MacTab")!
+    /// The upstream project this is based on.
+    static let upstreamRepositoryURL = URL(string: "https://github.com/vorssaint/vorssaint-utils")!
     static let coffeeURL = URL(string: "https://buymeacoffee.com/vorssaint")!
     static let discordURL = URL(string: "https://discord.gg/M6BwWH4BJp")!
     static let socialURL = URL(string: "https://x.com/vorssaint")!

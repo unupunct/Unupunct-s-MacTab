@@ -59,7 +59,7 @@ struct NotchAgentCardHeader<Accessory: View>: View {
             }
             Text(title)
                 .font(.system(size: 10.5, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.9))
+                .foregroundStyle(Color.white.opacity(0.9))
                 .lineLimit(1)
             Spacer(minLength: 4)
             accessory
@@ -87,13 +87,13 @@ struct NotchAgentMeter: View {
         let fraction = value.isFinite ? min(1, max(0, value)) : 0
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
-                Capsule(style: .continuous).fill(.white.opacity(0.13))
+                Capsule(style: .continuous).fill(Color.white.opacity(0.13))
                 Capsule(style: .continuous)
                     .fill(tint.opacity(dimmed ? 0.45 : 0.92))
                     .frame(width: max(fraction > 0 ? height : 0, proxy.size.width * fraction))
                 if let pace, pace.isFinite, pace > 0.02, pace < 0.98 {
                     RoundedRectangle(cornerRadius: 0.75)
-                        .fill(.white.opacity(0.85))
+                        .fill(Color.white.opacity(0.85))
                         .frame(width: 1.5, height: height + 5)
                         .offset(x: proxy.size.width * pace - 0.75)
                 }
@@ -114,7 +114,7 @@ struct NotchAgentRing: View {
     var body: some View {
         let fraction = value.isFinite ? min(1, max(0, value)) : 0
         ZStack {
-            Circle().stroke(.white.opacity(0.18), lineWidth: lineWidth)
+            Circle().stroke(Color.white.opacity(0.18), lineWidth: lineWidth)
             Circle()
                 .trim(from: 0, to: fraction)
                 .stroke(tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
@@ -221,7 +221,7 @@ struct NotchAgentBars: View {
                     VStack(spacing: 0) {
                         Spacer(minLength: 0)
                         if total <= 0 {
-                            Capsule().fill(.white.opacity(0.1)).frame(height: 2)
+                            Capsule().fill(Color.white.opacity(0.1)).frame(height: 2)
                         } else {
                             VStack(spacing: 0) {
                                 ForEach(providers.indices.reversed(), id: \.self) { slot in
@@ -264,11 +264,10 @@ struct NotchAgentHeatmap: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let columns = Self.columns(days, calendar: calendar)
-            let spacing = Self.spacing
-            let cell = min((proxy.size.height - spacing * 6) / 7,
-                           (proxy.size.width - spacing * CGFloat(max(0, columns.count - 1))) / CGFloat(max(1, columns.count)))
-            let levels = thresholds
+            let columns: [[AgentBucket?]] = Self.columns(days, calendar: calendar)
+            let spacing: CGFloat = Self.spacing
+            let cell: CGFloat = Self.cellSize(in: proxy.size, columnCount: columns.count, spacing: spacing)
+            let levels: [Double] = thresholds
             HStack(alignment: .top, spacing: spacing) {
                 ForEach(Array(columns.enumerated()), id: \.offset) { _, week in
                     VStack(spacing: spacing) {
@@ -276,11 +275,11 @@ struct NotchAgentHeatmap: View {
                             if let day = week[row] {
                                 let value = day.total.weight(byCost: byCost)
                                 RoundedRectangle(cornerRadius: min(2.5, cell / 3), style: .continuous)
-                                    .fill(.white.opacity(opacity(value, levels: levels)))
+                                    .fill(Color.white.opacity(opacity(value, levels: levels)))
                                     .overlay {
                                         if hovered == day.start || calendar.isDateInToday(day.start) {
                                             RoundedRectangle(cornerRadius: min(2.5, cell / 3), style: .continuous)
-                                                .strokeBorder(.white.opacity(hovered == day.start ? 0.9 : 0.45), lineWidth: 1)
+                                                .strokeBorder(Color.white.opacity(hovered == day.start ? 0.9 : 0.45), lineWidth: 1)
                                         }
                                     }
                                     .frame(width: cell, height: cell)
@@ -298,6 +297,13 @@ struct NotchAgentHeatmap: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
         .accessibilityHidden(true)
+    }
+
+    private static func cellSize(in size: CGSize, columnCount: Int, spacing: CGFloat) -> CGFloat {
+        let byHeight: CGFloat = (size.height - spacing * 6) / 7
+        let gaps: CGFloat = spacing * CGFloat(max(0, columnCount - 1))
+        let byWidth: CGFloat = (size.width - gaps) / CGFloat(max(1, columnCount))
+        return min(byHeight, byWidth)
     }
 
     /// Days laid into weeks that start on the reader's first weekday.

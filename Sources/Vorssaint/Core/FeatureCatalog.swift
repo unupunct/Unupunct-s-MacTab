@@ -225,7 +225,9 @@ extension AppFeature {
     }
 
     func isAvailable(in defaults: UserDefaults) -> Bool {
-        defaults.bool(forKey: availabilityKey)
+        // Monterey port: a feature this system cannot run is never available.
+        if isUnsupportedOnThisSystem { return false }
+        return defaults.bool(forKey: availabilityKey)
     }
 
     /// The feature's own enable keys; any one being true means the feature is

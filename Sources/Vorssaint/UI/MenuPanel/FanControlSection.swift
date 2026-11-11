@@ -217,8 +217,7 @@ struct FanControlCardContent: View {
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(snapshot.isCooling ? AnyShapeStyle(Color.cyan)
                                                      : AnyShapeStyle(Color.secondary))
-                .symbolEffect(.variableColor.iterative, options: .repeating,
-                              isActive: snapshot.isCooling)
+                .symbolVariableColorCompat(reversing: false, isActive: snapshot.isCooling)
                 .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 1) {

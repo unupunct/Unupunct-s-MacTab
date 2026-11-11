@@ -72,15 +72,15 @@ struct NotchWatchView: View {
             }
             Group {
                 if let target = watch.target, let window = target.windowTitle, window != target.appName {
-                    Text("\(Text(target.appName).fontWeight(.semibold)) \(Text("· " + window).foregroundStyle(.secondary))")
+                    Text(target.appName).fontWeightCompat(.semibold) + Text(" ") + Text("· " + window).foregroundColor(.secondary)
                 } else {
-                    Text(watchedTitle).fontWeight(.semibold)
+                    Text(watchedTitle).fontWeightCompat(.semibold)
                 }
             }
             .lineLimit(1).truncationMode(.middle)
         }
         .font(.system(size: 12))
-        .foregroundStyle(.white.opacity(0.85))
+        .foregroundStyle(Color.white.opacity(0.85))
         .help(watchedTitle)
     }
 
@@ -167,7 +167,7 @@ private struct NotchWatchAreaCard: View {
                           systemImage: watch.permissionMissing ? "lock" : "eye.slash")
                         .font(.caption).multilineTextAlignment(.center)
                         .padding(8)
-                        .background(.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .background(Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -191,7 +191,7 @@ private struct NotchWatchAreaCard: View {
         }
         .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .accessibilityElement(children: .combine)
     }
 }
@@ -253,10 +253,10 @@ private struct NotchWatchRuleRow: View {
             .padding(.horizontal, 8)
             .frame(height: 24)
             .frame(maxWidth: 180)
-            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .strokeBorder(.white.opacity(focused ? 0.34 : 0), lineWidth: 1)
+                    .strokeBorder(Color.white.opacity(focused ? 0.34 : 0), lineWidth: 1)
             }
             .accessibilityLabel(text.condition(watch.condition))
     }
@@ -302,16 +302,16 @@ private struct NotchWatchSetupView: View {
     private var glyph: some View {
         Image(systemName: NotchModule.watch.symbol)
             .font(.system(size: 26, weight: .light))
-            .foregroundStyle(.white.opacity(0.65))
+            .foregroundStyle(Color.white.opacity(0.65))
             .frame(width: 56, height: 56)
-            .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .accessibilityHidden(true)
     }
 
     private var copy: some View {
         Text(!enabled ? text.description : permissions.screenRecording ? text.setupHint : text.permissionHint)
             .font(.system(size: 12))
-            .foregroundStyle(.white.opacity(0.65))
+            .foregroundStyle(Color.white.opacity(0.65))
             .fixedSize(horizontal: false, vertical: true)
     }
 

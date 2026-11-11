@@ -76,7 +76,7 @@ struct AppUpdatesSettings: View {
                 Toggle(text.showInPanel, isOn: $showInPanel)
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .onAppear { updates.checkIfNeeded() }
     }
 

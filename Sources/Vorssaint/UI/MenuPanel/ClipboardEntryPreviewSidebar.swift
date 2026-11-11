@@ -98,7 +98,7 @@ struct ClipboardEntryPreviewSidebar: View {
         TextEditor(text: $draft)
             .font(.system(size: 12))
             .lineSpacing(2)
-            .scrollContentBackground(.hidden)
+            .scrollContentBackgroundHiddenCompat()
             .padding(8)
             .background(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)

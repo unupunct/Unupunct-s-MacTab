@@ -93,7 +93,7 @@ struct SuperKeySettings: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
     }
 
     /// The whole feature in one line: the key you hold, and the keys it stands

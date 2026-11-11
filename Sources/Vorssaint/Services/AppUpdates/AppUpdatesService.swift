@@ -166,7 +166,7 @@ final class AppUpdatesService: ObservableObject {
         let includeAppStore = UserDefaults.standard.bool(forKey: DefaultsKey.appUpdatesIncludeAppStore)
         let includeOnlineCatalog = UserDefaults.standard.bool(
             forKey: DefaultsKey.appUpdatesIncludeOnlineCatalog)
-        let country = Locale.current.region?.identifier
+        let country = Locale.current.regionCode
 
         workQueue.async { [weak self] in
             guard let self else { return }
@@ -867,7 +867,7 @@ final class AppUpdatesService: ObservableObject {
     /// package manager replace a running bundle is exactly what that updater
     /// exists to do safely.
     private static func isOwnBundle(_ bundleID: String) -> Bool {
-        bundleID == Bundle.main.bundleIdentifier || bundleID.hasPrefix("com.vorssaint")
+        bundleID == Bundle.main.bundleIdentifier || bundleID.hasPrefix("com.vorssaint") || bundleID.hasPrefix("local.unupunct")
     }
 
     private static let ownPackageTokens: Set<String> = ["vorssaint", "vorssaint@beta", "vorssaint-beta"]

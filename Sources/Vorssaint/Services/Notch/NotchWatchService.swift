@@ -255,7 +255,7 @@ final class NotchWatchService: ObservableObject {
                 guard self.generation == generation, self.isActive else { return }
                 let interval = self.pageVisible && NotchService.shared.expanded
                     ? NotchWatchSupport.visibleInterval : NotchWatchSupport.backgroundInterval
-                do { try await Task.sleep(for: .seconds(interval)) } catch { return }
+                do { try await Task.sleepCompat(seconds: interval) } catch { return }
             }
         }
     }

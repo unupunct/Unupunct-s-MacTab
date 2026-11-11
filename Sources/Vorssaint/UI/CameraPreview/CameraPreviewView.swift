@@ -118,7 +118,7 @@ struct CameraPreviewView: View {
         .menuIndicator(.hidden)
         .fixedSize()
         .foregroundStyle(.white)
-        .background(.black.opacity(0.55), in: Capsule())
+        .background(Color.black.opacity(0.55), in: Capsule())
         .accessibilityLabel(strings.cameraMenuLabel)
     }
 
@@ -133,11 +133,11 @@ struct CameraPreviewView: View {
         VStack(spacing: 10) {
             Image(systemName: icon)
                 .font(.system(size: 26, weight: .light))
-                .foregroundStyle(.white.opacity(0.55))
+                .foregroundStyle(Color.white.opacity(0.55))
             Text(text)
                 .font(.caption)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.white.opacity(0.8))
+                .foregroundStyle(Color.white.opacity(0.8))
                 .fixedSize(horizontal: false, vertical: true)
             extra()
         }

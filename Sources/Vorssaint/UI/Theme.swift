@@ -123,7 +123,7 @@ enum PanelSurface {
 func sectionTitle(_ text: String) -> some View {
     Text(text.uppercased())
         .font(.system(size: 10, weight: .semibold))
-        .kerning(0.5)
+        .kerningCompat(0.5)
         .foregroundStyle(.secondary)
 }
 

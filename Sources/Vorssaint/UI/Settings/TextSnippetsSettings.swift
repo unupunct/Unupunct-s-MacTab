@@ -130,7 +130,7 @@ struct TextSnippetsSettings: View {
                 .foregroundStyle(.secondary)
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .observesSecureInput(isActive: enabled || libraryEnabled)
         .sheet(isPresented: $creating) {
             SnippetEditor(text: text,
@@ -190,7 +190,7 @@ private struct SnippetRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(snippet.name.isEmpty ? snippet.trigger : snippet.name)
-                            .fontWeight(.medium)
+                            .fontWeightCompat(.medium)
                         Text(snippet.trigger)
                             .font(.caption.monospaced())
                             .padding(.horizontal, 5)
@@ -376,7 +376,7 @@ private struct SnippetEditor: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .formStyle(.columns)
+            .formStyleColumnsCompat()
             if triggerTooShort, !snippet.trigger.isEmpty {
                 Text(text.triggerTooShort)
                     .font(.caption)

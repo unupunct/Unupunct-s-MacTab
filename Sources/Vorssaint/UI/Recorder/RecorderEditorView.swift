@@ -63,6 +63,7 @@ struct RecorderEditorView: View {
 
     private var topBand: some View {
         HStack(spacing: 8) {
+            Group {
             BrandMark(width: 24, tint: Color(white: 0.92))
             Text(strings.editorTitle)
                 .font(.system(size: 13, weight: .semibold))
@@ -93,6 +94,8 @@ struct RecorderEditorView: View {
             presetsMenu
 
             Spacer(minLength: 10)
+            }
+            Group {
             if let url = model.lastExportedURL, !model.isExporting {
                 ViewThatFits(in: .horizontal) {
                     finishedFileChip(url).fixedSize()
@@ -149,12 +152,13 @@ struct RecorderEditorView: View {
             } primaryAction: {
                 controller.save()
             }
-            .menuStyle(.button)
+            .menuStyleButtonCompat()
             .buttonStyle(.borderedProminent)
             .disabled(model.isExporting)
             .screenshotSafeHelp("⌘S")
             .fixedSize()
             .layoutPriority(1)
+            }
         }
         .padding(.leading, 76)
         .padding(.trailing, 14)
@@ -230,7 +234,7 @@ struct RecorderEditorView: View {
                     // next click is the aim.
                     Color.black.opacity(0.001)
                         .contentShape(Rectangle())
-                        .onTapGesture { location in
+                        .onTapLocationCompat { location in
                             model.aim(at: location, in: proxy.size)
                         }
                     VStack {
@@ -531,9 +535,9 @@ struct RecorderEditorView: View {
 
     private var exportProgressLabel: String {
         switch model.exportPhase {
-        case .saving: strings.exportingLabel
-        case .compressing: shareStrings.compressing
-        case .uploading: shareStrings.uploading
+        case .saving: return strings.exportingLabel
+        case .compressing: return shareStrings.compressing
+        case .uploading: return shareStrings.uploading
         }
     }
 
@@ -833,7 +837,7 @@ private struct Filmstrip: View {
                             }
                             .onEnded { _ in dragPicksCut = nil }
                     )
-                    .onTapGesture { location in
+                    .onTapLocationCompat { location in
                         // A click goes to that moment and puts down any
                         // selection, the way clicking away works everywhere.
                         model.setCutSelection(nil)
@@ -894,7 +898,7 @@ private struct Filmstrip: View {
                 playhead(at: position(model.sourceTime, width: width), height: height)
             }
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .coordinateSpace(.named(coordinateSpace))
+            .coordinateSpace(name: coordinateSpace)
         }
     }
 
@@ -930,7 +934,7 @@ private struct Filmstrip: View {
         Rectangle()
             .fill(Color.white)
             .frame(width: 2, height: height)
-            .shadow(color: .black.opacity(0.6), radius: 1)
+            .shadow(color: Color.black.opacity(0.6), radius: 1)
             .offset(x: max(0, x - 1))
             .allowsHitTesting(false)
     }

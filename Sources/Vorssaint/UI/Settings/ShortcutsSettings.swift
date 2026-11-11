@@ -72,7 +72,7 @@ struct ShortcutsSettings: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .onAppear { revealKeyboardBrightnessShortcuts() }
         .onChange(of: router.requestID) { _, _ in revealKeyboardBrightnessShortcuts() }
         .sheet(isPresented: $showsAppShortcuts) {

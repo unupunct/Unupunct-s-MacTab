@@ -174,7 +174,7 @@ struct NotchAudioControls: View {
             Image(systemName: mixer.systemOutputMuted == true ? "speaker.slash.fill" : "speaker.wave.2.fill")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(mixer.systemOutputMuted == true ? Color.red : Color.white)
-                .contentTransition(.symbolEffect(.replace))
+                .contentTransitionSymbolReplaceCompat()
                 .animation(reduceMotion ? nil : .smooth(duration: 0.24), value: mixer.systemOutputMuted)
                 .frame(width: 18, height: 18)
                 .contentShape(Rectangle())
@@ -358,7 +358,7 @@ private struct NotchKeyboardLightControls: View {
         } label: {
             Image(systemName: service.keyboardLightEnabled == false ? "light.min" : "light.max")
                 .font(.system(size: 12, weight: .medium))
-                .contentTransition(.symbolEffect(.replace))
+                .contentTransitionSymbolReplaceCompat()
                 .animation(reduceMotion ? nil : .smooth(duration: 0.24), value: service.keyboardLightEnabled)
                 .frame(width: 18, height: 18)
                 .contentShape(Rectangle())
@@ -426,8 +426,8 @@ struct NotchActionTile: View {
         Button(action: action) {
             VStack(spacing: 6) {
                 Image(systemName: symbol).font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(active ? accent.glyph : .white.opacity(0.85))
-                    .contentTransition(.symbolEffect(.replace))
+                    .foregroundStyle(active ? accent.glyph : Color.white.opacity(0.85))
+                    .contentTransitionSymbolReplaceCompat()
                     .frame(width: 40, height: 40)
                     .background(active ? accent.fill : Color.white.opacity(0.075), in: Circle())
                     .animation(reduceMotion ? nil : .smooth(duration: 0.26), value: symbol)
@@ -478,7 +478,7 @@ struct NotchActionTile: View {
 
     private func readingTitle(_ text: String) -> some View {
         Text(text).font(.system(size: 11, weight: .medium))
-            .foregroundStyle(.white.opacity(0.7))
+            .foregroundStyle(Color.white.opacity(0.7))
     }
 }
 

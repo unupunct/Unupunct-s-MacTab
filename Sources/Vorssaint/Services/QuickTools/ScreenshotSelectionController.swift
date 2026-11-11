@@ -1805,8 +1805,10 @@ private final class PassThroughHostingView<Content: View>: NSHostingView<Content
     /// intrinsic sizing, including the full-screen button measured by layout.
     convenience init(fixedFrameRootView rootView: Content) {
         self.init(rootView: rootView)
-        sizingOptions = []
-        safeAreaRegions = []
+        if #available(macOS 13.0, *) { sizingOptions = [] }
+        #if compiler(>=5.9) // safeAreaRegions is absent from older SDKs
+        if #available(macOS 13.3, *) { safeAreaRegions = [] }
+        #endif
         translatesAutoresizingMaskIntoConstraints = true
     }
     /// Capture actions remain clickable while the Dynamic Island panel owns
@@ -1857,7 +1859,7 @@ private struct FullScreenCaptureButton: View {
             isHovered = $0
             hoverChanged($0)
         }
-        .shadow(color: .black.opacity(0.20), radius: 12, y: 5)
+        .shadow(color: Color.black.opacity(0.20), radius: 12, y: 5)
         .help(FeatureStrings.screenshot(l10n.language).fullScreenShortcutTitle)
         .accessibilityLabel(FeatureStrings.screenshot(l10n.language).fullScreenCaptureButton)
     }
@@ -1964,7 +1966,7 @@ private struct CaptureGuideView: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
         }
-        .shadow(color: .black.opacity(0.22), radius: 18, y: 7)
+        .shadow(color: Color.black.opacity(0.22), radius: 18, y: 7)
         .allowsHitTesting(false)
     }
 
@@ -2051,7 +2053,7 @@ private struct UnifiedCaptureGuideContent: View {
             Capsule(style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
         }
-        .shadow(color: .black.opacity(0.16), radius: 10, y: 4)
+        .shadow(color: Color.black.opacity(0.16), radius: 10, y: 4)
     }
 
     private var escapeHint: some View {
@@ -2071,7 +2073,7 @@ private struct UnifiedCaptureGuideContent: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
         }
-        .shadow(color: .black.opacity(0.18), radius: 12, y: 5)
+        .shadow(color: Color.black.opacity(0.18), radius: 12, y: 5)
     }
 
     private var captureModePalette: some View {
@@ -2088,7 +2090,7 @@ private struct UnifiedCaptureGuideContent: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
         }
-        .shadow(color: .black.opacity(0.18), radius: 12, y: 5)
+        .shadow(color: Color.black.opacity(0.18), radius: 12, y: 5)
     }
 
     private func captureModeButton(_ tool: ScreenCaptureTool) -> some View {
@@ -2205,6 +2207,6 @@ private struct RecorderSelectionAudioControls: View {
             Capsule(style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
         }
-        .shadow(color: .black.opacity(0.16), radius: 10, y: 4)
+        .shadow(color: Color.black.opacity(0.16), radius: 10, y: 4)
     }
 }

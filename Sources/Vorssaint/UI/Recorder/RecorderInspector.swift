@@ -66,7 +66,7 @@ struct RecorderInspector: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
         }
-        .scrollIndicators(.never)
+        .scrollIndicatorsCompat(.never)
         .frame(width: 272)
         .background(.ultraThinMaterial)
     }
@@ -157,7 +157,7 @@ struct RecorderInspector: View {
                         .foregroundStyle(.white)
                         .padding(3)
                 }
-                .shadow(color: .black.opacity(0.24), radius: 3, y: 2)
+                .shadow(color: Color.black.opacity(0.24), radius: 3, y: 2)
         }
         .frame(width: 48, height: 36)
         .overlay {
@@ -349,12 +349,11 @@ struct RecorderInspector: View {
             .keyboardShortcut(.escape, modifiers: [])
             sectionTitle(strings.thisTextLabel)
 
-            TextField(strings.textPlaceholder, text: Binding(
+            MultilineTextFieldCompat(title: strings.textPlaceholder, text: Binding(
                 get: { overlay.text },
                 set: { value in model.updateSelectedText { $0.text = value } }),
-                      axis: .vertical)
+                                     maxLines: 3)
                 .textFieldStyle(.roundedBorder)
-                .lineLimit(1...3)
                 .focused($textFieldFocused)
                 .onSubmit { model.commitZoomEdit() }
                 .onChange(of: textFieldFocused) { _, focused in
@@ -743,7 +742,7 @@ struct RecorderInspector: View {
             .font(.system(size: 11, weight: .semibold))
             .foregroundStyle(Color(white: 0.62))
             .textCase(.uppercase)
-            .kerning(0.4)
+            .kerningCompat(0.4)
     }
 
     private func boolBinding(_ path: WritableKeyPath<RecorderEditDocument, Bool>) -> Binding<Bool> {

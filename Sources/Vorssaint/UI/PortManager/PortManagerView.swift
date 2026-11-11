@@ -55,7 +55,7 @@ struct PortManagerView: View {
             } else {
                 List(service.filteredEntries) { entry in
                     portRow(entry)
-                        .listRowSeparator(.hidden)
+                        .listRowSeparatorHiddenCompat()
                 }
                 .listStyle(.inset)
             }

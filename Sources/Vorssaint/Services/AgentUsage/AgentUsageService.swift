@@ -490,7 +490,7 @@ final class AgentUsageService: ObservableObject {
     private func closeEndedTurns(_ roots: [AgentLogRoot], atLaunch: Bool = false) -> Bool {
         guard store.showsClaudeTurn else { return false }
         let folders = roots.filter { $0.provider == .claude }
-            .map { $0.url.deletingLastPathComponent().appending(path: "sessions", directoryHint: .isDirectory) }
+            .map { $0.url.deletingLastPathComponent().appendingCompat(path: "sessions", directoryHint: .isDirectory) }
         return store.closeEndedTurns(AgentSessionRegistry.read(folders), atLaunch: atLaunch)
     }
 

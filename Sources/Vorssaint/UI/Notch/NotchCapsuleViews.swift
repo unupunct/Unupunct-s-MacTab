@@ -35,7 +35,7 @@ private extension Text {
     }
 
     func capsuleDetail() -> some View {
-        font(Font(CapsuleLayout.detailFont as CTFont)).foregroundStyle(.white.opacity(0.62)).lineLimit(1)
+        font(Font(CapsuleLayout.detailFont as CTFont)).foregroundStyle(Color.white.opacity(0.62)).lineLimit(1)
     }
 }
 
@@ -116,7 +116,7 @@ struct NotchCapsuleNoticeView: View {
             Text(notice.detail)
                 .font(Font(CapsuleLayout.levelFont as CTFont))
                 .lineLimit(1)
-                .contentTransition(.numericText())
+                .contentTransitionNumericCompat()
                 .frame(width: CapsuleLayout.levelReadingWidth(notice.detail), alignment: .trailing)
         }
         .animation(reduceMotion ? nil : .easeOut(duration: 0.14), value: notice.detail)
@@ -239,7 +239,7 @@ struct NotchCapsuleRestingView: View {
                     EmptyView()
                 }
             }
-            .foregroundStyle(.white.opacity(0.9))
+            .foregroundStyle(Color.white.opacity(0.9))
         }
     }
 }
@@ -609,7 +609,7 @@ struct NotchCapsuleCalendarStrip: View {
                                     Self.clock(remaining, ongoing: countdown.ongoing)
                                     Text(NotchCalendarSupport.timeText(countdown, locale: l10n.language.formattingLocale()))
                                         .font(Font(CapsuleLayout.smallFont as CTFont))
-                                        .foregroundStyle(.white.opacity(0.55))
+                                        .foregroundStyle(Color.white.opacity(0.55))
                                         .lineLimit(1).fixedSize()
                                 }
                                 Self.clock(remaining, ongoing: countdown.ongoing)
@@ -641,7 +641,7 @@ struct NotchCapsuleCalendarStrip: View {
     private static func dot(_ event: NotchCalendarEvent) -> some View {
         Circle().fill(event.color.color)
             .frame(width: CapsuleLayout.calendarDotSide, height: CapsuleLayout.calendarDotSide)
-            .overlay { Circle().strokeBorder(.white.opacity(0.5), lineWidth: 0.5) }
+            .overlay { Circle().strokeBorder(Color.white.opacity(0.5), lineWidth: 0.5) }
     }
 
     /// Time left in an event under way takes the agenda's "happening now"

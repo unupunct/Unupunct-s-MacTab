@@ -106,7 +106,7 @@ struct NotchMascotSettings: View {
             }
         }
         .padding(12)
-        .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Color.quaternaryFill(0.35), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     // MARK: Appearance
@@ -337,7 +337,7 @@ private struct NotchMascotStageCard: View {
                 .opacity(awake ? 1 : 0.45)
         }
         .padding(16)
-        .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(Color.quaternaryFill(0.35), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .onChange(of: awake) { _, awake in
             // A moment still playing ends; switched on, it wakes up with a
             // stretch, and off, it yawns and dozes off. Hidden a moment ago
@@ -518,7 +518,7 @@ private struct NotchMascotStage: View {
         .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: caption?.title)
         .frame(width: width, height: Self.height, alignment: .top)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(.primary.opacity(0.07)))
+        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(Color.primary.opacity(0.07)))
     }
 
     /// Menus on the left and status icons on the right, as far as they fit
@@ -533,11 +533,11 @@ private struct NotchMascotStage: View {
         let shownIcons = Self.fitting(Array(repeating: icon, count: 4), gap: gap, in: room)
         return HStack(spacing: gap) {
             ForEach(Array(shownMenus.enumerated()), id: \.offset) { _, menu in
-                Capsule().fill(.primary.opacity(0.2)).frame(width: menu, height: bar * 0.2)
+                Capsule().fill(Color.primary.opacity(0.2)).frame(width: menu, height: bar * 0.2)
             }
             Spacer(minLength: 0)
             ForEach(Array(shownIcons.enumerated()), id: \.offset) { _, size in
-                Circle().fill(.primary.opacity(0.2)).frame(width: size, height: size)
+                Circle().fill(Color.primary.opacity(0.2)).frame(width: size, height: size)
             }
         }
         .padding(.horizontal, inset)
@@ -824,7 +824,7 @@ private struct NotchCommandBarStyleSample: View {
     private var field: some View {
         HStack(spacing: 4) {
             NotchMascotView(look: look, size: 10, idles: false).frame(width: 10, height: 10)
-            Capsule().fill(.white.opacity(0.28)).frame(width: 38, height: 3)
+            Capsule().fill(Color.white.opacity(0.28)).frame(width: 38, height: 3)
         }
         .frame(width: 68, alignment: .leading)
     }

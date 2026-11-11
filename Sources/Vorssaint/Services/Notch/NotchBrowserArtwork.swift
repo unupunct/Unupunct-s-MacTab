@@ -151,7 +151,7 @@ final class NotchBrowserArtwork {
             guard !askedApple, let saved, NotchBrowserArtworkSupport.asksAppleMusic(
                       tabs: saved.tabs, savedAt: saved.modified, lookupStarted: lookup.started),
                   let search = NotchBrowserArtworkSupport.appleMusicSearchURL(
-                      title: lookup.title, artist: lookup.artist, country: Locale.current.region?.identifier)
+                      title: lookup.title, artist: lookup.artist, country: Locale.current.regionCode)
             else { return retry(index, lookup, askedApple: askedApple) }
             load(search, accept: "application/json", for: lookup) { [self] reply in
                 guard let reply, let cover = NotchBrowserArtworkSupport.appleMusicArtworkURL(
@@ -290,7 +290,7 @@ private final class NotchBrowserArtworkDownload: NSObject, URLSessionDataDelegat
         configuration.urlCredentialStorage = nil
         configuration.httpCookieStorage = nil
         configuration.httpShouldSetCookies = false
-        configuration.httpAdditionalHeaders = ["User-Agent": "Vorssaint", "Accept": accept]
+        configuration.httpAdditionalHeaders = ["User-Agent": "Unupunct MacTab", "Accept": accept]
         let delegate = NotchBrowserArtworkDownload(completion: completion)
         let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
         session.dataTask(with: url).resume()

@@ -13,7 +13,7 @@ enum FanControlIdentifiers {
     #if VORSSAINT_DEVELOPMENT
     static let appBundleID = "com.vorssaint.utils.dev"
     #else
-    static let appBundleID = "com.vorssaint.utils"
+    static let appBundleID = "local.unupunct.mactab"
     #endif
 
     static let helperID = "\(appBundleID).fan-control"

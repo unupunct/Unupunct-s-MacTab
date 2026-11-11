@@ -259,7 +259,7 @@ final class NotchLockScreenService {
         // Set to false, the whole frame would take them even with nothing shown.
         if !interactive { panel.ignoresMouseEvents = true }
         let host = NotchLockScreenHostingView(rootView: AnyView(content))
-        host.sizingOptions = []
+        host.setPreferredContentSizing(false)
         panel.contentView = host
         panel.setFrame(frame, display: false)
         return panel

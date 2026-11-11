@@ -67,7 +67,7 @@ struct GeneralSettings: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 Button(l10n.s.permissionOpenSettings) {
-                    SMAppService.openSystemSettingsLoginItems()
+                    AppServiceCompat.openSystemSettingsLoginItems()
                 }
             } else if let loginError {
                 Text(loginError)
@@ -145,7 +145,12 @@ struct GeneralSettings: View {
         }
     }
 
+    @ViewBuilder
     private var feedbackCard: some View {
+        // Feedback goes to the upstream maintainer's inbox; this unofficial port has none.
+        if AppInfo.isUnofficialPort {
+            EmptyView()
+        } else {
         SettingsCard {
             SettingsRow(symbol: "bubble.left.and.text.bubble.right", title: feedbackStrings.sectionTitle,
                         caption: feedbackStrings.sectionCaption) {
@@ -153,6 +158,7 @@ struct GeneralSettings: View {
                     appDelegate()?.openFeedbackWindow()
                 }
             }
+        }
         }
     }
 

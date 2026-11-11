@@ -46,11 +46,12 @@ struct CPUCoreMatrix: View {
     }
 
     private func coreGroup(_ segment: CPUCoreSegment, strings: CPUCoreFeatureStrings) -> some View {
-        let name = switch segment.group.name.lowercased() {
-        case "super": strings.superCores
-        case "performance": strings.performanceCores
-        case "efficiency": strings.efficiencyCores
-        default: segment.group.name
+        let name: String
+        switch segment.group.name.lowercased() {
+        case "super": name = strings.superCores
+        case "performance": name = strings.performanceCores
+        case "efficiency": name = strings.efficiencyCores
+        default: name = segment.group.name
         }
         return VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 4) {

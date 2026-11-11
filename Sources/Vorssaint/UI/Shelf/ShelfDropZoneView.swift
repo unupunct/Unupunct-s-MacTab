@@ -114,12 +114,12 @@ private struct ShelfTopCenterBadge: View {
                 BrandMark(width: 18, tint: foreground)
             }
             Text(l10n.s.shelfTitle)
-                .font(.system(.callout, weight: .medium))
+                .font(.system(.callout).weight(.medium))
                 .lineLimit(1)
                 .frame(maxWidth: 150, alignment: .leading)
             if shelf.itemCount > 0 {
                 Text("\(shelf.itemCount)")
-                    .font(.system(.subheadline, weight: .semibold))
+                    .font(.system(.subheadline).weight(.semibold))
                     .monospacedDigit()
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
@@ -139,7 +139,7 @@ private struct ShelfTopCenterBadge: View {
                 .strokeBorder(targeted ? Color.accentColor : foreground.opacity(hovered ? 0.3 : 0.15),
                               lineWidth: targeted ? 2 : 1)
         )
-        .shadow(color: .black.opacity(colorScheme == .dark ? 0.25 : 0.12), radius: 5, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.12), radius: 5, x: 0, y: 2)
         .contentShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
         .onHover { hovered = $0 }
         .onTapGesture { shelf.expandDocked() }

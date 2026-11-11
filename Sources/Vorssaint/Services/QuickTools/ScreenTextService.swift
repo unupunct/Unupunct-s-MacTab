@@ -152,7 +152,7 @@ final class ScreenTextService: ObservableObject {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = level
         request.usesLanguageCorrection = true
-        request.automaticallyDetectsLanguage = automaticallyDetectLanguage
+        if #available(macOS 13.0, *) { request.automaticallyDetectsLanguage = automaticallyDetectLanguage }
         if !preferredLanguages.isEmpty,
            let supported = try? request.supportedRecognitionLanguages() {
             let available = preferredLanguages.filter { supported.contains($0) }

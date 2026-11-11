@@ -826,7 +826,7 @@ private struct ScreenshotQuickPreviewView: View {
             shareMenuChrome(Menu { shareDurations } label: { shareMenuLabel } primaryAction: {
                 share(.saved())
             }, help: "\(strings.shareSectionTitle) · \(ScreenshotShareDuration.saved().title(strings))")
-                .menuStyle(.button).buttonStyle(.bordered).controlSize(.small)
+                .menuStyleButtonCompat().buttonStyle(.bordered).controlSize(.small)
         }
     }
 

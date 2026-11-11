@@ -52,18 +52,18 @@ enum AgentClaudeServer {
     /// no sign-in of its own to check with.
     static func candidates(home: URL, searchPath: String? = nil) -> [URL] {
         // One list per line: Swift 6.0.3 cannot type-check them as one sum in time.
-        var folders: [String] = [home.appending(path: ".local/bin").path,
-                                 home.appending(path: ".claude/local").path, "/opt/homebrew/bin", "/usr/local/bin"]
+        var folders: [String] = [home.appendingCompat(path: ".local/bin").path,
+                                 home.appendingCompat(path: ".claude/local").path, "/opt/homebrew/bin", "/usr/local/bin"]
         folders += (searchPath ?? "").split(separator: ":").map(String.init).filter { $0.hasPrefix("/") }
         folders += toolFolders(home: home)
-        return folders.map { URL(fileURLWithPath: $0, isDirectory: true).appending(path: "claude") }
+        return folders.map { URL(fileURLWithPath: $0, isDirectory: true).appendingCompat(path: "claude") }
     }
 
     /// The folders that keep npm's global tools beside the Node that runs
     /// them, each manager's newest Node first, and Volta's, Bun's and pnpm's
     /// own. A Claude Code that needs Node finds it on this list too.
     static func toolFolders(home: URL) -> [String] {
-        let path = { (relative: String) -> String in home.appending(path: relative).path }
+        let path = { (relative: String) -> String in home.appendingCompat(path: relative).path }
         let fnm: [String] = ["Library/Application Support/fnm", ".local/share/fnm", ".fnm"].map(path)
         // One list per line, as above.
         var folders: [String] = [path(".volta/bin")]
@@ -119,7 +119,7 @@ enum AgentClaudeServer {
         environment.removeValue(forKey: "CLAUDECODE")
         if !profile.isDefault { environment["CLAUDE_CONFIG_DIR"] = profile.directory }
         environment["DISABLE_AUTOUPDATER"] = "1"
-        guard let data = try? Data(contentsOf: profile.configurationURL(home: home).appending(path: "settings.json")),
+        guard let data = try? Data(contentsOf: profile.configurationURL(home: home).appendingCompat(path: "settings.json")),
               let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
               let settings = json["env"] as? [String: Any] else { return environment }
         // Claude Code lets its settings override the environment, and reads

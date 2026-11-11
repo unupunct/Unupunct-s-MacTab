@@ -23,14 +23,14 @@ struct PanelUninstallerView: View {
             header
             content
         }
-        .dropDestination(for: URL.self) { urls, _ in
+        .dropURLsCompat(isTargeted: { dropTargeted = $0 }) { urls in
             let selected = selectFirstApp(from: urls)
             // The empty state explains a refusal, so the list gives way to it too.
             if selected || uninstaller.refusal != nil {
                 showingAppPicker = false
             }
             return selected
-        } isTargeted: { dropTargeted = $0 }
+        }
         .onAppear {
             PanelInteractionState.shared.viewKeepsPopoverOpen = true
             uninstaller.clearRefusal()

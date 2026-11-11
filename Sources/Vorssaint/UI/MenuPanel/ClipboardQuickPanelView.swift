@@ -232,7 +232,7 @@ struct ClipboardQuickPanelView: View {
                 Text(title.uppercased())
                     .font(.system(size: 9.5, weight: .semibold))
                     .foregroundStyle(.secondary)
-                    .tracking(0.6)
+                    .trackingCompat(0.6)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 6)
             }
@@ -387,7 +387,7 @@ private struct QuickEntryView: View, Equatable {
     /// would otherwise redraw the pane, and a long entry costs a frame or two
     /// each time.
     @State private var previewFollowTask: Task<Void, Never>?
-    private static let previewFollowDelay: Duration = .milliseconds(120)
+    private static let previewFollowDelay: Double = 0.12
 
     private var history: ClipboardHistoryService { .shared }
     private var l10n: L10n { .shared }
@@ -428,7 +428,7 @@ private struct QuickEntryView: View, Equatable {
             guard hovering, !previewIsEditing else { return }
             let id = entry.id
             previewFollowTask = Task { @MainActor in
-                try? await Task.sleep(for: Self.previewFollowDelay)
+                try? await Task.sleepCompat(seconds: Self.previewFollowDelay)
                 guard !Task.isCancelled else { return }
                 previewSelection.select(id)
             }
@@ -574,9 +574,13 @@ private struct QuickEntryView: View, Equatable {
     }
 
     /// A row puts a picture beside its label, a card above it.
-    private var pictureStack: AnyLayout {
-        isRow ? AnyLayout(HStackLayout(alignment: .center, spacing: 8))
-            : AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
+    @ViewBuilder
+    private func pictureStack<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        if isRow {
+            HStack(alignment: .center, spacing: 8) { content() }
+        } else {
+            VStack(alignment: .leading, spacing: 6) { content() }
+        }
     }
 
     /// A row keeps its picture small, a card gives it the room it has.

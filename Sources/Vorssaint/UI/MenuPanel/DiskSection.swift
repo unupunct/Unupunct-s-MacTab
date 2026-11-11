@@ -299,7 +299,7 @@ struct DiskSection: View {
                 Text(value.map { MetricFormat.bytesPerSec($0) } ?? l10n.s.networkMeasuring)
                     .font(.system(size: 13.5, weight: .semibold, design: .rounded))
                     .monospacedDigit()
-                    .contentTransition(.numericText())
+                    .contentTransitionNumericCompat()
                 Text(label)
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)

@@ -177,10 +177,10 @@ enum NotchActivityTests {
         suite.expect(NotchSupport.coversMenus(in: defaults), "missing menu-cover preferences use the visible default")
         defaults.set(false, forKey: DefaultsKey.notchCoversMenus)
         suite.expect(!NotchSupport.coversMenus(in: defaults), "an explicit choice to leave menus uncovered is preserved")
-        suite.expect(NotchTimerAlert.maximumDuration == .seconds(300), "an alarm is limited to five minutes")
+        suite.expect(NotchTimerAlert.maximumDuration == 300, "an alarm is limited to five minutes")
         var sounds = 0, stops = 0
-        var elapsed: Duration = .zero
-        let alert = NotchTimerAlert(interval: .milliseconds(5), now: { .now.advanced(by: elapsed) },
+        var elapsed: TimeInterval = 0
+        let alert = NotchTimerAlert(interval: 0.005, now: { NotchTimerAlert.continuousNow() + elapsed },
                                    sound: { sounds += 1 }, stopSound: { stops += 1 })
         defer { alert.stop() }
         func wait(until predicate: () -> Bool) {
@@ -206,7 +206,7 @@ enum NotchActivityTests {
         let mutedSounds = sounds
         settle()
         suite.expect(sounds == mutedSounds && stops > 0, "disabling sound stops current playback and repetition")
-        elapsed = .seconds(299)
+        elapsed = 299
         alert.start(enabled: true)
         suite.expect(sounds == mutedSounds + 1, "sound can resume within the original alarm budget")
         alert.suspend()
@@ -214,7 +214,7 @@ enum NotchActivityTests {
         settle()
         suite.expect(sounds == suspendedSounds, "suspension cancels sound playback")
         alert.start(enabled: true)
-        elapsed = .seconds(301)
+        elapsed = 301
         let expirationStops = stops
         wait { stops > expirationStops }
         let expiredSounds = sounds

@@ -9,7 +9,7 @@ import Combine
 final class NotchTimerService: ObservableObject {
     static let shared = NotchTimerService()
     @Published private(set) var session = NotchTimerSession()
-    private let origin = ContinuousClock.now
+    private let origin = NotchTimerAlert.continuousNow()
     private var completionTask: Task<Void, Never>?
     /// Wakes for the last seconds of a countdown, which the companion watches.
     private var countdownTask: Task<Void, Never>?
@@ -18,8 +18,7 @@ final class NotchTimerService: ObservableObject {
     private init() {}
 
     var now: TimeInterval {
-        let parts = origin.duration(to: .now).components
-        return Double(parts.seconds) + Double(parts.attoseconds) / 1e18
+        NotchTimerAlert.continuousNow() - origin
     }
 
     func syncWithPreferences() {
@@ -95,7 +94,7 @@ final class NotchTimerService: ObservableObject {
         guard !suspended, let deadline = session.deadline else { return }
         let remaining = max(0, deadline - now)
         completionTask = Task { @MainActor [weak self] in
-            do { try await Task.sleep(for: .seconds(remaining), clock: .continuous) }
+            do { try await Task.sleepCompat(seconds: remaining) }
             catch { return }
             guard let self, !Task.isCancelled, !self.suspended, NotchTimerSupport.isEnabled() else { return }
             self.completionTask = nil
@@ -115,7 +114,7 @@ final class NotchTimerService: ObservableObject {
         guard remaining > 1.5 else { return }
         let wait = max(0, remaining - NotchMascotMotion.countdownLead)
         countdownTask = Task { @MainActor [weak self] in
-            do { try await Task.sleep(for: .seconds(wait), clock: .continuous) }
+            do { try await Task.sleepCompat(seconds: wait) }
             catch { return }
             guard let self, !Task.isCancelled, !self.suspended, let deadline = self.session.deadline else { return }
             self.countdownTask = nil

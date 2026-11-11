@@ -338,9 +338,15 @@ enum NotchCalendarSupport {
 
     static func countdownAccessibilityText(until start: Date, now: Date, locale: Locale) -> String {
         let seconds = max(0, ceil(start.timeIntervalSince(now)))
-        return Duration.seconds(seconds).formatted(.units(
-            allowed: [.minutes, .seconds], width: .wide,
-            fractionalPart: .hide(rounded: .down)).locale(locale))
+        // DateComponentsFormatter exists on macOS 12 (Duration.formatted needs 13).
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.minute, .second]
+        formatter.unitsStyle = .full
+        formatter.zeroFormattingBehavior = .dropAll
+        var calendar = Calendar.current
+        calendar.locale = locale
+        formatter.calendar = calendar
+        return formatter.string(from: seconds.rounded(.down)) ?? "\(Int(seconds))"
     }
 
     /// The link Calendar resolves to one appointment. A series shares one

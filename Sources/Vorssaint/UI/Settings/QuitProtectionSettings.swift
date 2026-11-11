@@ -64,7 +64,7 @@ struct QuitProtectionSettings: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .sheet(item: $pickerShortcut) { shortcut in
             AppPickerView(onCancel: { pickerShortcut = nil }, onSelect: { url in
                 pickerShortcut = nil

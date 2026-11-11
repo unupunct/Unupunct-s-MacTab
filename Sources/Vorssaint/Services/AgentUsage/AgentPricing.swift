@@ -166,7 +166,7 @@ struct AgentPriceList: Equatable {
         let parts = text.split(separator: "-").compactMap { Int($0) }
         guard parts.count == 3, (2024...2100).contains(parts[0]) else { return nil }
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "UTC") ?? .gmt
+        calendar.timeZone = TimeZone(identifier: "UTC") ?? .gmtCompat
         let components = DateComponents(year: parts[0], month: parts[1], day: parts[2])
         guard components.isValidDate(in: calendar) else { return nil }
         return calendar.date(from: components)

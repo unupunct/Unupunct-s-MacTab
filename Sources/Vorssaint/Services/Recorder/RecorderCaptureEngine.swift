@@ -93,21 +93,31 @@ final class RecorderCaptureEngine: NSObject {
         // recording starts. Scaling it into that output makes later window
         // resizes follow the recording instead of leaving an empty frame.
         configuration.scalesToFit = region.windowID != nil
-        configuration.preservesAspectRatio = true
-        configuration.captureResolution = .best
+        #if compiler(>=5.9)
+        if #available(macOS 14.0, *) {
+            configuration.preservesAspectRatio = true
+            configuration.captureResolution = .best
+        }
+        #endif
         // The pointer is drawn by us afterwards, from the track the sampler
         // keeps, so it can be smoothed and pressed. Leaving the system one in
         // the frame would put two pointers in the video.
         configuration.showsCursor = false
-        configuration.shouldBeOpaque = true
+        #if compiler(>=5.9)
+        if #available(macOS 14.0, *) { configuration.shouldBeOpaque = true }
+        #endif
         // Shadows belong to the desktop, not to the thing being recorded, and
         // they would be baked into the frame the background is drawn behind.
-        configuration.ignoreShadowsDisplay = true
-        configuration.ignoreShadowsSingleWindow = true
+        #if compiler(>=5.9)
+        if #available(macOS 14.0, *) {
+            configuration.ignoreShadowsDisplay = true
+            configuration.ignoreShadowsSingleWindow = true
+        }
+        #endif
         if region.windowID == nil {
             configuration.sourceRect = Self.sourceRect(for: region)
         }
-        if capturesSystemAudio {
+        if capturesSystemAudio, #available(macOS 13.0, *) {
             configuration.capturesAudio = true
             configuration.sampleRate = 48_000
             configuration.channelCount = 2
@@ -118,7 +128,7 @@ final class RecorderCaptureEngine: NSObject {
         let stream = SCStream(filter: filter, configuration: configuration, delegate: self)
         do {
             try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: queue)
-            if capturesSystemAudio {
+            if capturesSystemAudio, #available(macOS 13.0, *) {
                 try stream.addStreamOutput(self, type: .audio, sampleHandlerQueue: queue)
             }
             guard !isCancelled() else { return .streamFailed }
@@ -325,16 +335,16 @@ extension RecorderCaptureEngine: SCStreamOutput {
             lifecycle.acceptsSamples && self.stream === stream
         }),
               CMSampleBufferIsValid(sampleBuffer),
-              let clock = stream.synchronizationClock else { return }
+              let clock = stream.synchronizationClockCompat else { return }
         let kind: Kind
         switch type {
         case .screen:
             guard Self.carriesPixels(sampleBuffer) else { return }
             kind = .video
-        case .audio:
-            kind = .systemAudio
         default:
-            return
+            // System audio through ScreenCaptureKit exists from macOS 13.
+            guard #available(macOS 13.0, *), type == .audio else { return }
+            kind = .systemAudio
         }
         guard let synchronized = RecorderSampleTiming.converted(sampleBuffer,
             from: clock, to: CMClockGetHostTimeClock()) else { return }

@@ -88,7 +88,7 @@ struct NotchTimerView: View {
                 .padding(.horizontal, NotchTimerSupport.StartButton.padding)
                 .frame(height: NotchLayout.timerStartHeight)
                 .foregroundStyle(.orange)
-                .background(.orange.opacity(0.18), in: Capsule())
+                .background(Color.orange.opacity(0.18), in: Capsule())
                 .contentShape(Capsule())
         }
         .buttonStyle(NotchButtonStyle(cornerRadius: NotchLayout.timerStartHeight / 2))
@@ -123,7 +123,7 @@ struct NotchTimerView: View {
                 Image(systemName: "chevron.down")
                     .font(.system(size: 9, weight: .semibold))
             }
-            .foregroundStyle(.white.opacity(0.85))
+            .foregroundStyle(Color.white.opacity(0.85))
             .padding(.horizontal, NotchTimerSupport.ModePicker.labelPadding)
             .frame(height: 28)
             .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
@@ -152,7 +152,7 @@ struct NotchTimerView: View {
                     Text(title(for: candidate))
                         .font(.system(size: NotchTimerSupport.ModePicker.labelSize, weight: .medium))
                         .lineLimit(1)
-                        .foregroundStyle(selected ? .white : .white.opacity(0.5))
+                        .foregroundStyle(selected ? .white : Color.white.opacity(0.5))
                         .padding(.horizontal, NotchTimerSupport.ModePicker.labelPadding)
                         .frame(height: NotchTimerSupport.ModePicker.height)
                         .overlay(alignment: .bottom) {
@@ -258,7 +258,7 @@ struct NotchTimerView: View {
                     ForEach(readouts) { readout($0) }
                 }
             }
-            .scrollIndicators(.hidden)
+            .scrollIndicatorsCompat(.hidden)
         }
     }
 

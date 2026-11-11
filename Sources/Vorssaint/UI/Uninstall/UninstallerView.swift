@@ -58,7 +58,7 @@ struct UninstallerView: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .fixedSize(horizontal: false, vertical: true)
         .frame(width: 360)
     }
@@ -115,10 +115,10 @@ struct UninstallerView: View {
                 uninstaller.select(appURL: url)
             } loadApps: { UninstallerSupport.offeredApplications() }
         }
-        .dropDestination(for: URL.self) { urls, _ in
+        .dropURLsCompat(isTargeted: { dropTargeted = $0 }) { urls in
             guard let app = urls.first(where: { $0.pathExtension == "app" }) ?? urls.first else { return false }
             return uninstaller.select(appURL: app)
-        } isTargeted: { dropTargeted = $0 }
+        }
     }
 
     // MARK: Busy

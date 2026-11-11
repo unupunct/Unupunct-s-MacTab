@@ -1286,6 +1286,7 @@ final class AppVolumeMixer: ObservableObject {
         guard engineRecovery.allowsBuild(app.id, configuration: configuration) else { return }
         guard #available(macOS 14.4, *), let token = builds.begin(app.id) else { return }
 
+        #if compiler(>=5.9)
         if MixerRoutingSupport.isAirPlaySentinel(targetOutputDeviceUID) {
             // Without a listed Mac output to clock it, the engine would count
             // as gone on every pass. A device list without one is a passing
@@ -1334,6 +1335,9 @@ final class AppVolumeMixer: ObservableObject {
                 self.install(engine, for: app.id, token: token)
             }
         }
+        #else
+        builds.finish(app.id, token: token)
+        #endif
     }
 
     /// An AirPlay build that could not get a renderer ends here, not in
@@ -2969,7 +2973,9 @@ final class LevelCompensationWatch {
     func stop() {
         // No tap, and so no watch, exists before macOS 14.4.
         guard #available(macOS 14.4, *) else { return }
+        #if compiler(>=5.9)
         TapGainEngine.teardownQueue.addOperation { [weak self] in self?.stopListening() }
+        #endif
     }
 
     /// A removal the HAL refuses keeps this small object alive: a late
@@ -3126,6 +3132,7 @@ final class AtomicFloatBox {
         }
     }
 }
+#if compiler(>=5.9) // process taps need the macOS 14.4 SDK; absent from the Monterey toolchain SDK
 
 /// Observes the contract captured by one IO callback. A format notification
 /// suspends rendering immediately; HAL reads happen on a separate queue. A
@@ -3383,7 +3390,7 @@ private final class TapGainEngine: GainEngine {
         }
 
         let aggregate: [String: Any] = [
-            kAudioAggregateDeviceNameKey: "Vorssaint Mixer",
+            kAudioAggregateDeviceNameKey: "Unupunct MacTab Mixer",
             kAudioAggregateDeviceUIDKey: UUID().uuidString,
             kAudioAggregateDeviceIsPrivateKey: true,
             kAudioAggregateDeviceMainSubDeviceKey: outputDeviceUID,
@@ -3691,7 +3698,7 @@ private final class AirPlayGainEngine: GainEngine {
         let aggregate: [String: Any] = [
             // A fixed name, listed in MicMuteSupport.ownDeviceNames, so no
             // device list ever offers this private aggregate as an output.
-            kAudioAggregateDeviceNameKey: "Vorssaint AirPlay",
+            kAudioAggregateDeviceNameKey: "Unupunct MacTab AirPlay",
             kAudioAggregateDeviceUIDKey: UUID().uuidString,
             kAudioAggregateDeviceIsPrivateKey: true,
             kAudioAggregateDeviceMainSubDeviceKey: clockDeviceUID,
@@ -3848,3 +3855,5 @@ private final class AirPlayGainEngine: GainEngine {
         return rate > 0 ? rate : 44_100
     }
 }
+
+#endif

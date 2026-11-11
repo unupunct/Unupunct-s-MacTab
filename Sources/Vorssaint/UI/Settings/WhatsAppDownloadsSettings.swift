@@ -54,7 +54,7 @@ struct WhatsAppDownloadsSettings: View {
             activitySection
             privacySection
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .onAppear {
             manager.setReviewVisible(true)
             retentionDays = WhatsAppDownloadSupport.sanitizedRetentionDays(retentionDays)

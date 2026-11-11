@@ -458,7 +458,7 @@ final class ScreenshotEditorModel: ObservableObject, BackdropEditing {
                 let request = VNRecognizeTextRequest()
                 request.recognitionLevel = .accurate
                 request.usesLanguageCorrection = true
-                request.automaticallyDetectsLanguage = true
+                if #available(macOS 13.0, *) { request.automaticallyDetectsLanguage = true }
                 let handler = VNImageRequestHandler(cgImage: tile, options: [:])
                 do {
                     try handler.perform([request])
@@ -1404,7 +1404,7 @@ final class ScreenshotEditorController: NSObject, NSWindowDelegate {
         let content = ScreenshotEditorView(model: model, controller: self)
             .frame(minWidth: minimumSize.width, minHeight: minimumSize.height)
         let host = NSHostingController(rootView: content)
-        host.sizingOptions = [.minSize]
+        if #available(macOS 13.0, *) { host.sizingOptions = [.minSize] }
         let window = NSWindow(contentViewController: host)
         // One continuous surface: the canvas fills the window and the
         // controls float over it, so the editor reads as a single object.

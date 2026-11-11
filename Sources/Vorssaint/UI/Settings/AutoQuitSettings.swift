@@ -125,7 +125,7 @@ struct AutoQuitSettings: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .sheet(isPresented: $showingAppPicker) {
             appPickerSheet
         }

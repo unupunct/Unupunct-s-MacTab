@@ -206,6 +206,7 @@ struct SwitcherSettings: View {
 
     private var switcherOptionsCard: some View {
         SettingsCard(title: l10n.s.keepAwakeOptions) {
+            Group {
             SettingsRow(symbol: "timer", title: l10n.s.switcherAppearanceDelay,
                         caption: l10n.s.switcherAppearanceDelayCaption) {
                 HStack(spacing: 8) {
@@ -264,6 +265,8 @@ struct SwitcherSettings: View {
                         AppSwitcher.shared.syncWithPreferences()
                     }
             }
+            }
+            Group {
             Divider()
             chipRow(symbol: "arrow.down.to.line", title: l10n.s.switcherMinimizedPlacementLabel, caption: nil,
                     selection: $switcherMinimizedPlacement,
@@ -308,6 +311,8 @@ struct SwitcherSettings: View {
             // Replacing ⌘Tab keeps every running app in the switcher, as the
             // system one does, so the choices above hold on All apps. Say why
             // rather than leave them looking broken.
+            }
+            Group {
             if switcherTakeOverSystemShortcuts {
                 Text(String(format: l10n.s.switcherWindowlessAppsLockedFormat,
                             l10n.s.switcherTakeOverSystemShortcuts))
@@ -320,6 +325,7 @@ struct SwitcherSettings: View {
             // before the redesign; the card's disabled state stops here.
             SwitcherAppRulesList()
                 .environment(\.isEnabled, true)
+            }
         }
     }
 

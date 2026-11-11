@@ -16,8 +16,19 @@ final class ShelfSharePresenter: NSObject, NSSharingServicePickerDelegate {
     /// Mac can send files to, kept current by macOS rather than by a list
     /// written here.
     func shareMenuItem(for urls: [URL], title: String) -> NSMenuItem {
-        let item = makePicker(for: urls).standardShareMenuItem
-        item.title = title
+        if #available(macOS 13.0, *) {
+            let item = makePicker(for: urls).standardShareMenuItem
+            item.title = title
+            return item
+        }
+        // macOS 12 has no standard share item: list the sharing services.
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        let submenu = NSMenu(title: title)
+        for service in NSSharingService.sharingServices(forItems: urls) {
+            let entry = ShareServiceMenuItem(service: service, items: urls)
+            submenu.addItem(entry)
+        }
+        item.submenu = submenu
         return item
     }
 
@@ -52,4 +63,22 @@ final class ShelfSharePresenter: NSObject, NSSharingServicePickerDelegate {
         completion = nil
         return picker
     }
+}
+
+/// A menu entry that runs one sharing service on a set of items.
+private final class ShareServiceMenuItem: NSMenuItem {
+    private let service: NSSharingService
+    private let shared: [Any]
+
+    init(service: NSSharingService, items: [Any]) {
+        self.service = service
+        self.shared = items
+        super.init(title: service.menuItemTitle, action: #selector(run), keyEquivalent: "")
+        target = self
+        image = service.image
+    }
+
+    required init(coder: NSCoder) { fatalError("init(coder:) is not used") }
+
+    @objc private func run() { service.perform(withItems: shared) }
 }

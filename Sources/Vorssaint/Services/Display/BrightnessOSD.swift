@@ -122,7 +122,7 @@ enum BrightnessOSD {
         panel.animationBehavior = .none
         panel.sharingType = .none
         panel.collectionBehavior = [
-            .canJoinAllSpaces, .fullScreenAuxiliary, .canJoinAllApplications,
+            .canJoinAllSpaces, .fullScreenAuxiliary, .canJoinAllApplicationsCompat,
             .transient, .ignoresCycle,
         ]
         self.panel = panel
@@ -148,7 +148,7 @@ struct BrightnessOSDView: View {
             Image(systemName: "sun.max.fill")
                 .font(.system(size: 39, weight: .regular))
                 .symbolRenderingMode(.monochrome)
-                .foregroundStyle(.white.opacity(0.82))
+                .foregroundStyle(Color.white.opacity(0.82))
                 .frame(height: 44)
 
             HStack(alignment: .firstTextBaseline, spacing: 5) {
@@ -160,7 +160,7 @@ struct BrightnessOSDView: View {
                     .lineLimit(1)
                 Text("%")
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.52))
+                    .foregroundStyle(Color.white.opacity(0.52))
             }
             .frame(height: 36)
 
@@ -179,7 +179,7 @@ struct BrightnessOSDView: View {
                     in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .strokeBorder(.white.opacity(0.08), lineWidth: 0.5)
+                .strokeBorder(Color.white.opacity(0.08), lineWidth: 0.5)
         )
         .environment(\.colorScheme, .dark)
         .accessibilityElement(children: .ignore)

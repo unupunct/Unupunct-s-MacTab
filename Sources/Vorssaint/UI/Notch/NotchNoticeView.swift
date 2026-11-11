@@ -107,7 +107,7 @@ struct NotchNoticeView: View {
                     .monospacedDigit()
                     .lineLimit(1)
                     .truncationMode(notice.event == .track ? .tail : .middle)
-                    .contentTransition(.numericText())
+                    .contentTransitionNumericCompat()
             }
             // A level's mark keeps its place while a shorter reading leaves
             // room it holds for the widest.
@@ -123,7 +123,7 @@ struct NotchNoticeView: View {
             // one, with the air that fits it beside the camera.
             Text(content.compactDetail)
                 .font(Font(NotchNotificationBannerLayout.messageFont as CTFont))
-                .foregroundStyle(.white.opacity(0.85))
+                .foregroundStyle(Color.white.opacity(0.85))
                 .lineLimit(NotchNotificationBannerLayout.messageLines(stripHeight: geometry.stripHeight))
                 .frame(maxWidth: .infinity, alignment: .trailing)
         } else if let level = notice.level {

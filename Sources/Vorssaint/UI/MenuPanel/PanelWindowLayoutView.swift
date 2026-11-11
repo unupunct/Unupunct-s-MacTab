@@ -30,6 +30,7 @@ struct PanelWindowLayoutView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
+            Group {
             header
             intro
             actionGroup(title: text.halves, actions: [.leftHalf, .rightHalf, .topHalf, .bottomHalf, .centerHalf])
@@ -48,6 +49,8 @@ struct PanelWindowLayoutView: View {
                 .bottomLeftSixth, .bottomCenterSixth, .bottomRightSixth,
             ])
             actionGroup(title: text.corners, actions: [.topLeft, .topRight, .bottomLeft, .bottomRight])
+            }
+            Group {
             actionGroup(title: text.other, actions: [
                 .maximize, .marginMaximize, .fullScreen, .center, .previousDisplay, .nextDisplay, .restore,
             ])
@@ -56,6 +59,7 @@ struct PanelWindowLayoutView: View {
                     .font(.system(size: 10.5, weight: .medium))
                     .foregroundStyle(resultColor)
                     .panelCard()
+            }
             }
         }
         .onAppear {
@@ -112,6 +116,7 @@ struct PanelWindowLayoutView: View {
 
     private var intro: some View {
         VStack(alignment: .leading, spacing: 6) {
+            Group {
             Toggle(text.edgeSnapEnable, isOn: $edgeSnapEnabled)
                 .toggleStyle(.checkbox)
                 .controlSize(.small)
@@ -169,6 +174,8 @@ struct PanelWindowLayoutView: View {
                     .foregroundStyle(.tertiary)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            }
+            Group {
             Divider()
             Toggle(text.gestureEnable, isOn: $gestureEnabled)
                 .toggleStyle(.checkbox)
@@ -203,6 +210,7 @@ struct PanelWindowLayoutView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.mini)
+            }
             }
         }
         .panelCard()

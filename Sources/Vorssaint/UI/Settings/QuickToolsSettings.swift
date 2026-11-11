@@ -334,7 +334,7 @@ struct QuickToolsSettings: View {
                 .settingsFormSectionAnchor(.cleaningMode)
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
     }
 
     private var scratchpadBackgroundOpacityBinding: Binding<Double> {

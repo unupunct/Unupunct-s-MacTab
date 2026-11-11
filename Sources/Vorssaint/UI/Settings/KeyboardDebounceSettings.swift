@@ -113,7 +113,7 @@ struct KeyboardDebounceSettings: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .onAppear {
             globalWindow = Defaults.sanitizedKeyboardDebounceWindow(globalWindow)
             selectedWindow = Defaults.sanitizedKeyboardDebounceWindow(selectedWindow)

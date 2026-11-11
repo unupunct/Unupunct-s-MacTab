@@ -818,7 +818,7 @@ enum WindowActivator {
         ActivationHandoff.yield(to: app)
         // The first answer is kept as it is: the fallback only runs when the
         // first request was refused.
-        let activated = app.activate(from: NSRunningApplication.current, options: options)
+        let activated = app.activateCompat(from: NSRunningApplication.current, options: options)
         if !activated {
             app.activate(options: options)
         }

@@ -75,9 +75,15 @@ struct ScreenRecordingCaptureSettings: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                VStack(alignment: .leading, spacing: 4) {
-                    Toggle(strings.systemAudioToggle, isOn: $systemAudio)
-                    Text(strings.systemAudioCaption)
+                if MontereyCapabilities.systemAudioRecording {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Toggle(strings.systemAudioToggle, isOn: $systemAudio)
+                        Text(strings.systemAudioCaption)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    Text("Recording the Mac's sound needs macOS 13 or later, so it is not available on this system.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

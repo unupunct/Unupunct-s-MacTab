@@ -47,7 +47,7 @@ struct ScreenCaptureSettings: View {
 
             selectedSettings
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .onAppear { reconcileSelection(withDestination: true) }
         .onChange(of: features.revision) { _, _ in
             reconcileSelection(withDestination: false)

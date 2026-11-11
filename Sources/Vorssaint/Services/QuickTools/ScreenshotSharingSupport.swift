@@ -16,9 +16,9 @@ enum ScreenshotShareDuration: Int, CaseIterable, Codable, Identifiable {
 
     func title(_ strings: ScreenshotFeatureStrings) -> String {
         switch self {
-        case .oneHour: strings.shareOneHour
-        case .sixHours: strings.shareSixHours
-        case .twentyFourHours: strings.shareTwentyFourHours
+        case .oneHour: return strings.shareOneHour
+        case .sixHours: return strings.shareSixHours
+        case .twentyFourHours: return strings.shareTwentyFourHours
         }
     }
 }
@@ -81,7 +81,12 @@ enum ScreenshotSharingSupport {
         return true
     }
 
-    static let productionEndpoint = URL(string: "https://screenshots.vorssaint.com")!
+    /// The upstream project's hosted service. The unofficial Monterey port must not
+    /// send anything to it (it is run by the upstream maintainer for the upstream app),
+    /// so the port gets a reserved, never-resolving address: sharing fails, nothing leaves the Mac.
+    static var productionEndpoint: URL {
+        AppInfo.isUnofficialPort ? URL(string: "https://sharing.invalid")! : URL(string: "https://screenshots.vorssaint.com")!
+    }
     static let developerBundleIdentifier = "com.vorssaint.utils.dev"
     static let maximumUploadBytes = 25 * 1_024 * 1_024
 

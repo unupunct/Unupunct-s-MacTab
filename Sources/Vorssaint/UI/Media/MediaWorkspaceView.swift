@@ -824,7 +824,7 @@ struct MediaWorkspaceView: View {
                 }
             }
             .foregroundStyle(.white)
-            .shadow(color: .black.opacity(0.55), radius: 2, y: 1)
+            .shadow(color: Color.black.opacity(0.55), radius: 2, y: 1)
         }
     }
 

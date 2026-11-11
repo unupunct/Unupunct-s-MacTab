@@ -109,6 +109,7 @@ enum QuickTogglesSupport {
     static let vorssaintBundleIdentifiers = [
         "com.vorssaint.utils",
         "com.vorssaint.utils.dev",
+        "local.unupunct.mactab",
     ]
 
     /// `NSApplication.ActivationPolicy.regular.rawValue`. Kept as an Int so this

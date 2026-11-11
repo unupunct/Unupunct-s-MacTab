@@ -94,7 +94,7 @@ enum NowPlayingOpenContract {
         }
         open(App(pid: 20))
         suite.expect(events == ["yield:20", "activate:20:1:true"],
-                     "the cover hands Vorssaint's activation to the player before asking for all its windows")
+                     "the cover hands Unupunct MacTab's activation to the player before asking for all its windows")
         open(App(pid: 20), cooperative: false)
         suite.expect(events == ["yield:20", "activate:20:1:true", "fallback:20:true"],
                      "a refused cooperative request still falls back to a direct one")
@@ -105,7 +105,7 @@ enum NowPlayingOpenContract {
             open(App(pid: 20, activationPolicy: policy),
                  installedAt: URL(fileURLWithPath: "/Applications/Player.app"))
             suite.expect(events.isEmpty,
-                         "a helper that takes no activation leaves Vorssaint inactive and launches nothing")
+                         "a helper that takes no activation leaves Unupunct MacTab inactive and launches nothing")
         }
         open(App(pid: 20), window: false)
         suite.expect(events == ["yield:20", "activate:20:1:true", "reopen:Player.app"],

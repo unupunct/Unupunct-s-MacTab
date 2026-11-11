@@ -46,6 +46,7 @@ struct CommandBarSettings: View {
                 // One choice, open it or recenter it, so one row. Neither
                 // carries an icon: a ⌘ glyph in front of "Open the bar now"
                 // reads as the shortcut that opens it, which it is not.
+                Group {
                 HStack(spacing: 10) {
                     Button(text.openButton) {
                         CommandBarService.shared.show()
@@ -110,6 +111,8 @@ struct CommandBarSettings: View {
                         .font(.caption)
                         .foregroundStyle(.orange)
                 }
+                }
+                Group {
                 if secureInput.holder != .off {
                     SecureInputRow()
                 }
@@ -125,6 +128,7 @@ struct CommandBarSettings: View {
                     Text(text.asciiLayoutCaption)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                }
                 }
             } header: {
                 Text(text.pageTitle)
@@ -365,7 +369,7 @@ struct CommandBarSettings: View {
                 Text(text.hiddenTitle)
             }
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
         .observesSecureInput()
         .sheet(isPresented: $showsAppShortcuts) {
             CommandBarAppShortcutsView()

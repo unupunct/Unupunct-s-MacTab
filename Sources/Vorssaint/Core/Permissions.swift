@@ -350,7 +350,7 @@ final class Permissions: ObservableObject {
         requestingCalendar = true
         calendarRequestFailed = false
         let store = EKEventStore()
-        store.requestFullAccessToEvents { [weak self, store] _, error in
+        let completion: (Bool, Error?) -> Void = { [weak self, store] _, error in
             _ = store
             DispatchQueue.main.async {
                 self?.calendarPermissionResolution = ProcessInfo.processInfo.systemUptime
@@ -360,6 +360,20 @@ final class Permissions: ObservableObject {
                 self?.calendarAccess = status
             }
         }
+        #if compiler(>=5.9)
+        // Toolchains with the macOS 14+ SDK only; the macOS 13 SDK used for the
+        // Monterey build does not declare this method.
+        if #available(macOS 14.0, *) {
+            store.requestFullAccessToEvents(completion: completion)
+        } else {
+            store.requestAccess(to: .event, completion: completion)
+        }
+        #else
+        do {
+            // macOS 12/13 have a single event permission.
+            store.requestAccess(to: .event, completion: completion)
+        }
+        #endif
     }
 
     func openCalendarSettings() {

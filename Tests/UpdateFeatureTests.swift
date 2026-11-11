@@ -263,7 +263,7 @@ enum UpdateFeatureTests {
         // that delegate's deinit is what deletes the scratch file, so the
         // release path has to invalidate the session too.
         let showcaseSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/Update/UpdateShowcaseMedia.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/Update/UpdateShowcaseMedia.swift",
             encoding: .utf8)) ?? ""
         let showcaseDeinitBody = (showcaseSource.components(separatedBy: "\n    deinit {")
             .dropFirst().first ?? "").components(separatedBy: "\n    }").first ?? ""
@@ -960,7 +960,7 @@ enum UpdateFeatureTests {
                    appPath: "/private/var/folders/ab/xyz/T/AppTranslocation/1F2/d/Vorssaint.app",
                    volumeIsReadOnly: { _ in false }),
                "translocated apps are flagged as not updatable in place")
-        suite.expect(UpdateInstallerSupport.runsFromImmutableLocation(appPath: "/Volumes/Vorssaint/Vorssaint.app",
+        suite.expect(UpdateInstallerSupport.runsFromImmutableLocation(appPath: "/Volumes/Unupunct MacTab/Vorssaint.app",
                                                                 volumeIsReadOnly: { _ in true }),
                "apps on a read-only volume (the DMG) are flagged as not updatable in place")
         suite.expect(!UpdateInstallerSupport.runsFromImmutableLocation(appPath: "/Volumes/ExternalSSD/Vorssaint.app",
@@ -1241,7 +1241,7 @@ enum UpdateFeatureTests {
         // what the service does with the third state is pinned by source. Both
         // needles are public symbols, not a line's spelling.
         let launchAtLoginSource = (try? String(
-            contentsOfFile: "Sources/Vorssaint/Services/LaunchAtLogin.swift",
+            contentsOfFile: "Sources/Unupunct MacTab/Services/LaunchAtLogin.swift",
             encoding: .utf8)) ?? ""
         suite.expect(launchAtLoginSource.contains(".requiresApproval"),
                "an approval-pending login item is read as its own state")
@@ -1490,7 +1490,7 @@ enum UpdateFeatureTests {
             ignoredTokens: ["vorssaint"],
             apps: [])
         suite.expect(ownPackageRows.isEmpty,
-               "the app update list never offers to replace Vorssaint through its own package")
+               "the app update list never offers to replace Unupunct MacTab through its own package")
 
         let storeApps = [
             AppUpdatesSupport.InstalledApp(name: "Blocker", bundleID: "net.example.blocker",

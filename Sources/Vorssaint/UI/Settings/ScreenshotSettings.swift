@@ -59,6 +59,7 @@ struct ScreenshotCaptureSettings: View {
     var body: some View {
         Group {
             Section {
+                Group {
                 HStack(spacing: 10) {
                     Button {
                         ScreenshotService.shared.capture()
@@ -105,6 +106,8 @@ struct ScreenshotCaptureSettings: View {
                         .font(.caption)
                         .foregroundStyle(.orange)
                 }
+                }
+                Group {
                 Toggle(strings.editClipboardImage, isOn: $clipboardShortcutEnabled)
                     .onChange(of: clipboardShortcutEnabled) { _, _ in
                         ScreenshotService.shared.syncWithPreferences()
@@ -120,6 +123,7 @@ struct ScreenshotCaptureSettings: View {
                 }
                 if !permissions.screenRecording {
                     PermissionRow(kind: .screenRecording)
+                }
                 }
             } header: {
                 Text(strings.pageTitle)
@@ -178,6 +182,7 @@ struct ScreenshotCaptureSettings: View {
             }
 
             Section {
+                Group {
                 Toggle(strings.autoCopyToggle, isOn: autoCopyBinding)
                 Text(strings.autoCopyCaption)
                     .font(.caption)
@@ -193,11 +198,14 @@ struct ScreenshotCaptureSettings: View {
                     .foregroundStyle(.secondary)
                 folderRow
                 subfolderRow
+                }
+                Group {
                 fileNameRow
                 Toggle(strings.downscaleToggle, isOn: $downscale)
                 Text(strings.downscaleCaption)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                }
             }
 
             Section {

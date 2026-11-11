@@ -46,7 +46,7 @@ struct RecorderExportSpeedControl: View {
                             draftSpeed = speed
                         } label: {
                             Text(label(speed))
-                                .fontWeight(abs(draftSpeed - speed) < 0.001 ? .bold : .regular)
+                                .fontWeightCompat(abs(draftSpeed - speed) < 0.001 ? .bold : .regular)
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.bordered)

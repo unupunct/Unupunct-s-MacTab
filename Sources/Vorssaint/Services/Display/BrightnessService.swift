@@ -988,10 +988,11 @@ final class BrightnessService: ObservableObject {
     /// Active counts the displays mirroring an active one, which the active
     /// list leaves out (see `BrightnessSupport.participatingDisplayIDs`).
     private static func topology(online: Set<CGDirectDisplayID>) -> BrightnessSupport.DisplayTopology {
-        let mirrorSources = Dictionary(uniqueKeysWithValues: online.compactMap { id in
+        var mirrorSources: [CGDirectDisplayID: CGDirectDisplayID] = [:]
+        for id in online {
             let source = CGDisplayMirrorsDisplay(id)
-            return source == kCGNullDirectDisplay ? nil : (id, source)
-        })
+            if source != kCGNullDirectDisplay { mirrorSources[id] = source }
+        }
         return BrightnessSupport.DisplayTopology(
             online: online,
             active: BrightnessSupport.participatingDisplayIDs(
@@ -1311,7 +1312,7 @@ final class BrightnessService: ObservableObject {
             shouldStopFunctionKeyThread = false
             pendingFunctionKeyRestart = false
             let thread = Thread { [weak self] in self?.runFunctionKeyTap() }
-            thread.name = "Vorssaint Brightness Keys"
+            thread.name = "Unupunct MacTab Brightness Keys"
             thread.qualityOfService = .userInteractive
             functionKeyThread = thread
             return thread

@@ -1380,7 +1380,7 @@ final class ClipboardHistoryService: ObservableObject {
         panelSizeLimit = sizeLimit
         let host = NSHostingController(rootView: ClipboardQuickPanelView())
         // AppKit owns the window size; SwiftUI fills its content view.
-        host.sizingOptions = []
+        host.setPreferredContentSizing(false)
         panel.contentViewController = host
         observePanelGeometry(panel)
         self.panel = panel

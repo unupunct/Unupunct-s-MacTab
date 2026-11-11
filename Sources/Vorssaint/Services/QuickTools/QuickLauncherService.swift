@@ -347,7 +347,7 @@ final class QuickLauncherService: ObservableObject {
                                          styleMask: [.borderless, .nonactivatingPanel],
                                          backing: .buffered,
                                          defer: false)
-        panel.title = "Vorssaint"
+        panel.title = "Unupunct MacTab"
         panel.isReleasedWhenClosed = false
         // Item drag-to-reorder needs the mouse drag for itself; a background-
         // movable window would win the gesture and drag the whole panel.
@@ -358,7 +358,7 @@ final class QuickLauncherService: ObservableObject {
         panel.isOpaque = false
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
         let host = NSHostingController(rootView: QuickLauncherView())
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         panel.contentViewController = host
         self.panel = panel
         return panel

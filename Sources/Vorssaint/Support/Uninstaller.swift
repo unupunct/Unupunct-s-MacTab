@@ -11,7 +11,7 @@ import ServiceManagement
 /// puts back the Space rearranging setting.
 ///
 /// Used by `Tools/uninstall.sh`. Must run from the installed bundle, since
-/// `SMAppService.mainApp` is scoped to the running app's bundle identifier.
+/// `AppServiceCompat.mainApp` is scoped to the running app's bundle identifier.
 enum Uninstaller {
     static func runAndExit() -> Never {
         // The fan helper is a daemon service of its own, so unregistering the
@@ -43,7 +43,7 @@ enum Uninstaller {
                   : "UNINSTALL: Space arrangement restoration could not be confirmed")
         }
         do {
-            try SMAppService.mainApp.unregister()
+            try AppServiceCompat.mainApp.unregister()
             print("UNINSTALL: login item unregistered")
         } catch {
             print("UNINSTALL: login item was not registered")

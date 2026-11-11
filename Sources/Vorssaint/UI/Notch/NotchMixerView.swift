@@ -54,7 +54,7 @@ struct NotchMixerView: View {
                         NotchMicrophoneFader(height: faderHeight, editingVolumeID: $editingVolumeID)
                             .frame(width: Self.masterWidth)
                     }
-                    Rectangle().fill(.white.opacity(0.12)).frame(width: 1)
+                    Rectangle().fill(Color.white.opacity(0.12)).frame(width: 1)
                         .accessibilityHidden(true)
                     desk.frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -139,9 +139,9 @@ struct NotchMixerView: View {
     private var permission: some View {
         HStack(spacing: 14) {
             Image(systemName: "waveform.badge.exclamationmark").font(.system(size: 24, weight: .light))
-                .foregroundStyle(.white.opacity(0.65))
+                .foregroundStyle(Color.white.opacity(0.65))
                 .frame(width: 56, height: 56)
-                .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 8) {
                 Text(l10n.s.mixerPermissionBody).font(.system(size: 12)).foregroundStyle(.secondary)
@@ -179,7 +179,7 @@ private struct NotchEditablePercent: View {
                 Text("\(percent)%")
                     .font(.system(size: height > 18 ? 12 : 10, weight: .medium)).monospacedDigit()
                     .foregroundStyle(tint)
-                    .contentTransition(.numericText())
+                    .contentTransitionNumericCompat()
                     .animation(reduceMotion ? nil : .smooth(duration: 0.2), value: percent)
             }
             .frame(maxWidth: .infinity, minHeight: height)
@@ -214,7 +214,7 @@ private struct NotchMasterFader: View {
                 Image(systemName: muted ? "speaker.slash.fill" : "speaker.wave.2.fill")
                     .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(muted ? Color.red : Color.white)
-                    .contentTransition(.symbolEffect(.replace))
+                    .contentTransitionSymbolReplaceCompat()
                     .animation(reduceMotion ? nil : .smooth(duration: 0.24), value: muted)
                     .frame(width: 32, height: 32)
                     .contentShape(Circle())
@@ -285,7 +285,7 @@ private struct NotchMicrophoneFader: View {
     private func icon(muted: Bool) -> some View {
         Image(systemName: muted ? "mic.slash.fill" : "mic.fill")
             .font(.system(size: 15, weight: .medium))
-            .contentTransition(.symbolEffect(.replace))
+            .contentTransitionSymbolReplaceCompat()
             .animation(reduceMotion ? nil : .smooth(duration: 0.24), value: muted)
             .frame(width: 32, height: 32)
             .contentShape(Circle())
@@ -388,13 +388,13 @@ private struct NotchMixerOptions: View {
                     }
                     microphone
                 }
-                Divider().overlay(.white.opacity(0.12))
+                Divider().overlay(Color.white.opacity(0.12))
                 MixerOptionsControls()
             }
             .padding(.trailing, 4)
             .padding(.bottom, 4)
         }
-        .scrollIndicators(.automatic)
+        .scrollIndicatorsCompat(.automatic)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
@@ -608,7 +608,7 @@ private struct NotchAppFader: View {
         Menu { actions } label: {
             Image(systemName: "ellipsis")
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(Color.white.opacity(0.7))
                 .frame(width: 24, height: 28)
                 .contentShape(Rectangle())
         }

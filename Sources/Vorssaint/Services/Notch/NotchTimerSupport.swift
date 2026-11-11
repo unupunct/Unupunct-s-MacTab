@@ -335,11 +335,15 @@ enum NotchTimerSupport {
 
     static func compactText(_ remaining: TimeInterval, locale: Locale) -> String {
         let seconds = remaining.isFinite ? ceil(min(timerLimit, max(0, remaining))) : 0
-        let units: Set<Duration.UnitsFormatStyle.Unit> = seconds >= 3600
-            ? [.hours, .minutes] : [seconds >= 60 ? .minutes : .seconds]
-        return Duration.seconds(seconds).formatted(.units(
-            allowed: units, width: .narrow,
-            fractionalPart: .hide(rounded: .down)).locale(locale))
+        // DateComponentsFormatter exists on macOS 12 (Duration formatting needs 13).
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = seconds >= 3600 ? [.hour, .minute] : (seconds >= 60 ? [.minute] : [.second])
+        formatter.unitsStyle = .abbreviated
+        formatter.zeroFormattingBehavior = .dropAll
+        var calendar = Calendar.current
+        calendar.locale = locale
+        formatter.calendar = calendar
+        return formatter.string(from: seconds) ?? "\(Int(seconds))"
     }
 
     // MARK: Strip

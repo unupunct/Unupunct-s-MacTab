@@ -112,7 +112,7 @@ final class RecentCaptureService: ObservableObject {
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
         let host = NSHostingController(rootView: RecentCapturesWindowView(
             onClose: { [weak self] in self?.hideHistoryWindow() }))
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         panel.contentViewController = host
         self.panel = panel
         return panel
@@ -507,6 +507,6 @@ final class RecentCaptureService: ObservableObject {
         let generator = AVAssetImageGenerator(asset: AVURLAsset(url: url))
         generator.appliesPreferredTrackTransform = true
         generator.maximumSize = CGSize(width: 360, height: 360)
-        return try? await generator.image(at: .zero).image
+        return try? await generator.imageCompat(at: .zero)
     }
 }

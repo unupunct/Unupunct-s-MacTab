@@ -26,6 +26,83 @@ struct NotchLayoutEditor: View {
     private var text: NotchStrings { FeatureStrings.notch(l10n.language) }
     private var editor: NotchEditorStrings { FeatureStrings.notchEditor(l10n.language) }
 
+    @ViewBuilder
+    private func sideButtons(layout: NotchQuickAccessConfiguration, frame: CGRect) -> some View {
+        ForEach(NotchQuickAccessSide.allCases, id: \.self) { side in
+            sideColumn(side: side, layout: layout, frame: frame)
+        }
+    }
+
+    @ViewBuilder
+    private func sideColumn(side: NotchQuickAccessSide, layout: NotchQuickAccessConfiguration, frame: CGRect) -> some View {
+        let items: [NotchQuickButton] = layout.buttons.filter { $0.side == side }
+        ForEach(Array(items.enumerated()), id: \.element.id) { index, button in
+            draggableBubble(button, index: index, count: items.count, side: side, frame: frame)
+        }
+        if layout.hasRoom(on: side) {
+            addButton(side: side, count: items.count, frame: frame)
+        }
+    }
+
+    private func dragGesture(for button: NotchQuickButton, frame: CGRect) -> some Gesture {
+        DragGesture(minimumDistance: 5, coordinateSpace: .named("island.editor"))
+            .onChanged { value in
+                editingID = nil
+                draggingID = button.id
+                translation = value.translation
+                dragLocation = value.location
+            }
+            .onEnded { value in
+                move(button, at: value.location, island: frame)
+                draggingID = nil
+                translation = .zero
+                dragLocation = nil
+            }
+    }
+
+    private func draggableBubble(_ button: NotchQuickButton, index: Int, count: Int,
+                                 side: NotchQuickAccessSide, frame: CGRect) -> some View {
+        let center: CGPoint = point(index, count: count, side: side, island: frame)
+        let dragging: Bool = draggingID == button.id
+        let shift: CGSize = dragging ? translation : CGSize.zero
+        let depth: Double = dragging ? 3 : 1
+        return bubble(button)
+            .highPriorityGesture(dragGesture(for: button, frame: frame))
+            .offset(shift)
+            .position(center)
+            .zIndex(depth)
+    }
+
+    private func addButton(side: NotchQuickAccessSide, count: Int, frame: CGRect) -> some View {
+        let presented = Binding<Bool>(get: { addingSide == side }, set: { if !$0 { addingSide = nil } })
+        let label = "\(editor.addButton), \(side.title(l10n))"
+        return Button { addingSide = side } label: {
+            Image(systemName: "plus").font(.system(size: 15, weight: .semibold))
+                .frame(width: 30, height: 30)
+                .background(.background, in: Circle())
+                .overlay { Circle().strokeBorder(Color.accentColor.opacity(0.65), style: StrokeStyle(lineWidth: 1, dash: [3, 3])) }
+        }
+        .buttonStyle(.plain).foregroundStyle(Color.accentColor)
+        .help(editor.addButton)
+        .accessibilityLabel(label)
+        .popover(isPresented: presented, arrowEdge: Self.arrowEdge(for: side)) {
+            NotchActionChooser(title: editor.addButton) { action in
+                guard configuration.hasRoom(on: side) else { return }
+                configuration.buttons.append(NotchQuickButton(action: action, side: side))
+                addingSide = nil
+            }
+        }
+        .position(point(count, count: count, side: side, island: frame))
+    }
+
+    private static func arrowEdge(for side: NotchQuickAccessSide) -> Edge {
+        switch side {
+        case .left: return .trailing
+        case .right: return .leading
+        default: return .top
+        }
+    }
+
     var body: some View {
         let layout = configuration
         VStack(spacing: 12) {
@@ -33,7 +110,7 @@ struct NotchLayoutEditor: View {
                 let scale = scale(in: proxy.size)
                 let frame = islandFrame(in: proxy.size)
                 ZStack(alignment: .topLeading) {
-                    RoundedRectangle(cornerRadius: 22).fill(.quaternary.opacity(0.35))
+                    RoundedRectangle(cornerRadius: 22).fill(Color.quaternaryFill(0.35))
                     if draggingID != nil {
                         ForEach(NotchQuickAccessSide.allCases, id: \.self) { side in
                             let target = dropFrame(side, island: frame)
@@ -54,7 +131,7 @@ struct NotchLayoutEditor: View {
                                 .overlay {
                                     // A capsule's outline goes all the way round.
                                     if outlineEnabled {
-                                        shape.stroke(.white.opacity(0.65), lineWidth: 2).clipShape(shape)
+                                        shape.stroke(Color.white.opacity(0.65), lineWidth: 2).clipShape(shape)
                                             .mask(Rectangle().padding(.top, previewGeometry.floats ? 0 : 1))
                                     }
                                 }
@@ -62,54 +139,14 @@ struct NotchLayoutEditor: View {
                         .scaleEffect(scale)
                         .frame(width: frame.width, height: frame.height)
                         .position(x: frame.midX, y: frame.midY)
-                    ForEach(NotchQuickAccessSide.allCases, id: \.self) { side in
-                        let items = layout.buttons.filter { $0.side == side }
-                        ForEach(Array(items.enumerated()), id: \.element.id) { index, button in
-                            let center = point(index, count: items.count, side: side, island: frame)
-                            bubble(button)
-                                .highPriorityGesture(DragGesture(minimumDistance: 5, coordinateSpace: .named("island.editor"))
-                                    .onChanged { value in
-                                        editingID = nil
-                                        draggingID = button.id
-                                        translation = value.translation
-                                        dragLocation = value.location
-                                    }
-                                    .onEnded { value in
-                                        move(button, at: value.location, island: frame)
-                                        draggingID = nil; translation = .zero; dragLocation = nil
-                                    })
-                                .offset(draggingID == button.id ? translation : .zero)
-                                .position(center)
-                                .zIndex(draggingID == button.id ? 3 : 1)
-                        }
-                        if layout.hasRoom(on: side) {
-                            Button { addingSide = side } label: {
-                                Image(systemName: "plus").font(.system(size: 15, weight: .semibold))
-                                    .frame(width: 30, height: 30)
-                                    .background(.background, in: Circle())
-                                    .overlay { Circle().strokeBorder(Color.accentColor.opacity(0.65), style: StrokeStyle(lineWidth: 1, dash: [3, 3])) }
-                            }
-                            .buttonStyle(.plain).foregroundStyle(Color.accentColor)
-                            .help(editor.addButton)
-                            .accessibilityLabel(editor.addButton + ", " + side.title(l10n))
-                            .popover(isPresented: Binding(get: { addingSide == side }, set: { if !$0 { addingSide = nil } }),
-                                     arrowEdge: side == .left ? .trailing : side == .right ? .leading : .top) {
-                                NotchActionChooser(title: editor.addButton) { action in
-                                    guard configuration.hasRoom(on: side) else { return }
-                                    configuration.buttons.append(NotchQuickButton(action: action, side: side))
-                                    addingSide = nil
-                                }
-                            }
-                            .position(point(items.count, count: items.count, side: side, island: frame))
-                        }
-                    }
+                    sideButtons(layout: layout, frame: frame)
                     // A grip on the corner, clear of the page inside the silhouette.
                     Image(systemName: "arrow.up.left.and.arrow.down.right")
                         .font(.system(size: 10, weight: .semibold)).foregroundStyle(Color.accentColor)
                         .frame(width: 24, height: 24)
                         .background(.background, in: Circle())
                         .overlay { Circle().strokeBorder(Color.accentColor.opacity(0.65), lineWidth: 1) }
-                        .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
+                        .shadow(color: Color.black.opacity(0.12), radius: 3, y: 2)
                         .contentShape(Circle())
                         .gesture(DragGesture(minimumDistance: 3, coordinateSpace: .named("island.editor")).onChanged { value in
                             if resizeStart == nil { resizeStart = CGSize(width: actualWidth, height: actualHeight) }
@@ -211,13 +248,13 @@ struct NotchLayoutEditor: View {
             Image(systemName: button.action?.symbol ?? "questionmark")
                 .font(.system(size: 12, weight: .medium)).foregroundStyle(.white)
                 .frame(width: 30, height: 30).background(.black, in: Circle())
-                .overlay { Circle().strokeBorder(editingID == button.id ? Color.accentColor : .white.opacity(0.2), lineWidth: 1.5) }
-                .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
+                .overlay { Circle().strokeBorder(editingID == button.id ? Color.accentColor : Color.white.opacity(0.2), lineWidth: 1.5) }
+                .shadow(color: Color.black.opacity(0.12), radius: 3, y: 2)
                 .opacity(hidden ? 0.4 : 1)
         }
         .buttonStyle(.plain)
-        .help(hidden ? title + ", " + editor.hiddenInIsland : title)
-        .accessibilityLabel(editor.editButton + ", " + title)
+        .help(hidden ? [title, editor.hiddenInIsland].joined(separator: ", ") : title)
+        .accessibilityLabel("\(editor.editButton), \(title)")
         .accessibilityValue(hidden ? editor.hiddenInIsland : "")
         .popover(isPresented: Binding(get: { editingID == button.id }, set: { if !$0 { editingID = nil } }),
                  arrowEdge: button.side == .left ? .trailing : button.side == .right ? .leading : .top) {
@@ -289,7 +326,7 @@ struct NotchLayoutEditor: View {
                     if band.sectionsButton {
                         Image(systemName: "square.grid.2x2")
                             .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.55))
+                            .foregroundStyle(Color.white.opacity(0.55))
                             .frame(width: 28, height: 28)
                     }
                     NotchBandLevels(band: band, levels: bandLevels, side: .leading) { levelRow($0) }

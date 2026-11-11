@@ -330,7 +330,7 @@ final class ExtraBrightnessService: ObservableObject {
     /// it was tried against the purchase-sheet bug below and did not help, so
     /// it stays.
     private static let overlayCollectionBehavior: NSWindow.CollectionBehavior = [
-        .ignoresCycle, .fullScreenAuxiliary, .canJoinAllApplications,
+        .ignoresCycle, .fullScreenAuxiliary, .canJoinAllApplicationsCompat,
         .canJoinAllSpaces, .stationary,
     ]
 

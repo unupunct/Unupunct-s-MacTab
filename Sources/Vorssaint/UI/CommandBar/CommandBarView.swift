@@ -101,9 +101,9 @@ struct CommandBarView: View {
                 saveTask?.cancel()
                 let task = DispatchWorkItem { [weak self] in
                     guard let self else { return }
-                    if let moveObserver { NotificationCenter.default.removeObserver(moveObserver) }
-                    moveObserver = nil
-                    saveTask = nil
+                    if let observer = self.moveObserver { NotificationCenter.default.removeObserver(observer) }
+                    self.moveObserver = nil
+                    self.saveTask = nil
                     CommandBarService.shared.finishPanelDrag()
                 }
                 saveTask = task
@@ -304,7 +304,7 @@ struct CommandBarView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(text.actionsTitle.uppercased())
                 .font(.system(size: 9, weight: .bold))
-                .tracking(0.5)
+                .trackingCompat(0.5)
                 .foregroundStyle(.tertiary)
                 .padding(.horizontal, 16)
                 .padding(.top, 10)
@@ -377,7 +377,7 @@ struct CommandBarView: View {
             Text(service.aliasWarning ?? text.argumentHint)
                 .font(.system(size: 10.5))
                 .foregroundStyle(service.aliasWarning == nil
-                                 ? AnyShapeStyle(.tertiary) : AnyShapeStyle(Color.orange))
+                                 ? AnyShapeStyle(HierarchicalShapeStyle.tertiary) : AnyShapeStyle(Color.orange))
                 .padding(.horizontal, 17)
                 .padding(.bottom, 12)
         }
@@ -409,7 +409,7 @@ struct CommandBarView: View {
             Text(service.aliasWarning ?? text.shortcutCaptureHint)
                 .font(.system(size: 10.5))
                 .foregroundStyle(service.aliasWarning == nil
-                                 ? AnyShapeStyle(.tertiary) : AnyShapeStyle(Color.orange))
+                                 ? AnyShapeStyle(HierarchicalShapeStyle.tertiary) : AnyShapeStyle(Color.orange))
                 .padding(.horizontal, 17)
                 .padding(.bottom, 12)
         }
@@ -471,7 +471,7 @@ struct CommandBarView: View {
                 HStack(spacing: 5) {
                     Text(text.tryTheseLabel)
                         .font(.system(size: 9, weight: .bold))
-                        .tracking(0.5)
+                        .trackingCompat(0.5)
                         .foregroundStyle(.tertiary)
                     ForEach(CommandBarView.examples(text), id: \.self) { example in
                         Button {
@@ -556,7 +556,7 @@ struct CommandBarView: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title.uppercased())
             .font(.system(size: 9, weight: .bold))
-            .tracking(0.5)
+            .trackingCompat(0.5)
             .foregroundStyle(.tertiary)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 8)
@@ -1025,11 +1025,10 @@ struct CommandBarView: View {
             Toggle(item.name, isOn: uninstallIncludeBinding(item))
                 .labelsHidden()
                 .toggleStyle(.checkbox)
-                .focusable(interactions: .edit)
-                .onKeyPress(.space) {
+                .focusableEditCompat()
+                .onKeyPressCompat(.space) {
                     let included = uninstaller.items.first(where: { $0.id == item.id })?.include ?? false
                     uninstaller.setInclude(!included, for: item.id)
-                    return .handled
                 }
                 .disabled(uninstaller.isRemoving)
             Image(nsImage: NSWorkspace.shared.icon(forFile: item.url.path))

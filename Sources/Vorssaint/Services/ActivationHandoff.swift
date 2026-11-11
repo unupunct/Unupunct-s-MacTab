@@ -26,6 +26,8 @@ enum ActivationHandoff {
     static func yield(to app: NSRunningApplication) {
         lastSelfActivation = CFAbsoluteTimeGetCurrent()
         NSApp.activate(ignoringOtherApps: true)
-        NSApp.yieldActivation(to: app)
+        #if compiler(>=5.9)
+        if #available(macOS 14.0, *) { NSApp.yieldActivation(to: app) }
+        #endif
     }
 }

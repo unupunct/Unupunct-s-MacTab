@@ -46,7 +46,7 @@ struct NotchScratchpadView: View {
                     }
                     if pad.saveFailed {
                         Label(text.saveFailed, systemImage: "exclamationmark.triangle")
-                            .font(.system(size: 10.5)).foregroundStyle(.white.opacity(0.6))
+                            .font(.system(size: 10.5)).foregroundStyle(Color.white.opacity(0.6))
                             .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -74,7 +74,7 @@ struct NotchScratchpadView: View {
                         } else if pad.text.isEmpty {
                             Text(text.placeholder)
                                 .font(.system(size: textSize))
-                                .foregroundStyle(.white.opacity(0.35))
+                                .foregroundStyle(Color.white.opacity(0.35))
                                 .padding(.leading, Self.editorInset.width + PlainTextEditor.lineFragmentPadding)
                                 .padding(.top, Self.editorInset.height)
                                 .allowsHitTesting(false)
@@ -125,7 +125,7 @@ struct NotchScratchpadView: View {
         }
         .task(id: copied) {
             guard copied else { return }
-            try? await Task.sleep(for: .seconds(1.6))
+            try? await Task.sleepCompat(seconds: 1.6)
             guard !Task.isCancelled else { return }
             copied = false
         }
@@ -138,7 +138,7 @@ struct NotchScratchpadView: View {
                     ForEach(pad.pads) { entry in tab(entry).id(entry.id) }
                 }
             }
-            .scrollIndicators(.hidden)
+            .scrollIndicatorsCompat(.hidden)
             .frame(height: 28)
             .onAppear {
                 guard let selected = pad.selectedPadID else { return }
@@ -274,7 +274,7 @@ struct NotchScratchpadView: View {
                 Button { requestClose(entry) } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 8, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(Color.white.opacity(0.6))
                         .frame(width: 14, height: 14)
                         .contentShape(Rectangle())
                 }
@@ -283,11 +283,11 @@ struct NotchScratchpadView: View {
                 .accessibilityLabel(text.closePad)
             }
         }
-        .foregroundStyle(selected ? .white : .white.opacity(0.6))
+        .foregroundStyle(selected ? .white : Color.white.opacity(0.6))
         .padding(.leading, 10)
         .padding(.trailing, showsClose ? 5 : selected ? 8 : 10)
         .frame(height: 22)
-        .background(.white.opacity(selected ? 0.14 : 0.05), in: Capsule())
+        .background(Color.white.opacity(selected ? 0.14 : 0.05), in: Capsule())
         .contentShape(Capsule())
     }
 

@@ -199,7 +199,7 @@ final class CameraPreviewService: ObservableObject {
         let request = CameraPreviewRequest()
         sessionRequest = request
         self.session = session
-        for name in [AVCaptureSession.runtimeErrorNotification, AVCaptureSession.wasInterruptedNotification] {
+        for name in [Notification.Name.AVCaptureSessionRuntimeError, Notification.Name.AVCaptureSessionWasInterrupted] {
             sessionObservers.append(NotificationCenter.default.addObserver(forName: name, object: session,
                 queue: .main) { [weak self] _ in
                     guard let self, self.isPresented, self.session === session else { return }
@@ -262,7 +262,7 @@ final class CameraPreviewService: ObservableObject {
             // opens on the same camera without a key of our own. Only an
             // explicit pick may land here: a fallback after a disconnect
             // would overwrite the remembered camera with a stand-in.
-            AVCaptureDevice.userPreferredCamera = device
+            Self.setUserPreferredCamera(device)
         }
         guard let session, let request = sessionRequest else { return }
         sessionQueue.async { [weak self] in
@@ -286,9 +286,32 @@ final class CameraPreviewService: ObservableObject {
         }
     }
 
+    // Monterey: `.external`/`.continuityCamera` (macOS 14) and `userPreferredCamera` (macOS 13)
+    // are unavailable, so external cameras are found through `.externalUnknown` and the
+    // remembered-camera choice is simply not persisted by the system.
+    private static var cameraDeviceTypes: [AVCaptureDevice.DeviceType] {
+        #if compiler(>=5.9)
+        if #available(macOS 14.0, *) { return [.builtInWideAngleCamera, .external, .continuityCamera] }
+        #endif
+        return [.builtInWideAngleCamera, .externalUnknown]
+    }
+
+    private static func userPreferredCamera() -> AVCaptureDevice? {
+        #if compiler(>=5.9)
+        if #available(macOS 13.0, *) { return AVCaptureDevice.userPreferredCamera }
+        #endif
+        return nil
+    }
+
+    private static func setUserPreferredCamera(_ device: AVCaptureDevice) {
+        #if compiler(>=5.9)
+        if #available(macOS 13.0, *) { AVCaptureDevice.userPreferredCamera = device }
+        #endif
+    }
+
     private func refreshDevices() {
         let discovery = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [.builtInWideAngleCamera, .external, .continuityCamera],
+            deviceTypes: Self.cameraDeviceTypes,
             mediaType: .video,
             position: .unspecified
         )
@@ -296,7 +319,7 @@ final class CameraPreviewService: ObservableObject {
     }
 
     private func preferredDevice() -> AVCaptureDevice? {
-        if let preferred = AVCaptureDevice.userPreferredCamera,
+        if let preferred = Self.userPreferredCamera(),
            devices.contains(where: { $0.uniqueID == preferred.uniqueID }) {
             return preferred
         }
@@ -362,7 +385,7 @@ final class CameraPreviewService: ObservableObject {
                                         styleMask: [.borderless, .nonactivatingPanel],
                                         backing: .buffered,
                                         defer: false)
-        panel.title = "Vorssaint"
+        panel.title = "Unupunct MacTab"
         panel.isReleasedWhenClosed = false
         // A mirror is something the user drags next to the meeting window.
         panel.isMovableByWindowBackground = true
@@ -373,7 +396,7 @@ final class CameraPreviewService: ObservableObject {
         panel.hasShadow = true
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
         let host = NSHostingController(rootView: CameraPreviewView())
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         panel.contentViewController = host
         self.panel = panel
         return panel

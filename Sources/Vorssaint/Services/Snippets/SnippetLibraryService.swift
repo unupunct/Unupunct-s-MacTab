@@ -231,7 +231,7 @@ final class SnippetLibraryService: ObservableObject {
                                         styleMask: [.borderless, .nonactivatingPanel],
                                         backing: .buffered,
                                         defer: false)
-        panel.title = "Vorssaint"
+        panel.title = "Unupunct MacTab"
         panel.isReleasedWhenClosed = false
         panel.isMovableByWindowBackground = true
         panel.hidesOnDeactivate = false
@@ -240,7 +240,7 @@ final class SnippetLibraryService: ObservableObject {
         panel.isOpaque = false
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
         let host = NSHostingController(rootView: SnippetLibraryView())
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         panel.contentViewController = host
         self.panel = panel
         return panel

@@ -29,12 +29,12 @@ struct ClaudeAccountProfile: Equatable, Identifiable {
     }
 
     func configurationURL(home: URL) -> URL {
-        isDefault ? home.appending(path: ".claude", directoryHint: .isDirectory)
+        isDefault ? home.appendingCompat(path: ".claude", directoryHint: .isDirectory)
             : URL(fileURLWithPath: directory, isDirectory: true)
     }
 
     func profileURL(home: URL) -> URL {
-        (isDefault ? home : configurationURL(home: home)).appending(path: ".claude.json")
+        (isDefault ? home : configurationURL(home: home)).appendingCompat(path: ".claude.json")
     }
 
     /// Never silently fall back to the default account if a chosen folder
@@ -57,9 +57,9 @@ struct ClaudeAccountProfile: Equatable, Identifiable {
 
     func logURLs(home: URL) -> [URL] {
         guard isAvailable(home: home) else { return [] }
-        let folders = isDefault ? [home.appending(path: ".claude"), home.appending(path: ".config/claude")]
+        let folders = isDefault ? [home.appendingCompat(path: ".claude"), home.appendingCompat(path: ".config/claude")]
             : [configurationURL(home: home)]
-        return folders.map { $0.appending(path: "projects", directoryHint: .isDirectory) }
+        return folders.map { $0.appendingCompat(path: "projects", directoryHint: .isDirectory) }
     }
 
     /// Only account metadata and the usage timestamp survive decoding, in
@@ -99,8 +99,8 @@ struct ClaudeAccountProfile: Equatable, Identifiable {
         // its spelling: Claude keys its sign-in to the config directory.
         let names = (try? FileManager.default.contentsOfDirectory(atPath: home.path)) ?? []
         let candidates = names.filter { $0 == ".claude" || $0.hasPrefix(".claude-") }
-            .map { home.appending(path: $0, directoryHint: .isDirectory) }
-            + [home.appending(path: ".config/claude")]
+            .map { home.appendingCompat(path: $0, directoryHint: .isDirectory) }
+            + [home.appendingCompat(path: ".config/claude")]
         return candidates.sorted { $0.path < $1.path }.prefix(32).map { Self(directory: $0.path) }
             .filter { $0.isAvailable(home: home) }
     }

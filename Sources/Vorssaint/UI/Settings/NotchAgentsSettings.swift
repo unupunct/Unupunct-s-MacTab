@@ -42,6 +42,7 @@ struct NotchAgentsSettingsControls: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
+            Group {
             Text(text.settingsDescription)
                 .font(.callout)
                 .foregroundStyle(.secondary)
@@ -54,6 +55,8 @@ struct NotchAgentsSettingsControls: View {
             if codex { CodexAccountsSettings() }
 
             Divider()
+            }
+            Group {
             Text(text.cardsTitle).font(.subheadline.weight(.medium))
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 104), spacing: 8)], spacing: 8) {
                 ForEach(orderedCards) { card in
@@ -89,6 +92,8 @@ struct NotchAgentsSettingsControls: View {
 
             Divider()
             Text(text.liveTitle).font(.subheadline.weight(.medium))
+            }
+            Group {
             switchRow("waveform.path.ecg", text.liveActivity, isOn: $liveActivity)
             if liveActivity {
                 SettingsMenuRow(symbol: "camera.metering.center.weighted", title: text.readout, selection: $readout) {
@@ -125,6 +130,8 @@ struct NotchAgentsSettingsControls: View {
                 }
                 .padding(.leading, settingsRowTextInset)
             }
+            }
+            Group {
             SettingsMenuRow(symbol: "dollarsign.circle", title: text.budget, selection: $dailyBudget) {
                 ForEach(NotchAgentSupport.budgets, id: \.self) { value in
                     Text(value == 0 ? text.off : AgentFormat.cost(value)).tag(value)
@@ -147,6 +154,7 @@ struct NotchAgentsSettingsControls: View {
                     Text(text.claudeLimitsPrivacy).font(.caption).foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+            }
             }
         }
         .toggleStyle(.switch)
@@ -188,7 +196,7 @@ struct NotchAgentsSettingsControls: View {
                 Image(systemName: now.timeIntervalSince(account) < AgentClaudeAppUsage.freshness
                       ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
                     .foregroundStyle(now.timeIntervalSince(account) < AgentClaudeAppUsage.freshness ? .green : .orange)
-                explained(failure) { Text("Claude Code · " + text.updated(relative(account, now: now))) }
+                explained(failure) { Text(verbatim: "Claude Code · \(text.updated(relative(account, now: now)))") }
                 Spacer(minLength: 0)
             } else if !claudeProfile.isEmpty {
                 Image(systemName: "info.circle.fill").foregroundStyle(.secondary)

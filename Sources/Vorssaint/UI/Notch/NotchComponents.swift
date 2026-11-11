@@ -21,7 +21,7 @@ struct NotchButtonStyle: ButtonStyle {
         configuration.label
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(.white.opacity(active && highlights ? 0.09 : 0))
+                    .fill(Color.white.opacity(active && highlights ? 0.09 : 0))
                     .allowsHitTesting(false)
             }
             .opacity(enabled ? (configuration.isPressed ? 0.8 : 1) : 0.4)
@@ -65,7 +65,7 @@ struct NotchMeter: View {
         let fraction = value.isFinite ? min(1, max(0, value)) : 0
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
-                Capsule(style: .continuous).fill(.white.opacity(0.14))
+                Capsule(style: .continuous).fill(Color.white.opacity(0.14))
                 Capsule(style: .continuous)
                     .fill(tint.opacity(0.9))
                     .frame(width: max(fraction > 0 ? height : 0, proxy.size.width * fraction))
@@ -87,7 +87,7 @@ struct NotchRollingDigits: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .contentTransition(.numericText(countsDown: countsDown))
+            .contentTransitionNumericCompat(countsDown: countsDown)
             .animation(reduceMotion ? nil : .smooth(duration: 0.3),
                        value: NotchTimerSupport.rollingValue(value, everySecond: everySecond))
     }
@@ -152,11 +152,11 @@ struct NotchIconButton: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(selected ? .white : .white.opacity(0.55))
-                .contentTransition(.symbolEffect(.replace))
+                .foregroundStyle(selected ? .white : Color.white.opacity(0.55))
+                .contentTransitionSymbolReplaceCompat()
                 .animation(reduceMotion ? nil : .smooth(duration: 0.24), value: symbol)
                 .frame(width: 28, height: 28)
-                .background(.white.opacity(selected ? 0.12 : 0),
+                .background(Color.white.opacity(selected ? 0.12 : 0),
                             in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                 .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
         }
@@ -207,9 +207,9 @@ struct NotchEmptyView<Actions: View>: View {
     private var glyph: some View {
         Image(systemName: symbol)
             .font(.system(size: 26, weight: .light))
-            .foregroundStyle(.white.opacity(0.65))
+            .foregroundStyle(Color.white.opacity(0.65))
             .frame(width: 56, height: 56)
-            .background(.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .accessibilityHidden(true)
     }
 
@@ -238,11 +238,11 @@ struct NotchPillButton: View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: 12, weight: prominent ? .semibold : .medium))
-                .foregroundStyle(.white.opacity(prominent ? 1 : 0.7))
+                .foregroundStyle(Color.white.opacity(prominent ? 1 : 0.7))
                 .lineLimit(1)
                 .padding(.horizontal, 14)
                 .frame(height: 28)
-                .background(.white.opacity(prominent ? 0.14 : 0), in: Capsule())
+                .background(Color.white.opacity(prominent ? 0.14 : 0), in: Capsule())
                 .contentShape(Capsule())
         }
         .buttonStyle(NotchButtonStyle(cornerRadius: 14))
@@ -268,7 +268,7 @@ struct NotchArtwork: View {
                 Color.black.overlay {
                     Image(systemName: "music.note")
                         .font(.system(size: size * 0.3, weight: .light))
-                        .foregroundStyle(.white.opacity(0.45))
+                        .foregroundStyle(Color.white.opacity(0.45))
                 }
             }
         }
@@ -276,7 +276,7 @@ struct NotchArtwork: View {
         .clipShape(RoundedRectangle(cornerRadius: size * 0.19, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: size * 0.19, style: .continuous)
-                .strokeBorder(.white.opacity(0.12), lineWidth: 0.5)
+                .strokeBorder(Color.white.opacity(0.12), lineWidth: 0.5)
         }
         .accessibilityHidden(true)
     }
@@ -331,7 +331,7 @@ struct NotchRail<Item: Identifiable, Content: View>: View {
                     }
                     .contentShape(Rectangle())
                 }
-                .scrollIndicators(.never)
+                .scrollIndicatorsCompat(.never)
                 .notchScrollEdgeFade(.horizontal)
                 .onAppear {
                     if let targetColumn { proxy.scrollTo(targetColumn, anchor: .center) }
@@ -594,7 +594,7 @@ struct NotchSurfaceBackground: View {
         (0...64).map { index in
             let t = Double(index) / 64
             return Gradient.Stop(
-                color: .black.opacity(1 - openness * (contrast == .increased ? 0.10 : 0.45) * pow(t, 2.5)),
+                color: Color.black.opacity(1 - openness * (contrast == .increased ? 0.10 : 0.45) * pow(t, 2.5)),
                 location: t)
         }
     }
@@ -611,7 +611,7 @@ extension NotchSurfaceBackground {
             let stops = NotchTranslucentTint.stops(height: height, stripHeight: presentation.stripHeight,
                                                    openness: presentation.openness,
                                                    increasedContrast: contrast == .increased)
-                .map { Gradient.Stop(color: .black.opacity($0.opacity), location: $0.location) }
+                .map { Gradient.Stop(color: Color.black.opacity($0.opacity), location: $0.location) }
             // The blur covers only the island's box. Its mask image is drawn
             // again on every frame of a resize, and at the stage's size it
             // would be as large as the largest display.
@@ -698,26 +698,26 @@ struct NotchControlSurface: ViewModifier {
         Group {
             if glassSurface {
                 content
-                    .background(.white.opacity(selected ? 0.11 : 0.045), in: shape)
+                    .background(Color.white.opacity(selected ? 0.11 : 0.045), in: shape)
                     .overlay {
-                        shape.strokeBorder(.white.opacity(selected ? 0.16 : 0.065), lineWidth: 0.5)
+                        shape.strokeBorder(Color.white.opacity(selected ? 0.16 : 0.065), lineWidth: 0.5)
                             .allowsHitTesting(false)
                     }
             } else {
 #if compiler(>=6.2)
                 if #available(macOS 26, *), glass, !reduceTransparency {
-                    content.background(.white.opacity(selected ? 0.12 : 0.065), in: shape)
+                    content.background(Color.white.opacity(selected ? 0.12 : 0.065), in: shape)
                         .glassEffect(.regular.interactive(interactive), in: shape)
                 } else {
-                    content.background(.white.opacity(selected ? 0.12 : 0.065), in: shape)
+                    content.background(Color.white.opacity(selected ? 0.12 : 0.065), in: shape)
                 }
 #else
-                content.background(.white.opacity(selected ? 0.12 : 0.065), in: shape)
+                content.background(Color.white.opacity(selected ? 0.12 : 0.065), in: shape)
 #endif
             }
         }
         .overlay {
-            shape.strokeBorder(.white.opacity(contrast == .increased ? 0.5 : 0), lineWidth: 0.75)
+            shape.strokeBorder(Color.white.opacity(contrast == .increased ? 0.5 : 0), lineWidth: 0.75)
                 .allowsHitTesting(false)
         }
     }
@@ -767,7 +767,7 @@ struct NotchBandBackButton: View {
             HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(Color.white.opacity(0.55))
                 Text(title)
                     .font(.system(size: 13, weight: .semibold))
                     .lineLimit(1)
@@ -793,13 +793,13 @@ struct NotchBandMenuLabel: View {
     var body: some View {
         HStack(spacing: 4) {
             if let symbol {
-                Image(systemName: symbol).foregroundStyle(.white.opacity(0.55))
+                Image(systemName: symbol).foregroundStyle(Color.white.opacity(0.55))
             }
             Text(title).lineLimit(1).truncationMode(truncation)
             Image(systemName: "chevron.down").font(.system(size: 9, weight: .semibold))
         }
         .font(.system(size: 12, weight: .medium))
-        .foregroundStyle(.white.opacity(0.85))
+        .foregroundStyle(Color.white.opacity(0.85))
         .padding(.horizontal, 7)
         .frame(height: 28)
         .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))

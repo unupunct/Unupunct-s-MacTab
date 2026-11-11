@@ -214,7 +214,7 @@ struct ScreenshotBackdropPopover<Model: BackdropEditing>: View {
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(3)
-                    .background(.black.opacity(0.45), in: RoundedRectangle(cornerRadius: 4))
+                    .background(Color.black.opacity(0.45), in: RoundedRectangle(cornerRadius: 4))
                     .padding(3)
             }
         }

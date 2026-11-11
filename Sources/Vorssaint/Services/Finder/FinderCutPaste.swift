@@ -166,7 +166,7 @@ final class FinderCutPaste: ObservableObject {
             shouldStopTapThread = false
             pendingTapRestart = false
             let thread = Thread { [weak self] in self?.runEventTap() }
-            thread.name = "Vorssaint File Shortcuts"
+            thread.name = "Unupunct MacTab File Shortcuts"
             thread.qualityOfService = .userInteractive
             tapThread = thread
             return thread
@@ -772,7 +772,7 @@ final class FinderCutPaste: ObservableObject {
         panel.isReleasedWhenClosed = false
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
         let host = NSHostingController(rootView: CutFeedbackView().environmentObject(self))
-        host.sizingOptions = .preferredContentSize
+        host.setPreferredContentSizing(true)
         panel.contentViewController = host
         self.panel = panel
         return panel

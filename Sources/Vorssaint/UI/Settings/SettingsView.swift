@@ -146,7 +146,7 @@ struct SettingsView: View {
 
         NavigationSplitView(columnVisibility: $columnVisibility) {
             sidebar(searchResults: searchResults)
-                .navigationSplitViewColumnWidth(min: 198, ideal: 210, max: 240)
+                .navigationSplitViewColumnWidthCompat(min: 198, ideal: 210, max: 240)
         } detail: {
             // NavigationSplitView's detail slot sometimes queries its content
             // for an unconstrained ideal size (settling the divider, or on a
@@ -163,7 +163,7 @@ struct SettingsView: View {
                     .frame(width: geometry.size.width, height: geometry.size.height, alignment: .top)
             }
         }
-        .navigationSplitViewStyle(.balanced)
+        .navigationSplitViewStyleCompat(.balanced)
         .toolbar {
             // SwiftUI adds its sidebar button only to windows it creates, and
             // this one is AppKit's. Without it, a sidebar dragged shut could
@@ -339,39 +339,54 @@ struct SettingsView: View {
         let selectedID = SettingsSidebarSupport.selection(for: router.destination, in: items,
                                                           preferredID: router.sidebarFeature.map { .feature($0) })
         ForEach(sections) { section in
-            Section {
-                if !collapsedSectionIDs.contains(section.id) {
-                    ForEach(section.items) { item in
-                        HStack(spacing: 9) {
-                            Image(systemName: item.icon)
-                                .foregroundStyle(selectedID == item.id
-                                    ? AnyShapeStyle(.primary) : AnyShapeStyle(.tint))
-                                .frame(width: 18)
-                            Text(item.title)
-                        }
-                        .tag(item.id)
-                        .id(item.id)
-                        .help(item.title)
-                    }
-                }
-            } header: {
-                Button {
-                    if !collapsedSectionIDs.insert(section.id).inserted {
-                        collapsedSectionIDs.remove(section.id)
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: collapsedSectionIDs.contains(section.id)
-                            ? "chevron.right" : "chevron.down")
-                            .font(.system(size: 9, weight: .semibold))
-                            .frame(width: 12)
-                        Text(section.title)
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
+            sidebarSectionView(section, selectedID: selectedID)
         }
+    }
+
+    @ViewBuilder
+    private func sidebarSectionView(_ section: SettingsSidebarSection, selectedID: SettingsSidebarItem.ID?) -> some View {
+        Section {
+            if !collapsedSectionIDs.contains(section.id) {
+                ForEach(section.items) { item in
+                    sidebarItemRow(item, selected: selectedID == item.id)
+                }
+            }
+        } header: {
+            sidebarSectionHeader(section)
+        }
+    }
+
+    private func sidebarItemRow(_ item: SettingsSidebarItem, selected: Bool) -> some View {
+        let style: AnyShapeStyle = selected
+            ? AnyShapeStyle(HierarchicalShapeStyle.primary) : AnyShapeStyle(TintShapeStyle())
+        return HStack(spacing: 9) {
+            Image(systemName: item.icon)
+                .foregroundStyle(style)
+                .frame(width: 18)
+            Text(item.title)
+        }
+        .tag(item.id)
+        .id(item.id)
+        .help(item.title)
+    }
+
+    private func sidebarSectionHeader(_ section: SettingsSidebarSection) -> some View {
+        let collapsed: Bool = collapsedSectionIDs.contains(section.id)
+        let symbol: String = collapsed ? "chevron.right" : "chevron.down"
+        return Button {
+            if !collapsedSectionIDs.insert(section.id).inserted {
+                collapsedSectionIDs.remove(section.id)
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: symbol)
+                    .font(.system(size: 9, weight: .semibold))
+                    .frame(width: 12)
+                Text(section.title)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
@@ -393,7 +408,7 @@ struct SettingsView: View {
             requestSearchItem(suggestion)
         } label: {
             Label(group.pageItem.title, systemImage: group.pageItem.icon)
-                .fontWeight(.semibold)
+                .fontWeightCompat(.semibold)
                 .searchResultRowStyle(isSelected: isSelected)
         }
         .buttonStyle(.plain)
@@ -497,9 +512,9 @@ struct SettingsView: View {
                           Self.isNavigationKey(event),
                           let editor = window.firstResponder as? NSTextView,
                           editor.isFieldEditor,
-                          (customSearchFocused || Self.isSidebarSearchEditor(editor, near: view)),
+                          (self.customSearchFocused || Self.isSidebarSearchEditor(editor, near: view)),
                           !editor.hasMarkedText() else { return event }
-                    return handleKey(event.keyCode) ? nil : event
+                    return self.handleKey(event.keyCode) ? nil : event
                 }
             }
 
@@ -622,6 +637,21 @@ struct UpdatesView: View {
     @AppStorage(DefaultsKey.releaseNotesOnUpdate) private var showWhatsNewAfter = true
 
     var body: some View {
+        if AppInfo.isUnofficialPort {
+            Section(l10n.s.updatesSection) {
+                Text("This unofficial macOS 12 port has no update feed and never checks for, downloads or installs updates. New versions are published on its GitHub releases page.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Link("Open the releases page", destination: AppInfo.releasesURL)
+            }
+        } else {
+            officialBody
+        }
+    }
+
+    @ViewBuilder
+    private var officialBody: some View {
         Section(l10n.s.updatesSection) {
             Toggle(l10n.s.autoCheckToggle, isOn: $autoCheck)
                 .onChange(of: autoCheck) { _, value in
@@ -731,7 +761,7 @@ struct AboutSettings: View {
 
             UpdatesView()
         }
-        .formStyle(.grouped)
+        .formStyleGroupedCompat()
     }
 
     private var aboutContent: some View {
@@ -846,7 +876,7 @@ struct ReleaseNotesSettings: View {
                 Text(section.title.uppercased())
                     .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(.secondary)
-                    .tracking(1.2)
+                    .trackingCompat(1.2)
             }
             ForEach(Array(section.items.enumerated()), id: \.offset) { _, item in
                 releaseItem(item, sectionTitle: section.title)
@@ -957,13 +987,17 @@ struct SupportSettings: View {
                         .frame(maxWidth: 460)
                 }
 
-                Button {
-                    openURL(AppInfo.coffeeURL)
-                } label: {
-                    Label(l10n.s.donateButton, systemImage: "cup.and.saucer.fill")
+                // The donation link belongs to the upstream project's maintainer, so the
+                // unofficial port does not offer it.
+                if !AppInfo.isUnofficialPort {
+                    Button {
+                        openURL(AppInfo.coffeeURL)
+                    } label: {
+                        Label(l10n.s.donateButton, systemImage: "cup.and.saucer.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
 
                 HStack(alignment: .top, spacing: 14) {
                     Image(systemName: "star.fill")
@@ -1238,7 +1272,7 @@ private struct SidebarSearchField: View {
         }
         .padding(.vertical, 5)
         .padding(.horizontal, 7)
-        .background(.quaternary.opacity(0.5), in: Capsule())
+        .background(Color.quaternaryFill(0.5), in: Capsule())
         .padding(.horizontal, 10)
         .padding(.top, 8)
         .padding(.bottom, 4)

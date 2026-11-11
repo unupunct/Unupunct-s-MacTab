@@ -324,10 +324,10 @@ final class SystemMonitor: ObservableObject {
     func panelDidAppear() {
         runOnMain { [weak self] in
             guard let self else { return }
-            panelClients += 1
-            ensureTimer()
-            refresh(suppressImmediateGPU: true)
-            scheduleDeferredGPURefreshIfNeeded()
+            self.panelClients += 1
+            self.ensureTimer()
+            self.refresh(suppressImmediateGPU: true)
+            self.scheduleDeferredGPURefreshIfNeeded()
         }
     }
 
@@ -336,8 +336,8 @@ final class SystemMonitor: ObservableObject {
     func panelDidDisappear() {
         runOnMain { [weak self] in
             guard let self else { return }
-            panelClients = max(0, panelClients - 1)
-            stopTimerIfIdle()
+            self.panelClients = max(0, self.panelClients - 1)
+            self.stopTimerIfIdle()
         }
     }
 
@@ -347,31 +347,31 @@ final class SystemMonitor: ObservableObject {
     func setMenuPanelNeeds(_ needs: SystemMonitorPanelNeeds) {
         runOnMain { [weak self] in
             guard let self else { return }
-            if needs == menuPanelNeeds {
-                if shouldRun {
-                    ensureTimer()
+            if needs == self.menuPanelNeeds {
+                if self.shouldRun {
+                    self.ensureTimer()
                 } else {
-                    stopTimerIfIdle()
+                    self.stopTimerIfIdle()
                 }
                 return
             }
             let defaults = UserDefaults.standard
-            let previousNeeds = menuPanelNeeds
-            let neededGPUBefore = currentPlan(defaults: defaults).needGPUUsage
-            menuPanelNeeds = needs
-            let needsGPUAfter = currentPlan(defaults: defaults).needGPUUsage
-            if shouldRun {
-                ensureTimer()
+            let previousNeeds = self.menuPanelNeeds
+            let neededGPUBefore = self.currentPlan(defaults: defaults).needGPUUsage
+            self.menuPanelNeeds = needs
+            let needsGPUAfter = self.currentPlan(defaults: defaults).needGPUUsage
+            if self.shouldRun {
+                self.ensureTimer()
                 let panelGPUBecameVisible = needs.system
                     && !previousNeeds.system
                     && defaults.bool(forKey: DefaultsKey.monitorSysGPU)
                 let suppressImmediateGPU = needsGPUAfter && (!neededGPUBefore || panelGPUBecameVisible)
-                refresh(suppressImmediateGPU: suppressImmediateGPU)
+                self.refresh(suppressImmediateGPU: suppressImmediateGPU)
                 if suppressImmediateGPU {
-                    scheduleDeferredGPURefreshIfNeeded()
+                    self.scheduleDeferredGPURefreshIfNeeded()
                 }
             } else {
-                stopTimerIfIdle()
+                self.stopTimerIfIdle()
             }
         }
     }
@@ -383,9 +383,9 @@ final class SystemMonitor: ObservableObject {
         runOnMain { [weak self] in
             guard let self else { return }
             let until = ProcessInfo.processInfo.systemUptime + max(0.1, duration)
-            suppressGPUReadsUntil = max(suppressGPUReadsUntil, until)
-            if shouldSample(), currentPlan(defaults: .standard).needGPUUsage {
-                scheduleDeferredGPURefreshIfNeeded()
+            self.suppressGPUReadsUntil = max(self.suppressGPUReadsUntil, until)
+            if self.shouldSample(), self.currentPlan(defaults: .standard).needGPUUsage {
+                self.scheduleDeferredGPURefreshIfNeeded()
             }
         }
     }
@@ -394,16 +394,16 @@ final class SystemMonitor: ObservableObject {
     func setMenuBarActive(_ active: Bool) {
         runOnMain { [weak self] in
             guard let self else { return }
-            guard active != menuBarActive else {
-                if active { resyncIfPlanChanged() }
+            guard active != self.menuBarActive else {
+                if active { self.resyncIfPlanChanged() }
                 return
             }
-            menuBarActive = active
+            self.menuBarActive = active
             if active {
-                ensureTimer()
-                refresh()
+                self.ensureTimer()
+                self.refresh()
             } else {
-                stopTimerIfIdle()
+                self.stopTimerIfIdle()
             }
         }
     }
@@ -413,16 +413,16 @@ final class SystemMonitor: ObservableObject {
     func setAlertsActive(_ active: Bool) {
         runOnMain { [weak self] in
             guard let self else { return }
-            guard active != alertsActive else {
-                if active { resyncIfPlanChanged() }
+            guard active != self.alertsActive else {
+                if active { self.resyncIfPlanChanged() }
                 return
             }
-            alertsActive = active
+            self.alertsActive = active
             if active {
-                ensureTimer()
-                refresh()
+                self.ensureTimer()
+                self.refresh()
             } else {
-                stopTimerIfIdle()
+                self.stopTimerIfIdle()
             }
         }
     }
@@ -451,12 +451,12 @@ final class SystemMonitor: ObservableObject {
         runOnMain { [weak self] in
             guard let self else { return }
             let clamped = max(1, seconds)
-            guard clamped != intervalSeconds else { return }
-            intervalSeconds = clamped
+            guard clamped != self.intervalSeconds else { return }
+            self.intervalSeconds = clamped
             // Strides are derived from the interval, so the wake cadence must
             // resync before the timer is rebuilt on the new base interval.
-            syncTimerCadence(plan: currentPlan(defaults: .standard))
-            if timer != nil { restartTimer() }
+            self.syncTimerCadence(plan: self.currentPlan(defaults: .standard))
+            if self.timer != nil { self.restartTimer() }
         }
     }
 

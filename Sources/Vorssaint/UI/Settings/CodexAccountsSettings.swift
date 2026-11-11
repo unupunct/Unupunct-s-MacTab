@@ -34,7 +34,7 @@ struct CodexAccountsSettings: View {
                                 }
                             }))
                         .textFieldStyle(.roundedBorder)
-                        .accessibilityLabel("Codex · " + text.accountName + ": " + profile.name)
+                        .accessibilityLabel("Codex · \(text.accountName): \(profile.name)")
                         Text(profile.directory).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
                             .truncationMode(.middle).help(profile.directory)
                     }

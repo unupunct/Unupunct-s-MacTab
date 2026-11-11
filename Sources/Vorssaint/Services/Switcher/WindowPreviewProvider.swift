@@ -183,7 +183,7 @@ final class WindowPreviewProvider {
 
                 let filter = SCContentFilter(desktopIndependentWindow: scWindow)
                 guard let image = await Self.windowServerCaptures.perform({
-                    try? await SCScreenshotManager.captureImage(contentFilter: filter, configuration: configuration)
+                    try? await SCScreenshotCompat.captureImage(contentFilter: filter, configuration: configuration)
                 }) else { continue }
                 guard !Task.isCancelled else { return }
 
@@ -466,7 +466,7 @@ final class WindowPreviewProvider {
                   !Self.captureIsPaused(excludedAppsKey: excludedAppsKey)
             else { return }
             self.pendingWarmPid = nil
-            warmTask?.cancel()
+            self.warmTask?.cancel()
             // Taken here, on the main queue, before the task starts.
             let snapshot = WindowEnumerator.snapshot()
             // Detached: this closure runs on the main queue, so a plain Task
@@ -474,7 +474,7 @@ final class WindowPreviewProvider {
             // Manager strip rectification and the downscaled copy of every
             // window below would run on the main thread after each activation.
             // The listing itself stays on the warm enumeration queue.
-            warmTask = Task.detached(priority: .utility) { [weak self] in
+            self.warmTask = Task.detached(priority: .utility) { [weak self] in
                 guard let self else { return }
                 let items = await withCheckedContinuation { continuation in
                     Self.warmEnumerationQueue.async {

@@ -127,7 +127,7 @@ struct NotchLyricsView: View {
                         ForEach(Array(lyrics.lines.enumerated()), id: \.element.id) { index, line in
                             Text(line.text.isEmpty ? "♪" : line.text)
                                 .font(.system(size: 17, weight: .bold))
-                                .foregroundStyle(.white.opacity(index == active ? 1 : 0.35))
+                                .foregroundStyle(Color.white.opacity(index == active ? 1 : 0.35))
                                 .animation(reduceMotion ? nil : .smooth(duration: 0.28), value: index == active)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)

@@ -242,7 +242,7 @@ struct ShelfView: View {
     private var emptyState: some View {
         RoundedRectangle(cornerRadius: 12, style: .continuous)
             .strokeBorder(style: StrokeStyle(lineWidth: 1.5, dash: [6, 5]))
-            .foregroundStyle(.secondary.opacity(0.4))
+            .foregroundStyle(Color.secondary.opacity(0.4))
             .frame(height: Self.tileAreaHeight)
             .overlay(
                 VStack(spacing: 8) {

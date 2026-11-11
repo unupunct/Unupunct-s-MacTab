@@ -1049,7 +1049,7 @@ final class MediaService: ObservableObject {
         let semaphore = DispatchSemaphore(value: 0)
         var result: Result<CGImage, Error>?
 
-        generator.generateCGImageAsynchronously(for: time) { image, _, error in
+        let finish: (CGImage?, Error?) -> Void = { image, error in
             if let image {
                 result = .success(image)
             } else {
@@ -1057,6 +1057,19 @@ final class MediaService: ObservableObject {
             }
             semaphore.signal()
         }
+        #if compiler(>=5.8)
+        if #available(macOS 13.0, *) {
+            generator.generateCGImageAsynchronously(for: time) { image, _, error in finish(image, error) }
+        } else {
+            generator.generateCGImagesAsynchronously(forTimes: [NSValue(time: time)]) { _, image, _, _, error in
+                finish(image, error)
+            }
+        }
+        #else
+        generator.generateCGImagesAsynchronously(forTimes: [NSValue(time: time)]) { _, image, _, _, error in
+            finish(image, error)
+        }
+        #endif
 
         while semaphore.wait(timeout: .now() + .milliseconds(50)) == .timedOut {
             if token.isCancelled {

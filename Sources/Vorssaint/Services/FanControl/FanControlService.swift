@@ -32,8 +32,8 @@ final class FanControlService: ObservableObject {
     private var registrationAttemptedVersion: String?
     private var observingWorkspace = false
 
-    private static var appService: SMAppService {
-        SMAppService.daemon(plistName: FanControlIdentifiers.plistName)
+    private static var appService: AppServiceCompat {
+        AppServiceCompat.daemon(plistName: FanControlIdentifiers.plistName)
     }
 
     private static var helperVersion: String {
@@ -96,7 +96,7 @@ final class FanControlService: ObservableObject {
         refreshAccessState()
         switch accessState {
         case .requiresApproval:
-            SMAppService.openSystemSettingsLoginItems()
+            AppServiceCompat.openSystemSettingsLoginItems()
         case .enabled:
             requestStatus()
         case .unavailable:
@@ -110,7 +110,7 @@ final class FanControlService: ObservableObject {
                 refreshAccessState()
                 isWorking = false
                 if accessState == .requiresApproval {
-                    SMAppService.openSystemSettingsLoginItems()
+                    AppServiceCompat.openSystemSettingsLoginItems()
                 } else if accessState == .enabled {
                     requestStatus()
                 }
@@ -118,7 +118,7 @@ final class FanControlService: ObservableObject {
                 isWorking = false
                 refreshAccessState()
                 if accessState == .requiresApproval {
-                    SMAppService.openSystemSettingsLoginItems()
+                    AppServiceCompat.openSystemSettingsLoginItems()
                 } else {
                     self.error = .helperUnavailable
                 }
@@ -282,7 +282,7 @@ final class FanControlService: ObservableObject {
         let connection = NSXPCConnection(machServiceName: FanControlIdentifiers.helperID,
                                          options: .privileged)
         connection.remoteObjectInterface = NSXPCInterface(with: FanControlXPCProtocol.self)
-        connection.setCodeSigningRequirement(FanControlIdentifiers.helperCodeRequirement)
+        connection.setCodeSigningRequirementCompat(FanControlIdentifiers.helperCodeRequirement)
         let semaphore = DispatchSemaphore(value: 0)
         let resultLock = NSLock()
         var restored = false
@@ -307,7 +307,7 @@ final class FanControlService: ObservableObject {
         return unregisterForRemoval(service)
     }
 
-    private static func unregisterForRemoval(_ service: SMAppService) -> Bool {
+    private static func unregisterForRemoval(_ service: AppServiceCompat) -> Bool {
         do {
             try service.unregister()
             return true
@@ -424,7 +424,7 @@ final class FanControlService: ObservableObject {
             let connection = NSXPCConnection(machServiceName: FanControlIdentifiers.helperID,
                                              options: .privileged)
             connection.remoteObjectInterface = NSXPCInterface(with: FanControlXPCProtocol.self)
-            connection.setCodeSigningRequirement(FanControlIdentifiers.helperCodeRequirement)
+            connection.setCodeSigningRequirementCompat(FanControlIdentifiers.helperCodeRequirement)
             connection.interruptionHandler = { [weak self, weak connection] in
                 DispatchQueue.main.async {
                     guard let connection, self?.connection === connection else { return }

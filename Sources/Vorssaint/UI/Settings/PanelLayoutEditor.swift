@@ -255,11 +255,11 @@ private struct MenuBarPanelMiniature: View {
             Spacer(minLength: 0)
             Image(systemName: "wifi")
                 .font(.system(size: 9.5))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(Color.white.opacity(0.5))
             if PowerSampler.hasInternalBattery {
                 Image(systemName: "battery.75")
                     .font(.system(size: 10))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(Color.white.opacity(0.5))
             }
             MenuBarGlyph()
                 .frame(width: 20, height: 15)
@@ -341,7 +341,7 @@ private struct MenuBarPanelMiniature: View {
             if let active {
                 Text(active.title(l10n.s).uppercased())
                     .font(.system(size: 8, weight: .semibold))
-                    .kerning(0.4)
+                    .kerningCompat(0.4)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
