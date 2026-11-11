@@ -30,6 +30,11 @@ clipboard history, a system monitor, mouse and scroll tweaks and more. Install o
 - **Intel temperature sensors**, with LAN traffic shown where a Mac has no GPU sensor.
 - A first-run setup that offers every tool this Mac can run.
 
+<p align="center">
+  <img src="docs/monterey/panel-volume.png" width="40%" alt="The menu bar panel on macOS 12: output and microphone volume, audio priority, and the Screenshot, Send to and Clean buttons">
+</p>
+<p align="center"><sub>The panel as it looks now, captured on macOS 12.7.6. The CPU, RAM and disk readings are in the menu bar above it.</sub></p>
+
 All of this was written for this port and has only been looked at on one Mac. See the limits below.
 
 ## Download and install
