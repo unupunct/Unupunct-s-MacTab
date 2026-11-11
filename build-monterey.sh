@@ -10,6 +10,7 @@
 #   ./build-monterey.sh              preflight, compile, bundle, ad-hoc sign, verify, zip
 #   ./build-monterey.sh --test       also compile and run the unit tests (see below)
 #   ./build-monterey.sh --opt -O     optimised build (default -Onone, much faster to compile)
+#   ./build-monterey.sh --universal  also build the other architecture (arm64 <-> x86_64) and merge them with lipo
 #   ./build-monterey.sh --reuse      reuse build/Unupunct MacTab if it exists (skip the app compile)
 #
 # Output: build/Unupunct MacTab.app, build/UnupunctMacTab-<version>-<arch>.zip and ...-macOS12.dmg,
@@ -21,11 +22,12 @@
 set -u -o pipefail
 cd "$(dirname "$0")"
 
-OPT="-Onone"; RUN_TESTS=0; REUSE=0
+OPT="-Onone"; RUN_TESTS=0; REUSE=0; UNIVERSAL=0
 while [ $# -gt 0 ]; do
     case "$1" in
         --test) RUN_TESTS=1 ;;
         --reuse) REUSE=1 ;;
+        --universal) UNIVERSAL=1 ;;
         --opt) shift; OPT="${1:-}" ;;
         -h|--help) sed -n 2,24p "$0"; exit 0 ;;
         *) echo "unknown option: $1" >&2; exit 2 ;;
@@ -43,11 +45,14 @@ BUNDLE_ID="local.unupunct.mactab"
 MIN_OS="12.3"
 ARCH="$(uname -m)"
 TARGET="${ARCH}-apple-macosx${MIN_OS}"
+if [ "$UNIVERSAL" = "1" ]; then ARCH_LABEL="universal"; else ARCH_LABEL="$ARCH"; fi
+if [ "$ARCH" = "arm64" ]; then OTHER_ARCH="x86_64"; else OTHER_ARCH="arm64"; fi
+OTHER_TARGET="${OTHER_ARCH}-apple-macosx${MIN_OS}"
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist 2>/dev/null || echo 0)"
 UPSTREAM_VERSION="$VERSION"
 VERSION="${UPSTREAM_VERSION}-monterey.2"   # this port's own version, on top of the upstream release it is based on
 STAGE="build/${APP_NAME}.app"
-ZIP="build/${EXECUTABLE}-${VERSION}-${ARCH}.zip"
+ZIP="build/${EXECUTABLE}-${VERSION}-${ARCH_LABEL}.zip"
 
 fail() { echo "✗ $*" >&2; exit 1; }
 step() { echo; echo "▸ $*"; }
@@ -80,7 +85,7 @@ for tool in iconutil codesign ditto /usr/libexec/PlistBuddy; do
 done
 [ -f Sources/UnupunctMacTab/Support/MontereyCompat.swift ] || fail "run this from the repository root of the monterey-port branch"
 echo "  deployment target: macOS $MIN_OS ($TARGET)"
-echo "  universal binary : NO. Built for $ARCH only; the other architecture is neither built nor tested here."
+if [ "$UNIVERSAL" = "1" ]; then echo "  universal binary : YES ($ARCH built and run here; $OTHER_ARCH cross-compiled, NOT run here)"; else echo "  universal binary : NO. Built for $ARCH only; the other architecture is neither built nor tested here."; fi
 echo "  optimisation     : $OPT"
 
 BRIDGE=(-import-objc-header Sources/MontereyCompat/Bridging.h)
@@ -98,6 +103,13 @@ else
         $(find Sources/UnupunctMacTab -name '*.swift' | sort) -o build/UnupunctMacTab || fail "app compile failed"
 fi
 [ -x build/UnupunctMacTab ] || fail "build/UnupunctMacTab was not produced"
+APP_BIN="build/UnupunctMacTab"
+if [ "$UNIVERSAL" = "1" ]; then
+    step "Cross-compiling the app for $OTHER_ARCH (cannot be run on this Mac)"
+    swiftc $OPT -j "$(sysctl -n hw.logicalcpu)" -enable-batch-mode -module-name UnupunctMacTab         -target "$OTHER_TARGET" -sdk "$SDK" "${BRIDGE[@]}" "${INCLUDES[@]}" "${SOLVER[@]}"         $(find Sources/UnupunctMacTab -name '*.swift' | sort) -o "build/UnupunctMacTab-$OTHER_ARCH" || fail "$OTHER_ARCH app compile failed"
+    lipo -create build/UnupunctMacTab "build/UnupunctMacTab-$OTHER_ARCH" -output build/UnupunctMacTab-universal || fail "lipo failed"
+    APP_BIN="build/UnupunctMacTab-universal"
+fi
 
 step "Compiling the Now Playing adapter"
 swiftc -O "${COMMON[@]}" -emit-library -module-name UnupunctMacTabNowPlaying \
@@ -107,6 +119,12 @@ swiftc -O "${COMMON[@]}" -emit-library -module-name UnupunctMacTabNowPlaying \
     Sources/UnupunctMacTab/Services/Notch/NotchPlaybackSource.swift \
     Sources/UnupunctMacTab/Services/Notch/NotchPlaybackCommand.swift \
     -o build/libUnupunctMacTabNowPlaying.dylib || fail "adapter compile failed"
+ADAPTER="build/libUnupunctMacTabNowPlaying.dylib"
+if [ "$UNIVERSAL" = "1" ]; then
+    swiftc -O -target "$OTHER_TARGET" -sdk "$SDK" -emit-library -module-name UnupunctMacTabNowPlaying         Sources/NowPlayingAdapter/NowPlayingAdapter.swift         Sources/NowPlayingAdapter/NowPlayingQueue.swift         Sources/NowPlayingAdapter/NowPlayingSelection.swift         Sources/UnupunctMacTab/Services/Notch/NotchPlaybackSource.swift         Sources/UnupunctMacTab/Services/Notch/NotchPlaybackCommand.swift         -o "build/libUnupunctMacTabNowPlaying-$OTHER_ARCH.dylib" || fail "$OTHER_ARCH adapter compile failed"
+    lipo -create build/libUnupunctMacTabNowPlaying.dylib "build/libUnupunctMacTabNowPlaying-$OTHER_ARCH.dylib" -output build/libUnupunctMacTabNowPlaying-universal.dylib || fail "adapter lipo failed"
+    ADAPTER="build/libUnupunctMacTabNowPlaying-universal.dylib"
+fi
 
 step "Compiling the fan-control helper (verification only: it is NOT bundled, see MONTEREY-COMPATIBILITY.md)"
 swiftc -O "${COMMON[@]}" "${BRIDGE[@]}" "${INCLUDES[@]}" \
@@ -126,8 +144,8 @@ swift Tools/MakeMontereyIcon.swift build/brand || fail "icon generation failed"
 step "Assembling $STAGE"
 rm -rf "$STAGE"
 mkdir -p "$STAGE/Contents/MacOS" "$STAGE/Contents/Resources" "$STAGE/Contents/Frameworks"
-cp build/UnupunctMacTab "$STAGE/Contents/MacOS/$EXECUTABLE"
-cp build/libUnupunctMacTabNowPlaying.dylib "$STAGE/Contents/Frameworks/libUnupunctMacTabNowPlaying.dylib"
+cp "$APP_BIN" "$STAGE/Contents/MacOS/$EXECUTABLE"
+cp "$ADAPTER" "$STAGE/Contents/Frameworks/libUnupunctMacTabNowPlaying.dylib"
 cp Resources/now-playing.pl Resources/agent-prices.json "$STAGE/Contents/Resources/"
 cp CHANGELOG.md "$STAGE/Contents/Resources/CHANGELOG.md"
 cp build/brand/AppIcon.icns build/brand/MenuBarIcon.png "build/brand/MenuBarIcon@2x.png" build/brand/BrandMark.png \
@@ -213,7 +231,7 @@ fi
 step "Packaging"
 rm -f "$ZIP"
 ditto -c -k --keepParent "$STAGE" "$ZIP" || fail "zip failed"
-DMG="build/${EXECUTABLE}-${VERSION}-${ARCH}-macOS12.dmg"
+DMG="build/${EXECUTABLE}-${VERSION}-${ARCH_LABEL}-macOS12.dmg"
 rm -f "$DMG"; rm -rf build/dmg-root; mkdir -p build/dmg-root
 cp -R "$STAGE" build/dmg-root/
 ln -s /Applications build/dmg-root/Applications
@@ -225,4 +243,4 @@ echo "  app : $PWD/$STAGE"
 echo "  zip : $PWD/$ZIP ($(du -h "$ZIP" | cut -f1))"
 echo "  log : $PWD/$LOG"
 echo
-echo "✓ Built for $ARCH, macOS $MIN_OS+. NOT yet verified by running: launch it and check MONTEREY-COMPATIBILITY.md."
+echo "✓ Built for $ARCH_LABEL, macOS $MIN_OS+. NOT yet verified by running: launch it and check MONTEREY-COMPATIBILITY.md."

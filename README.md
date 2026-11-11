@@ -47,7 +47,10 @@ All of this was written for this port and has only been looked at on one Mac. Se
    you are comfortable with the source and the build described below.)
 4. Grant the permissions each feature asks for (Accessibility, and others on demand).
 
-Requirements: **macOS 12.3 or later, Intel (x86_64)**. It is not a universal binary.
+Requirements: **macOS 12.3 or later**. Two downloads are on the Releases page:
+
+- **`…-x86_64-macOS12.dmg`**: Intel only. This is the one that was built and run on a Monterey Intel Mac.
+- **`…-universal-macOS12.dmg`**: Intel and Apple Silicon in one app, for macOS 13 and later as well. The Intel half is the same code as above. The **Apple Silicon half was cross-compiled and has never been run** (there was no Apple Silicon Mac to try it on), so treat it as untested.
 
 ## What works and what does not
 

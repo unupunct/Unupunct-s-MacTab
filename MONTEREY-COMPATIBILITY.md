@@ -12,7 +12,7 @@ identifier and update behaviour differ.
 | Built on | MacBook Air, **macOS 12.7.6 (21H1320), x86_64** (the same Mac the app was run on) |
 | Compiler / SDK | Apple Swift 5.7.2 (Command Line Tools only, **no Xcode**), macOS SDK 13.1 |
 | Deployment target | **macOS 12.3** (`x86_64-apple-macosx12.3`); the executable's `minos` is 12.3 |
-| Architecture | **x86_64 only.** Not universal: an Apple Silicon (arm64) build was never made or run. |
+| Architecture | The main download is **x86_64**. A second, **universal** download adds an arm64 slice that was cross-compiled on this Intel Mac and **never run**. |
 | Signing | ad-hoc (`codesign --sign -`). Not Developer ID signed, **not notarized**. |
 | Build command | `./build-monterey.sh` (run on the Mac; log in `build/build-monterey.log`) |
 
