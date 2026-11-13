@@ -24,7 +24,7 @@ clipboard history, a system monitor, mouse and scroll tweaks and more. Install o
 ## What this port adds
 
 - **A panel built around the things you reach for most.** Click the menu bar icon for output and microphone volume sliders, then System, Network, Disk and Power, with **Screenshot**, **Send to** and **Clean** buttons underneath. The CPU, RAM, disk and network readings sit on the left of the icon.
-- **Clean.** Opens a window with the app's junk cleaner, its app uninstaller and a new **Large files** finder. Everything is reviewed first and goes to the Trash.
+- **Clean.** Opens a window with four tabs: the app's junk cleaner (now with a monthly schedule, optional Slack/Discord/Teams/Spotify/Steam caches, and a list of what was left in place), an **installed-apps list** for the uninstaller (size, when each app was last opened, a "not opened for 90 days" filter, uninstall several in turn), a **Large files** finder (your own folders, sort by size or age, **duplicates**), and **Exclusions** for folders the cleaner must never touch. Everything is reviewed first and goes to the Trash.
 - **Send to.** Copies chosen files to a folder, drive or mounted network location, or opens them in an app. You edit the list of destinations.
 - **App volume** for Music, Spotify and VLC (macOS 12 cannot control other apps one by one).
 - **Intel temperature sensors**, with LAN traffic shown where a Mac has no GPU sensor.

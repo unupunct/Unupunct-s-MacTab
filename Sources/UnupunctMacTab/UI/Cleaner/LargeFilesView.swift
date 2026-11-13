@@ -20,6 +20,8 @@ struct LargeFilesView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             header
+            foldersBox
+            options
             content
             footer
         }
@@ -33,42 +35,117 @@ struct LargeFilesView: View {
         }
     }
 
+    // MARK: Header, folders, options
+
     private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Large files").font(.headline)
-            Text("Looks through Downloads, Desktop, Documents, Movies, Music and Pictures. Nothing is removed until you tick a file and confirm, and removed files go to the Trash.")
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Large files and duplicates").font(.headline)
+            Text("Nothing is removed until you tick a file and confirm, and removed files go to the Trash.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            HStack(spacing: 8) {
-                Text("Bigger than").font(.callout)
-                Picker("", selection: $scanner.minimumMegabytes) {
-                    ForEach(Self.thresholds, id: \.self) { megabytes in
-                        Text(thresholdLabel(megabytes)).tag(megabytes)
-                    }
-                }
-                .labelsHidden()
-                .frame(width: 100)
-                Button(scanner.phase == .scanning ? "Scanning…" : "Scan") { scanner.scan() }
-                    .disabled(scanner.phase == .scanning)
+        }
+    }
+
+    private var foldersBox: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("Folders to look through").font(.callout.weight(.semibold))
                 Spacer()
+                Button("Add folder…") { chooseFolder() }
+                Button("Reset") { scanner.resetFolders() }
+            }
+            ForEach(scanner.folders, id: \.self) { path in
+                folderRow(path)
             }
         }
     }
 
+    private func folderRow(_ path: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "folder").foregroundStyle(.secondary)
+            Text(prettyPath(path)).font(.caption).lineLimit(1).truncationMode(.middle)
+            Spacer()
+            Button {
+                scanner.removeFolder(path)
+            } label: {
+                Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help("Stop looking in this folder")
+        }
+    }
+
+    private func prettyPath(_ path: String) -> String {
+        let home: String = NSHomeDirectory()
+        return path.hasPrefix(home) ? "~" + path.dropFirst(home.count) : path
+    }
+
+    private func chooseFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = true
+        panel.prompt = "Add"
+        panel.message = "Choose folders or drives to look through."
+        guard panel.runModal() == .OK else { return }
+        for url in panel.urls { scanner.addFolder(url.path) }
+    }
+
+    private var options: some View {
+        HStack(spacing: 10) {
+            Picker("", selection: $scanner.mode) {
+                Text("Big files").tag(LargeFilesScanner.Mode.large)
+                Text("Duplicates").tag(LargeFilesScanner.Mode.duplicates)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(width: 190)
+            if scanner.mode == .large {
+                sizeAndSort
+            }
+            Spacer()
+            Button(scanner.phase == .scanning ? "Scanning…" : "Scan") { scanner.scan() }
+                .disabled(scanner.phase == .scanning || scanner.folders.isEmpty)
+        }
+    }
+
+    private var sizeAndSort: some View {
+        HStack(spacing: 8) {
+            Text("Bigger than").font(.callout)
+            Picker("", selection: $scanner.minimumMegabytes) {
+                ForEach(Self.thresholds, id: \.self) { megabytes in
+                    Text(thresholdLabel(megabytes)).tag(megabytes)
+                }
+            }
+            .labelsHidden()
+            .frame(width: 90)
+            Picker("", selection: $scanner.sort) {
+                Text("Biggest first").tag(LargeFilesScanner.Sort.size)
+                Text("Oldest first").tag(LargeFilesScanner.Sort.oldest)
+            }
+            .labelsHidden()
+            .frame(width: 120)
+        }
+    }
+
+    // MARK: Results
+
     @ViewBuilder
     private var content: some View {
         if scanner.phase == .idle {
-            note("Press Scan to look for big files.")
+            note(scanner.mode == .large
+                 ? "Press Scan to look for big files."
+                 : "Press Scan to look for files that exist more than once (5 MB and up).")
         } else if scanner.phase == .scanning {
             HStack(spacing: 8) {
                 ProgressView().controlSize(.small)
-                Text("Looking for big files…").font(.callout).foregroundStyle(.secondary)
+                Text(scanner.progressNote).font(.callout).foregroundStyle(.secondary)
             }
-        } else if scanner.items.isEmpty {
-            note("No files bigger than \(scanner.minimumMegabytes) MB found in these folders.")
+        } else if scanner.mode == .large {
+            largeList
         } else {
-            list
+            duplicateList
         }
     }
 
@@ -76,18 +153,62 @@ struct LargeFilesView: View {
         Text(text).font(.callout).foregroundStyle(.secondary)
     }
 
-    private var list: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ForEach(scanner.items) { item in
-                    row(item)
-                    Divider()
+    @ViewBuilder
+    private var largeList: some View {
+        if scanner.items.isEmpty {
+            note("No files bigger than \(scanner.minimumMegabytes) MB found in these folders.")
+        } else {
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(scanner.items) { item in
+                        row(item, showDate: scanner.sort == .oldest)
+                        Divider()
+                    }
                 }
             }
         }
     }
 
-    private func row(_ item: LargeFileItem) -> some View {
+    @ViewBuilder
+    private var duplicateList: some View {
+        if scanner.groups.isEmpty {
+            note("No duplicate files found in these folders.")
+        } else {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text("\(scanner.groups.count) set(s) of identical files.").font(.callout)
+                    Spacer()
+                    Button("Tick extra copies (keep the oldest)") { scanner.selectExtraCopies() }
+                }
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 10) {
+                        ForEach(scanner.groups) { group in
+                            groupBox(group)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func groupBox(_ group: DuplicateGroup) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("\(group.files.count) copies, \(format(group.size)) each")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 2)
+            ForEach(group.files) { file in
+                row(file, showDate: true)
+                Divider()
+            }
+        }
+    }
+
+    private func dateText(_ date: Date) -> String {
+        date.formatted(date: .abbreviated, time: .omitted)
+    }
+
+    private func row(_ item: LargeFileItem, showDate: Bool) -> some View {
         HStack(spacing: 10) {
             Toggle("", isOn: Binding(get: { item.selected }, set: { _ in scanner.toggle(item) }))
                 .labelsHidden()
@@ -100,6 +221,9 @@ struct LargeFilesView: View {
                     .truncationMode(.head)
             }
             Spacer(minLength: 8)
+            if showDate {
+                Text(dateText(item.modified)).font(.caption).foregroundStyle(.secondary)
+            }
             Text(format(item.size)).font(.system(size: 12)).monospacedDigit()
             Button {
                 NSWorkspace.shared.activateFileViewerSelecting([item.url])
@@ -111,6 +235,8 @@ struct LargeFilesView: View {
         }
         .padding(.vertical, 6)
     }
+
+    // MARK: Footer
 
     private var resultText: String {
         var text = "Moved \(format(scanner.lastFreed)) to the Trash."

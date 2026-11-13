@@ -489,6 +489,7 @@ struct CleanerView: View {
         case .off: return l10n.s.cleanerScheduleOff
         case .daily: return l10n.s.cleanerScheduleDaily
         case .weekly: return l10n.s.cleanerScheduleWeekly
+        case .monthly: return "Monthly"
         }
     }
 
@@ -497,6 +498,7 @@ struct CleanerView: View {
             Text(l10n.s.cleanerScheduleOff).tag(CleanerSchedule.Frequency.off.rawValue)
             Text(l10n.s.cleanerScheduleDaily).tag(CleanerSchedule.Frequency.daily.rawValue)
             Text(l10n.s.cleanerScheduleWeekly).tag(CleanerSchedule.Frequency.weekly.rawValue)
+            Text("Monthly").tag(CleanerSchedule.Frequency.monthly.rawValue)
         }
         .labelsHidden()
         .fixedSize()
@@ -942,6 +944,7 @@ struct CleanerView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
+            skippedList
             Button(l10n.s.cleanerAgain) { cleaner.reset() }
                 .controlSize(.large)
                 .padding(.top, 6)
@@ -949,6 +952,26 @@ struct CleanerView: View {
         }
         .padding(compact ? 14 : 28)
         .frame(maxWidth: .infinity, minHeight: compact ? 0 : 320)
+    }
+
+    /// What the last clean left in place, so a held-open app or an excluded
+    /// folder is easy to spot.
+    @ViewBuilder
+    private var skippedList: some View {
+        if !cleaner.skippedPaths.isEmpty {
+            DisclosureGroup("Left in place (\(cleaner.skippedPaths.count))") {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("An app was probably still using these, or they are in a folder you excluded.")
+                        .font(.caption).foregroundStyle(.secondary)
+                    ForEach(Array(cleaner.skippedPaths.prefix(40)), id: \.self) { path in
+                        Text(path).font(.system(size: 11)).lineLimit(1).truncationMode(.middle)
+                    }
+                }
+                .padding(.top, 4)
+            }
+            .frame(maxWidth: 420)
+            .padding(.horizontal, 20)
+        }
     }
 
     // MARK: Helpers

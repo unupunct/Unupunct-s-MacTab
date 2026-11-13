@@ -5,7 +5,7 @@ import SwiftUI
 import AppKit
 
 enum ToolboxTab: String, CaseIterable, Identifiable {
-    case clean, uninstall, large
+    case clean, uninstall, large, exclusions
 
     var id: String { rawValue }
 
@@ -14,6 +14,7 @@ enum ToolboxTab: String, CaseIterable, Identifiable {
         case .clean: return "Clean"
         case .uninstall: return "Uninstall apps"
         case .large: return "Large files"
+        case .exclusions: return "Exclusions"
         }
     }
 }
@@ -48,9 +49,11 @@ struct ToolboxView: View {
         case .clean:
             CleanerView().frame(maxWidth: .infinity, maxHeight: .infinity)
         case .uninstall:
-            UninstallerView()
+            UninstallTabView()
         case .large:
             LargeFilesView()
+        case .exclusions:
+            ExclusionsView()
         }
     }
 }

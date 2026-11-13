@@ -37,6 +37,23 @@ enum CleanerPolicy {
         "/Library/Developer/Xcode/tvOS DeviceSupport",
     ]
 
+    /// Rebuildable caches of chat and game apps, under their own support folders.
+    /// Offered unchecked; (label shown to the person, path under the home folder).
+    static let appCachePaths: [(String, String)] = [
+        ("Slack cache", "/Library/Application Support/Slack/Cache"),
+        ("Slack code cache", "/Library/Application Support/Slack/Code Cache"),
+        ("Slack GPU cache", "/Library/Application Support/Slack/GPUCache"),
+        ("Discord cache", "/Library/Application Support/discord/Cache"),
+        ("Discord code cache", "/Library/Application Support/discord/Code Cache"),
+        ("Discord GPU cache", "/Library/Application Support/discord/GPUCache"),
+        ("Teams cache", "/Library/Application Support/Microsoft/Teams/Cache"),
+        ("Teams code cache", "/Library/Application Support/Microsoft/Teams/Code Cache"),
+        ("Teams GPU cache", "/Library/Application Support/Microsoft/Teams/GPUCache"),
+        ("Spotify offline cache", "/Library/Application Support/Spotify/PersistentCache"),
+        ("Steam app cache", "/Library/Application Support/Steam/appcache"),
+        ("Steam logs", "/Library/Application Support/Steam/logs"),
+    ]
+
     /// Device backups are the user's safety net: enormous, ancient, and the
     /// other classic tenant of "Other" storage, but never a machine's call
     /// to delete. Every find waits unchecked for the user's eye.

@@ -40,13 +40,14 @@ from newer SF Symbols (`mountain.2.fill`, `gauge.with.dots.needle.67percent`, `c
 macOS 12, `cloud.fill` touches its canvas edge). Choosing one of the missing symbols falls back to the
 app's own icon, which is the behaviour upstream's self-test describes.
 
-## Added by this port (release monterey.2)
+## Added by this port (releases monterey.2 and monterey.3)
 
 New code, not in upstream, and **tested only by looking at it on the one Mac**: the panel's Screenshot, Send to and Clean
 buttons; the Clean window with the app uninstaller and the Large files finder; Send to; app volume for Music, Spotify and
 VLC through AppleScript; Intel SMC temperature keys (`TC…`, `TG…`); a LAN tile that replaces the GPU temperature where a
 Mac has none; a keep-the-panel-below-the-menu-bar guard (macOS 12 grew the panel upward and cut off its top); the first-run
-"Everything" choice. Seen working in screenshots: the panel layout, the volume sliders, the CPU temperature and the Send to
+"Everything" choice. Added in monterey.3: the installed-apps list in the uninstaller (sizes, last opened from Spotlight, batch review), large files with your own folders / oldest-first sort / duplicate finder, an Exclusions tab, a monthly clean schedule, optional unticked caches for Slack, Discord, Teams, Spotify and Steam, and a "left in place" list after cleaning. All four Clean-window tabs were opened and used by hand on the one Mac and worked; not every path was exercised (uninstalling several apps in a row, the monthly schedule firing, trashing duplicates, the app-cache paths on a Mac that has those apps).
+Seen working in screenshots: the panel layout, the volume sliders, the CPU temperature and the Send to
 button. Not exercised: sending files, removing files from the Large files list, running the cleaner, the per-app sliders
 (none of those apps was open), and the first-run flow end to end (one run ended with only 7 tools installed and the cause is
 unknown; if it happens, use Settings > Features > Install all).

@@ -7,7 +7,7 @@ import Foundation
 /// timer so the tests can pin every boundary.
 enum CleanerSchedule {
     enum Frequency: String, CaseIterable, Identifiable {
-        case off, daily, weekly
+        case off, daily, weekly, monthly
 
         var id: String { rawValue }
 
@@ -35,6 +35,8 @@ enum CleanerSchedule {
             break
         case .weekly:
             components.weekday = min(max(weekday, 1), 7)
+        case .monthly:
+            components.day = 1
         }
         return calendar.nextDate(after: date, matching: components,
                                  matchingPolicy: .nextTime)

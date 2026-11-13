@@ -70,6 +70,8 @@ final class JunkCleaner: ObservableObject {
     }
 
     @Published private(set) var phase: Phase = .idle
+    /// Paths the last clean could not remove (usually because an app was still using them).
+    @Published private(set) var skippedPaths: [String] = []
     @Published var items: [Item] = []
     /// The category currently being scanned, for the progress line.
     @Published private(set) var scanningCategory: CleanerSupport.Category?
@@ -152,7 +154,8 @@ final class JunkCleaner: ObservableObject {
                     guard let self, self.scanToken == token else { return }
                     self.scanningCategory = category
                 }
-                let found = run()
+                let excluded: [String] = CleanerExclusions.paths
+                let found: [Item] = run().filter { !CleanerExclusions.isExcluded($0.url, among: excluded) }
                 DispatchQueue.main.async { [weak self] in
                     guard let self, self.scanToken == token else { return }
                     self.items.append(contentsOf: found)
@@ -176,6 +179,7 @@ final class JunkCleaner: ObservableObject {
         let chosen = items.filter(\.include)
         guard !chosen.isEmpty else { return }
         phase = .cleaning
+        skippedPaths = []
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let fm = FileManager.default
@@ -190,6 +194,7 @@ final class JunkCleaner: ObservableObject {
                 ? Self.installedBundleIDs() : []
             var freed: Int64 = 0
             var failed = 0
+            var skippedList: [String] = []
             var stubborn: [Item] = []
 
             // Emptying the Trash MUST come first: the row means the Trash as
@@ -197,12 +202,13 @@ final class JunkCleaner: ObservableObject {
             // the very items this clean just made recoverable, which reads
             // as "nothing ever went to the Trash".
             for item in chosen where item.category == .trash {
-                if Self.emptyTrash() { freed += item.size } else { failed += 1 }
+                if Self.emptyTrash() { freed += item.size } else { failed += 1; skippedList.append(item.url.path) }
             }
 
             for item in chosen where item.category != .trash {
                 guard Self.mayRemove(item, installed: installed) else {
                     failed += 1
+                    skippedList.append(item.url.path)
                     continue
                 }
                 if item.category == .loginItems {
@@ -211,6 +217,7 @@ final class JunkCleaner: ObservableObject {
                     Self.bootoutUserAgent(item.url)
                     guard Self.mayRemove(item, installed: installed) else {
                         failed += 1
+                        skippedList.append(item.url.path)
                         continue
                     }
                 }
@@ -230,13 +237,16 @@ final class JunkCleaner: ObservableObject {
                 // Unattended pass: nobody can answer the prompt, so they
                 // stay put and count as failed.
                 failed += stubborn.count
+                skippedList.append(contentsOf: stubborn.map { $0.url.path })
             } else if !stubborn.isEmpty {
                 let stillSafe = stubborn.filter { Self.mayRemove($0, installed: installed) }
                 failed += stubborn.count - stillSafe.count
+                skippedList.append(contentsOf: stubborn.filter { !stillSafe.contains($0) }.map { $0.url.path })
                 Self.trashViaFinder(stillSafe.map(\.url))
                 for item in stillSafe {
                     if fm.fileExists(atPath: item.url.path) {
                         failed += 1
+                        skippedList.append(item.url.path)
                     } else {
                         freed += item.size
                     }
@@ -246,6 +256,7 @@ final class JunkCleaner: ObservableObject {
             DispatchQueue.main.async { [weak self] in
                 guard let self, self.phase == .cleaning else { return }
                 self.items = []
+                self.skippedPaths = skippedList
                 self.phase = .done(freed: freed, failed: failed)
             }
         }
@@ -265,6 +276,7 @@ final class JunkCleaner: ObservableObject {
             home + "/Downloads", home + "/Pictures", home + "/Music", home + "/Movies",
         ]
         guard !critical.contains(path),
+              !CleanerExclusions.isExcluded(url),
               !url.lastPathComponent.lowercased().hasSuffix(".localized"),
               let expectedIdentity = item.fileIdentity,
               UninstallerSupport.fileIdentity(at: url) == expectedIdentity,
@@ -584,6 +596,16 @@ final class JunkCleaner: ObservableObject {
             found.append(Item(url: url, category: .developer, size: size,
                               detail: url.lastPathComponent,
                               recommended: CleanerPolicy.precheckDeveloper))
+        }
+        // Chat and game apps keep large rebuildable caches in their own support
+        // folders. They are offered here, always unchecked, so the person decides.
+        for (label, path) in CleanerPolicy.appCachePaths {
+            let url = URL(fileURLWithPath: NSHomeDirectory() + path)
+            guard fm.fileExists(atPath: url.path) else { continue }
+            let size = directorySize(of: url, fm: fm)
+            guard size > 0 else { continue }
+            found.append(Item(url: url, category: .developer, size: size,
+                              detail: label, recommended: false))
         }
         return sorted(found)
     }

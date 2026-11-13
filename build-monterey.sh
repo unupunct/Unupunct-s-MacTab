@@ -50,7 +50,7 @@ if [ "$ARCH" = "arm64" ]; then OTHER_ARCH="x86_64"; else OTHER_ARCH="arm64"; fi
 OTHER_TARGET="${OTHER_ARCH}-apple-macosx${MIN_OS}"
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist 2>/dev/null || echo 0)"
 UPSTREAM_VERSION="$VERSION"
-VERSION="${UPSTREAM_VERSION}-monterey.2"   # this port's own version, on top of the upstream release it is based on
+VERSION="${UPSTREAM_VERSION}-monterey.3"   # this port's own version, on top of the upstream release it is based on
 STAGE="build/${APP_NAME}.app"
 ZIP="build/${EXECUTABLE}-${VERSION}-${ARCH_LABEL}.zip"
 
